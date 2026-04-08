@@ -8,6 +8,7 @@ import { getChatHistory } from "@/features/chat/server/get-chat-history";
 import { getViewerPlan } from "@/features/billing/server/get-viewer-plan";
 import { getLibraryItems } from "@/features/library";
 import { BILLING_FREE_PLAN } from "@/features/billing/constants";
+import { TopicStarterCards } from "@/components/chat/topic-starter-cards";
 
 export const dynamic = "force-dynamic";
 
@@ -242,6 +243,17 @@ export default async function DashboardPage() {
             >
               Hablar con Flavia
             </Link>
+          </div>
+
+          {/* Topic entry points */}
+          <div>
+            <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">O elige un tema</p>
+            <p className="mt-2 text-sm text-stone-500">
+              Si no sabes por dónde empezar, elige lo que más te resuene
+            </p>
+            <div className="mt-4">
+              <TopicStarterCards />
+            </div>
           </div>
 
           {/* Library for newcomers */}

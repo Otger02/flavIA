@@ -289,6 +289,30 @@ export type Database = {
           },
         ];
       };
+      user_feedback: {
+        Row: {
+          id: string;
+          user_id: string;
+          category: string;
+          message: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          category: string;
+          message: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          category?: string;
+          message?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       subscriptions: {
         Row: {
           id: string;

@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+
 import { ChatInput } from "@/components/chat/chat-input";
 import { ChatMessageList } from "@/components/chat/chat-message-list";
 import { PaywallCard } from "@/components/chat/paywall-card";
@@ -8,18 +10,44 @@ import { RecommendationCard } from "@/components/chat/recommendation-card";
 import { useChat } from "@/features/chat/client/use-chat";
 import type { ChatMessage, ChatUsagePolicy } from "@/features/chat/types";
 
+const TOPIC_OPENERS: Record<string, string> = {
+  desire: "Quiero hablar sobre el deseo. Últimamente siento que algo ha cambiado.",
+  communication: "Necesito ayuda para comunicar algo que me cuesta decir.",
+  couple_connection: "Siento que mi pareja y yo nos estamos desconectando.",
+  pleasure: "Quiero explorar el placer sin vergüenza.",
+  boundaries: "Me cuesta poner límites en mis relaciones.",
+  routine: "Siento que hemos caído en una rutina y no sé cómo salir.",
+};
+
 type ChatShellProps = {
   initialMessages: ChatMessage[];
   initialSessionId: string | null;
   initialUsage: ChatUsagePolicy | null;
+  initialTopic?: string | null;
 };
 
-export function ChatShell({ initialMessages, initialSessionId, initialUsage }: ChatShellProps) {
+export function ChatShell({ initialMessages, initialSessionId, initialUsage, initialTopic }: ChatShellProps) {
   const { error, hasHistory, loading, messages, recommendation, sendMessage, sessionId, usage } = useChat({
     initialMessages,
     initialSessionId: initialSessionId ?? undefined,
     initialUsage,
   });
+
+  const topicSentRef = useRef(false);
+
+  // Auto-send topic opener if navigated with ?topic=
+  useEffect(() => {
+    if (
+      initialTopic &&
+      TOPIC_OPENERS[initialTopic] &&
+      !topicSentRef.current &&
+      !hasHistory &&
+      !loading
+    ) {
+      topicSentRef.current = true;
+      void sendMessage(TOPIC_OPENERS[initialTopic]);
+    }
+  }, [initialTopic, hasHistory, loading, sendMessage]);
 
   const isInputDisabled = loading || usage?.requiresUpgrade;
 

@@ -6,7 +6,12 @@ import { enforceUsagePolicy } from "@/features/chat/server/enforce-usage-policy"
 import { getChatHistory } from "@/features/chat/server/get-chat-history";
 import { getLatestChatSession } from "@/features/chat/server/get-latest-chat-session";
 
-export default async function ChatPage() {
+type ChatPageProps = {
+  searchParams: Promise<{ topic?: string }>;
+};
+
+export default async function ChatPage({ searchParams }: ChatPageProps) {
+  const params = await searchParams;
   const user = await getUser();
   const session = user ? await getLatestChatSession({ userId: user.id }) : null;
   const messages = session ? await getChatHistory({ sessionId: session.id }) : [];
@@ -19,12 +24,14 @@ export default async function ChatPage() {
         properties={{
           hasExistingSession: Boolean(session),
           initialMessageCount: messages.length,
+          topic: params.topic ?? null,
         }}
       />
       <ChatShell
         initialMessages={messages}
         initialSessionId={session?.id ?? null}
         initialUsage={usage}
+        initialTopic={params.topic ?? null}
       />
     </>
   );
