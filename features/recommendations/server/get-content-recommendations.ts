@@ -15,7 +15,7 @@ function mapContentItem(row: ContentItemSelect): ContentRecommendation {
     id: row.id,
     title: row.title,
     description: row.excerpt,
-    href: `/content/${row.slug}`,
+    href: `/library/${row.slug}`,
     score: row.priority ?? 0,
   };
 }
