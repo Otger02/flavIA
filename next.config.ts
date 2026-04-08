@@ -15,6 +15,14 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "i.ytimg.com",
       },
+      {
+        protocol: "https",
+        hostname: "assets.lelo.com",
+      },
+      {
+        protocol: "https",
+        hostname: "www.lelo.com",
+      },
     ],
   },
   reactStrictMode: true,

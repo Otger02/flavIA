@@ -22,16 +22,16 @@ export function ChatMessageList({ hasPersistedSession, loading, messages }: Chat
   }, [messages, loading]);
 
   return (
-    <div className="flex min-h-[28rem] flex-col gap-3 overflow-y-auto rounded-[1.25rem] border border-white/[0.06] bg-stone-950/60 p-4">
+    <div className="flex min-h-full flex-col gap-3 p-4">
       {messages.length === 0 ? (
-        <div className="flex flex-1 flex-col items-center justify-center px-5 py-10 text-center">
-          <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-rose-500/10">
-            <svg width="28" height="28" fill="none" viewBox="0 0 24 24" className="text-rose-400/70">
+        <div className="flex flex-1 flex-col items-center justify-center px-5 py-16 text-center">
+          <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-rose-100/80">
+            <svg width="28" height="28" fill="none" viewBox="0 0 24 24" className="text-rose-400">
               <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 21a9 9 0 100-18 9 9 0 000 18z" />
               <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 8v4m0 4h.01" />
             </svg>
           </div>
-          <p className="font-[family-name:var(--font-display)] text-lg text-white">
+          <p className="font-[family-name:var(--font-display)] text-lg text-stone-900">
             {hasPersistedSession
               ? "Esta conversación está lista para ti"
               : "Empieza cuando quieras"}
@@ -47,7 +47,7 @@ export function ChatMessageList({ hasPersistedSession, loading, messages }: Chat
       )}
       {loading ? (
         <div className="self-start">
-          <div className="flex items-center gap-2 rounded-2xl rounded-bl-md border border-white/[0.06] bg-white/[0.05] px-4 py-3">
+          <div className="flex items-center gap-2 rounded-2xl rounded-bl-md border border-rose-200/40 bg-rose-50/60 px-4 py-3">
             <div className="flex gap-1">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-rose-400/60" style={{ animationDelay: "0ms" }} />
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-rose-400/60" style={{ animationDelay: "150ms" }} />

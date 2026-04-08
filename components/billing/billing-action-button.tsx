@@ -9,7 +9,7 @@ type BillingActionButtonProps = {
   label: string;
   mode: "checkout" | "manage";
   pendingLabel?: string;
-  plan?: "pro" | "premium";
+  plan?: "pro" | "premium" | "plus";
   returnPath?: string;
   successPath?: string;
 };

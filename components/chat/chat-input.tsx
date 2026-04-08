@@ -47,8 +47,8 @@ export function ChatInput({ disabled = false, loading = false, onSendMessage }: 
   const isBlocked = disabled || loading || submitting;
 
   return (
-    <form className="mt-4" onSubmit={handleSubmit}>
-      <div className="flex items-end gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.03] p-2">
+    <form className="mt-3 flex-shrink-0" onSubmit={handleSubmit}>
+      <div className="flex items-end gap-2 rounded-2xl border border-stone-200/60 bg-white/80 p-2 shadow-[0_4px_12px_rgba(180,120,100,0.06)] backdrop-blur">
         <textarea
           ref={textareaRef}
           value={draft}
@@ -57,7 +57,7 @@ export function ChatInput({ disabled = false, loading = false, onSendMessage }: 
           placeholder="Escribe lo que sientes..."
           maxLength={CHAT_MAX_INPUT_LENGTH}
           disabled={isBlocked}
-          className="flex-1 resize-none bg-transparent px-3 py-2 text-sm text-white outline-none placeholder:text-stone-600 disabled:opacity-60"
+          className="flex-1 resize-none bg-transparent px-3 py-2 text-sm text-stone-900 outline-none placeholder:text-stone-400 disabled:opacity-60"
         />
         <button
           type="submit"
@@ -67,11 +67,11 @@ export function ChatInput({ disabled = false, loading = false, onSendMessage }: 
           {loading || submitting ? "..." : "Enviar"}
         </button>
       </div>
-      <div className="mt-2 flex items-center justify-between px-1">
-        <p className="text-[11px] text-stone-600">
+      <div className="mt-1.5 flex items-center justify-between px-1">
+        <p className="text-[11px] text-stone-400">
           {disabled ? "Chat pausado" : loading || submitting ? "Procesando..." : ""}
         </p>
-        <p className="text-[11px] text-stone-700">{draft.length}/{CHAT_MAX_INPUT_LENGTH}</p>
+        <p className="text-[11px] text-stone-400">{draft.length}/{CHAT_MAX_INPUT_LENGTH}</p>
       </div>
     </form>
   );

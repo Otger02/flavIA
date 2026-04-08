@@ -22,7 +22,7 @@ export default async function MarketingLayout({ children }: MarketingLayoutProps
             <Link href="/plans" className="transition-colors hover:text-stone-900">Planes</Link>
             {user ? (
               <Link
-                href="/chat"
+                href="/dashboard"
                 className="rounded-full bg-gradient-to-r from-rose-400 to-rose-500 px-5 py-2 text-sm font-medium text-white shadow-[0_8px_20px_rgba(220,100,100,0.18)] transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(220,100,100,0.25)]"
               >
                 Mi espacio

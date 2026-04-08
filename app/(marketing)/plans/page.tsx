@@ -112,7 +112,7 @@ export default async function PlansPage({ searchParams }: PlansPageProps) {
               ) : (
                 <BillingActionButton
                   mode="checkout"
-                  plan="pro"
+                  plan="plus"
                   label="Quiero Flavia Plus"
                   pendingLabel="Preparando..."
                   disabled={!viewer.userId}

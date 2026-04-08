@@ -24,21 +24,23 @@ export function ChatShell({ initialMessages, initialSessionId, initialUsage }: C
   const isInputDisabled = loading || usage?.requiresUpgrade;
 
   return (
-    <section className="mx-auto w-full max-w-3xl">
-      <div className="rounded-[2rem] border border-rose-900/15 bg-gradient-to-b from-stone-950/80 to-stone-950/95 p-6 shadow-[0_30px_80px_rgba(40,15,15,0.30)] backdrop-blur-sm">
-        <div className="mb-5 flex items-center justify-between gap-3">
-          <div>
-            <h1 className="font-[family-name:var(--font-display)] text-3xl text-white">Flavia</h1>
-            <p className="mt-1 text-sm text-rose-300/60">Tu espacio de conversación íntima</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className={`h-2 w-2 rounded-full ${loading ? "animate-pulse bg-rose-400" : "bg-emerald-400/80"}`} />
-            <p className="text-xs text-stone-500">{loading ? "Escribiendo..." : "Disponible"}</p>
-          </div>
+    <div className="flex h-[calc(100vh-7rem)] flex-col">
+      {/* Header */}
+      <div className="flex items-center justify-between gap-3 px-1 pb-4">
+        <div>
+          <h1 className="font-[family-name:var(--font-display)] text-3xl text-stone-900">Flavia</h1>
+          <p className="mt-0.5 text-sm text-stone-500">Tu espacio de conversación íntima</p>
         </div>
+        <div className="flex items-center gap-2">
+          <span className={`h-2 w-2 rounded-full ${loading ? "animate-pulse bg-rose-400" : "bg-emerald-400/80"}`} />
+          <p className="text-xs text-stone-500">{loading ? "Escribiendo..." : "Disponible"}</p>
+        </div>
+      </div>
 
-        {usage?.requiresUpgrade ? <PaywallCard message={usage.reason ?? undefined} /> : null}
+      {usage?.requiresUpgrade ? <PaywallCard message={usage.reason ?? undefined} /> : null}
 
+      {/* Scrollable messages area */}
+      <div className="min-h-0 flex-1 overflow-y-auto rounded-[1.5rem] border border-stone-200/60 bg-white/60 shadow-[0_20px_60px_rgba(180,120,100,0.08)] backdrop-blur">
         <ChatMessageList
           hasPersistedSession={Boolean(sessionId || initialSessionId)}
           loading={loading}
@@ -46,15 +48,18 @@ export function ChatShell({ initialMessages, initialSessionId, initialUsage }: C
         />
 
         {recommendation ? (
-          <RecommendationCard recommendation={recommendation} />
+          <div className="px-4 pb-4">
+            <RecommendationCard recommendation={recommendation} />
+          </div>
         ) : null}
-
-        {usage ? <ChatUsageIndicator usage={usage} /> : null}
-
-        <ChatInput disabled={isInputDisabled} loading={loading} onSendMessage={sendMessage} />
-
-        {error ? <p className="mt-3 text-sm text-rose-300">{error}</p> : null}
       </div>
-    </section>
+
+      {usage ? <ChatUsageIndicator usage={usage} /> : null}
+
+      {/* Fixed input at bottom */}
+      <ChatInput disabled={isInputDisabled} loading={loading} onSendMessage={sendMessage} />
+
+      {error ? <p className="mt-2 text-sm text-rose-500">{error}</p> : null}
+    </div>
   );
 }

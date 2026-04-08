@@ -70,7 +70,7 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/chat");
+    router.push("/dashboard");
   }
 
   function handleCodeChange(index: number, value: string) {
@@ -111,7 +111,7 @@ export default function LoginPage() {
     const nextEmpty = newCode.findIndex((d) => !d);
     inputRefs.current[nextEmpty === -1 ? 7 : nextEmpty]?.focus();
 
-    if (pasted.length === 6) {
+    if (pasted.length === 8) {
       void verifyCode(pasted);
     }
   }

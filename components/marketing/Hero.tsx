@@ -1,6 +1,10 @@
 import Link from "next/link";
 
-export function Hero() {
+type HeroProps = {
+  isLoggedIn?: boolean;
+};
+
+export function Hero({ isLoggedIn }: HeroProps) {
   return (
     <section className="relative grid gap-8 overflow-hidden rounded-[2.25rem] border border-rose-200/40 bg-[linear-gradient(135deg,rgba(255,248,239,0.95)_0%,rgba(246,214,214,0.75)_48%,rgba(255,242,236,0.98)_100%)] p-6 shadow-[0_22px_70px_rgba(180,80,70,0.08)] backdrop-blur md:grid-cols-[1.1fr_0.9fr] md:p-8 lg:p-10">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.55),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(255,200,190,0.30),transparent_45%)]" />
@@ -17,10 +21,10 @@ export function Hero() {
         </p>
         <div className="flex flex-wrap items-center gap-3">
           <Link
-            href="/login"
+            href={isLoggedIn ? "/dashboard" : "/login"}
             className="rounded-full bg-gradient-to-r from-rose-400 to-rose-500 px-7 py-3.5 text-sm font-medium text-white shadow-[0_14px_30px_rgba(220,100,100,0.22)] transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(220,100,100,0.30)]"
           >
-            Empieza ahora
+            {isLoggedIn ? "Ir a mi espacio" : "Empieza ahora"}
           </Link>
           <a
             href="#how-it-works"
