@@ -108,7 +108,7 @@ function buildUpgradeReply(sessionId: string) {
     sessionId,
     role: "assistant" as const,
     content:
-      "Podemos seguir con esto, porque aqui es donde se pone interesante. Si quieres, seguimos paso a paso.",
+      "Justo aquí es donde la conversación se pone buena. Si quieres seguir, con Flavia Plus no hay límite — seguimos al ritmo que necesites.",
     createdAt: new Date().toISOString(),
   };
 }
@@ -116,41 +116,41 @@ function buildUpgradeReply(sessionId: string) {
 function buildTurnThreeOrFourValueLine(activeTopic: ChatSession["activeTopic"]) {
   switch (activeTopic) {
     case "communication":
-      return "Hay una forma de decir esto sin atacar. Si quieres, te doy una estructura sencilla.";
+      return "Hay una forma de decir esto sin que suene a ataque. Si quieres, te doy una frase con la que podrías empezar.";
     case "couple_connection":
-      return "Podemos bajar esto a una forma concreta de acercarte sin entrar a la defensiva.";
+      return "Esto lo podemos bajar a algo concreto: una forma de acercarte que no active la defensa del otro.";
     case "desire":
-      return "Tambien podemos llevar esto a una forma simple de hablar del deseo sin presion.";
+      return "Si te parece, lo llevamos a una forma simple de hablar de deseo sin que nadie se sienta presionado.";
     case "body_confidence":
-      return "Si quieres, lo aterrizamos en una frase concreta para hablar de esto sin vergüenza.";
+      return "Podemos aterrizarlo en algo concreto: una forma de hablarte a ti misma sobre esto sin vergüenza.";
     default:
-      return "Si quieres, lo bajamos a un siguiente paso concreto y facil de decir.";
+      return "Si quieres, lo bajamos a un siguiente paso concreto. Algo que puedas decir o hacer ya.";
   }
 }
 
 function buildRecommendationBridge(kind: "content" | "product") {
   if (kind === "content") {
-    return "He visto algo que puede ayudarte mucho justo en este punto.";
+    return "Tengo algo que encaja justo con lo que estamos hablando. Creo que te puede servir.";
   }
 
-  return "Puede ayudarte tener un apoyo mas guiado para seguir paso a paso desde aqui.";
+  return "Si sientes que quieres ir más profundo con esto, hay una forma de que sigamos sin prisa.";
 }
 
 function buildHumanRecommendationRationale(kind: "content" | "product", activeTopic: ChatSession["activeTopic"]) {
   if (kind === "content") {
     switch (activeTopic) {
       case "communication":
-        return "Te puede servir para ordenar lo que quieres decir antes de hablarlo.";
+        return "Te puede servir para ordenar lo que quieres decir antes de abrir la conversación.";
       case "couple_connection":
-        return "Encaja con este momento porque te ayuda a reconectar sin forzar la conversacion.";
+        return "Va con lo que estás viviendo: ayuda a reconectar sin forzar nada.";
       case "desire":
-        return "Puede ayudarte a hablar de deseo con mas claridad y menos tension.";
+        return "Habla de deseo con la calma que necesitas ahora mismo.";
       default:
-        return "Puede ayudarte a avanzar con mas claridad en este punto.";
+        return "Creo que te da claridad justo en lo que estamos trabajando.";
     }
   }
 
-  return "Puede ser un buen siguiente paso si quieres acompañamiento mas guiado desde aqui.";
+  return "Si quieres acompañamiento más guiado, esto puede ser un buen siguiente paso.";
 }
 
 function enrichAssistantReply({

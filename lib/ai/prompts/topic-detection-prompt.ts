@@ -12,11 +12,21 @@ export function getTopicDetectionPrompt({ recentMessages }: TopicDetectionPrompt
     .join("\n");
 
   return [
-    "Classify the main user topic of this intimate wellbeing conversation.",
-    `Allowed topics only: ${CHAT_TOPICS.join(", ")}.`,
-    'Return exactly one token: one allowed topic, or "null" if none is clearly dominant.',
-    "Do not explain your answer.",
-    "Conversation:",
+    "Clasifica el tema principal de esta conversación sobre bienestar íntimo.",
+    "Temas permitidos:",
+    `- desire: deseo sexual, libido, ganas, excitación, falta de deseo`,
+    `- couple_connection: conexión de pareja, distancia emocional, reconexión, rutina de pareja`,
+    `- self_connection: relación con una misma, autoestima, identidad sexual, autoconocimiento`,
+    `- communication: comunicación en pareja, conversaciones difíciles, expresar necesidades`,
+    `- body_confidence: relación con el cuerpo, imagen corporal, vergüenza, aceptación`,
+    `- routine: rutina sexual, monotonía, aburrimiento, novedad`,
+    `- curiosity: curiosidad sexual, prácticas, orientación, exploración`,
+    "",
+    `Solo puedes devolver uno de estos valores: ${CHAT_TOPICS.join(", ")}.`,
+    'Devuelve exactamente un token: un tema permitido, o "null" si ninguno es claramente dominante.',
+    "No expliques tu respuesta.",
+    "",
+    "Conversación:",
     conversationSnippet,
   ].join("\n");
 }
