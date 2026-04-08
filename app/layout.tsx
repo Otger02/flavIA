@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
 
+import { PostHogProvider } from "@/components/analytics/posthog-provider";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -25,7 +26,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${fraunces.variable} ${inter.variable}`}>
-      <body className="font-[family-name:var(--font-body)] antialiased">{children}</body>
+      <body className="min-h-screen bg-stone-50 font-[family-name:var(--font-body)] text-stone-950 antialiased">
+        <PostHogProvider />
+        {children}
+      </body>
     </html>
   );
 }

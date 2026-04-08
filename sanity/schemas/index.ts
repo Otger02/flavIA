@@ -1,1 +1,1 @@
-export const sanitySchemas = [];
+export { schemaTypes as sanitySchemas } from "@/sanity/schemaTypes";
