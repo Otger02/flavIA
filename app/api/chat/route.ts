@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { getUser } from "@/features/auth/server/get-user";
-import { ChatTurnProcessingError, processChatTurn } from "@/features/chat/server/process-chat-turn";
+import { ChatTurnProcessingError, processChatTurnStream } from "@/features/chat/server/process-chat-turn";
 import { chatTurnRequestSchema } from "@/features/chat/types";
 
 export const runtime = "nodejs";
@@ -27,12 +27,18 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const result = await processChatTurn({
+    const stream = await processChatTurnStream({
       userId: user.id,
       input: parsedInput.data,
     });
 
-    return NextResponse.json(result, { status: 200 });
+    return new Response(stream, {
+      headers: {
+        "Content-Type": "application/x-ndjson",
+        "Cache-Control": "no-cache",
+        Connection: "keep-alive",
+      },
+    });
   } catch (error) {
     if (error instanceof ChatTurnProcessingError) {
       return NextResponse.json(

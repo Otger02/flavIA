@@ -13,7 +13,7 @@ import { chooseRecommendation } from "@/features/recommendations/server/choose-r
 import { getContentRecommendations } from "@/features/recommendations/server/get-content-recommendations";
 import { getProductRecommendations } from "@/features/recommendations/server/get-product-recommendations";
 import { logRecommendation } from "@/features/recommendations/server/log-recommendation";
-import { generateChatResponse } from "@/lib/ai/client";
+import { generateChatResponse, generateChatResponseStream } from "@/lib/ai/client";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { ChatSession, ChatTurnRequest, ChatTurnResponse } from "@/features/chat/types";
 
@@ -341,4 +341,168 @@ export async function processChatTurn({
       statusCode: classified.statusCode,
     });
   }
+}
+
+// --- Streaming variant ---
+
+export async function processChatTurnStream({
+  userId,
+  input,
+}: ProcessChatTurnParams): Promise<ReadableStream<Uint8Array>> {
+  const encoder = new TextEncoder();
+
+  function encodeEvent(data: Record<string, unknown>) {
+    return encoder.encode(JSON.stringify(data) + "\n");
+  }
+
+  const session = await createChatSession({ userId, sessionId: input.sessionId });
+  const sanitizedMessage = sanitizeIncomingMessage(input.message);
+  const usage = await enforceUsagePolicy({ userId, sessionId: session.id });
+
+  // If paywall, return a single "done" event — no streaming needed
+  if (usage.requiresUpgrade) {
+    const historyBeforeTurn = await getChatHistory({ sessionId: session.id });
+    const paywallReply = buildUpgradeReply(session.id);
+
+    return new ReadableStream({
+      start(controller) {
+        controller.enqueue(
+          encodeEvent({
+            type: "done",
+            session,
+            reply: paywallReply,
+            messages: [...historyBeforeTurn, paywallReply],
+            recommendation: null,
+            usage,
+          }),
+        );
+        controller.close();
+      },
+    });
+  }
+
+  if (!usage.allowed) {
+    throw new ChatTurnProcessingError({
+      code: "validation_error",
+      message: usage.reason ?? "Chat usage policy blocked this request.",
+      retryable: false,
+      sessionId: session.id,
+      statusCode: 400,
+    });
+  }
+
+  // Pre-LLM work
+  await saveChatMessage({
+    sessionId: session.id,
+    userId,
+    role: "user",
+    content: sanitizedMessage,
+    metadata: input.clientMessageId ? { clientMessageId: input.clientMessageId } : undefined,
+  });
+
+  const history = await getChatHistory({ sessionId: session.id });
+  const detectedTopic = await detectActiveTopic({ recentMessages: history }).catch(() => null);
+  const sessionWithTopic = await persistActiveTopic(session, userId, detectedTopic ?? session.activeTopic);
+
+  const context = await buildChatContext({ session: sessionWithTopic, history });
+  const userTurnCount = history.filter((m) => m.role === "user").length;
+
+  // Get the stream
+  const { stream: tokenStream, model, provider } = await generateChatResponseStream(context);
+
+  return new ReadableStream({
+    async start(controller) {
+      let fullContent = "";
+
+      try {
+        for await (const token of tokenStream) {
+          fullContent += token;
+          controller.enqueue(encodeEvent({ type: "token", content: token }));
+        }
+
+        // Post-LLM work
+        const recommendationRequest = {
+          userId,
+          surface: "chat" as const,
+          context: { activeTopic: context.activeTopic },
+        };
+
+        const [contentRecommendations, productRecommendations] = await Promise.all([
+          getContentRecommendations(recommendationRequest),
+          getProductRecommendations(recommendationRequest),
+        ]);
+
+        const recommendationChoice = await chooseRecommendation({
+          content: contentRecommendations,
+          products: productRecommendations,
+          turnCount: userTurnCount === 5 ? 3 : userTurnCount === 6 ? 5 : userTurnCount,
+        });
+
+        let recommendation = recommendationChoice?.recommendation ?? null;
+
+        const finalReplyContent = enrichAssistantReply({
+          activeTopic: context.activeTopic,
+          recommendationKind: recommendation?.kind ?? null,
+          reply: fullContent,
+          userTurnCount,
+        });
+
+        const reply = await saveChatMessage({
+          sessionId: session.id,
+          userId,
+          role: "assistant",
+          content: finalReplyContent,
+        });
+
+        if (recommendationChoice && recommendation) {
+          const logResult = await logRecommendation({
+            userId,
+            sessionId: session.id,
+            surface: "chat",
+            itemId: recommendationChoice.targetId,
+            itemType: recommendationChoice.targetType,
+            activeTopic: context.activeTopic,
+            score: recommendation.score,
+          }).catch(() => null);
+
+          recommendation = {
+            ...recommendation,
+            logId: logResult?.logId ?? null,
+            rationale: buildHumanRecommendationRationale(recommendation.kind, context.activeTopic),
+          };
+        }
+
+        // Send enrichment suffix separately if the enriched content has more than the raw LLM output
+        const enrichmentSuffix = finalReplyContent.slice(fullContent.length);
+        if (enrichmentSuffix) {
+          controller.enqueue(encodeEvent({ type: "token", content: enrichmentSuffix }));
+        }
+
+        const messages = await getChatHistory({ sessionId: session.id });
+
+        await updateUserState({ session: sessionWithTopic, assistantMessage: reply });
+
+        controller.enqueue(
+          encodeEvent({
+            type: "done",
+            session: sessionWithTopic,
+            reply,
+            messages,
+            recommendation,
+            usage,
+          }),
+        );
+      } catch (error) {
+        console.error("[chat-stream] Error during streaming:", error);
+        controller.enqueue(
+          encodeEvent({
+            type: "error",
+            message: error instanceof Error ? error.message : "Streaming error",
+          }),
+        );
+      } finally {
+        controller.close();
+      }
+    },
+  });
 }

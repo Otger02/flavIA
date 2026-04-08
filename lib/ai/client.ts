@@ -138,3 +138,96 @@ export async function generateChatResponse(context: ChatContext): Promise<Genera
     provider: openAiApiKey ? "openai" : anthropicApiKey ? "anthropic" : "openai",
   };
 }
+
+// --- Streaming ---
+
+type StreamResult = {
+  stream: AsyncIterable<string>;
+  model: string;
+  provider: "openai" | "anthropic";
+};
+
+async function streamWithOpenAI(context: ChatContext, apiKey: string): Promise<StreamResult> {
+  const client = new OpenAI({ apiKey });
+  const messages: ChatCompletionMessageParam[] = [
+    { role: "system", content: getChatSystemPrompt(context) },
+    ...getConversationMessages(context),
+  ];
+
+  const completion = await client.chat.completions.create({
+    model: OPENAI_MODEL,
+    temperature: 0.7,
+    messages,
+    stream: true,
+  });
+
+  async function* iterateChunks() {
+    for await (const chunk of completion) {
+      const delta = chunk.choices[0]?.delta?.content;
+      if (delta) yield delta;
+    }
+  }
+
+  return { stream: iterateChunks(), model: OPENAI_MODEL, provider: "openai" };
+}
+
+async function streamWithAnthropic(context: ChatContext, apiKey: string): Promise<StreamResult> {
+  const client = new Anthropic({ apiKey });
+  const response = client.messages.stream({
+    model: ANTHROPIC_MODEL,
+    max_tokens: 500,
+    system: getChatSystemPrompt(context),
+    messages: getAnthropicConversationMessages(context),
+  });
+
+  async function* iterateChunks() {
+    for await (const event of response) {
+      if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
+        yield event.delta.text;
+      }
+    }
+  }
+
+  return { stream: iterateChunks(), model: ANTHROPIC_MODEL, provider: "anthropic" };
+}
+
+export async function generateChatResponseStream(context: ChatContext): Promise<StreamResult> {
+  const { anthropicApiKey, openAiApiKey } = getAiProviderKeys();
+  const errors: string[] = [];
+
+  if (openAiApiKey) {
+    try {
+      return await streamWithOpenAI(context, openAiApiKey);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unknown OpenAI error";
+      errors.push(`OpenAI stream: ${message}`);
+    }
+  }
+
+  if (anthropicApiKey) {
+    try {
+      return await streamWithAnthropic(context, anthropicApiKey);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unknown Anthropic error";
+      errors.push(`Anthropic stream: ${message}`);
+    }
+  }
+
+  if (errors.length > 0) {
+    console.error("[AI] All streaming providers failed:", errors.join("; "));
+  } else {
+    console.error("[AI] No API keys configured for streaming.");
+  }
+
+  // Fallback: return a single-chunk "stream" with the error message
+  const latestUserMessage = getLatestUserMessage(context);
+  const fallbackContent = latestUserMessage
+    ? `Estoy teniendo un problema temporal para generar una respuesta completa. Mientras tanto, entiendo que dices: "${latestUserMessage.content}".`
+    : "Estoy teniendo un problema temporal para responder ahora mismo.";
+
+  async function* fallbackStream() {
+    yield fallbackContent;
+  }
+
+  return { stream: fallbackStream(), model: "fallback", provider: "openai" };
+}

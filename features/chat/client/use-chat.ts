@@ -18,10 +18,13 @@ type UseChatOptions = {
   initialUsage?: ChatUsagePolicy | null;
 };
 
+// Extended message type for client-side streaming state
+type ClientChatMessage = ChatMessage & { streaming?: boolean };
+
 type UseChatResult = {
   error: string | null;
   loading: boolean;
-  messages: ChatMessage[];
+  messages: ClientChatMessage[];
   hasHistory: boolean;
   recommendation: RecommendationCard | null;
   sendMessage: (text: string) => Promise<ChatTurnResponse | null>;
@@ -29,7 +32,7 @@ type UseChatResult = {
   usage: ChatUsagePolicy | null;
 };
 
-function dedupeMessages(messages: ChatMessage[]): ChatMessage[] {
+function dedupeMessages(messages: ClientChatMessage[]): ClientChatMessage[] {
   const seen = new Set<string>();
 
   return messages.filter((message) => {
@@ -42,12 +45,45 @@ function dedupeMessages(messages: ChatMessage[]): ChatMessage[] {
   });
 }
 
-function shouldRetry(status: number, retryableFlag: unknown) {
-  if (typeof retryableFlag === "boolean") {
-    return retryableFlag;
-  }
+async function* readNDJSON(response: Response): AsyncGenerator<Record<string, unknown>> {
+  const reader = response.body?.getReader();
+  if (!reader) return;
 
-  return [408, 429, 500, 502, 503, 504].includes(status);
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+
+      const lines = buffer.split("\n");
+      buffer = lines.pop() ?? "";
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed) continue;
+        try {
+          yield JSON.parse(trimmed) as Record<string, unknown>;
+        } catch {
+          // Skip malformed lines
+        }
+      }
+    }
+
+    // Process remaining buffer
+    if (buffer.trim()) {
+      try {
+        yield JSON.parse(buffer.trim()) as Record<string, unknown>;
+      } catch {
+        // Skip
+      }
+    }
+  } finally {
+    reader.releaseLock();
+  }
 }
 
 export function useChat({
@@ -55,7 +91,7 @@ export function useChat({
   initialSessionId,
   initialUsage = null,
 }: UseChatOptions = {}): UseChatResult {
-  const [messages, setMessages] = useState<ChatMessage[]>(dedupeMessages(initialMessages));
+  const [messages, setMessages] = useState<ClientChatMessage[]>(dedupeMessages(initialMessages));
   const [sessionId, setSessionId] = useState<string | null>(initialSessionId ?? null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -108,7 +144,7 @@ export function useChat({
       });
     }
 
-    const optimisticMessage: ChatMessage = {
+    const optimisticMessage: ClientChatMessage = {
       id: crypto.randomUUID(),
       sessionId: sessionId ?? "pending-session",
       role: "user",
@@ -116,81 +152,110 @@ export function useChat({
       createdAt: new Date().toISOString(),
     };
 
+    const streamingPlaceholder: ClientChatMessage = {
+      id: `streaming-${crypto.randomUUID()}`,
+      sessionId: sessionId ?? "pending-session",
+      role: "assistant",
+      content: "",
+      createdAt: new Date().toISOString(),
+      streaming: true,
+    };
+
     latestRequestIdRef.current = optimisticMessage.id;
 
-    setMessages((currentMessages) => dedupeMessages([...currentMessages, optimisticMessage]));
+    setMessages((currentMessages) =>
+      dedupeMessages([...currentMessages, optimisticMessage, streamingPlaceholder]),
+    );
 
     try {
-      const requestBody = {
-        message,
-        clientMessageId: optimisticMessage.id,
-        sessionId: sessionId ?? undefined,
-      };
+      const response = await fetch(CHAT_API_ROUTE, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message,
+          clientMessageId: optimisticMessage.id,
+          sessionId: sessionId ?? undefined,
+        }),
+      });
 
-      const maxAttempts = 2;
-      let lastErrorMessage = "Unable to process the chat turn.";
+      if (!response.ok) {
+        const responseBody = (await response.json().catch(() => null)) as
+          | { error?: string }
+          | null;
 
-      for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-        const response = await fetch(CHAT_API_ROUTE, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestBody),
-        });
+        const errorMsg = responseBody?.error ?? "Unable to process the chat turn.";
+        setError(errorMsg);
+        setRecommendation(null);
+        setMessages((currentMessages) =>
+          currentMessages.filter(
+            (m) => m.id !== optimisticMessage.id && m.id !== streamingPlaceholder.id,
+          ),
+        );
+        return null;
+      }
 
-        if (!response.ok) {
-          const fallbackMessage = "Unable to process the chat turn.";
-          const responseBody = (await response.json().catch(() => null)) as
-            | {
-                error?: string;
-                retryable?: boolean;
-              }
-            | null;
+      // Check if response is streaming (NDJSON) or regular JSON
+      const contentType = response.headers.get("Content-Type") ?? "";
 
-          const retryable = shouldRetry(response.status, responseBody?.retryable);
-          lastErrorMessage = responseBody?.error ?? fallbackMessage;
+      if (contentType.includes("application/x-ndjson")) {
+        // Streaming path
+        let finalPayload: ChatTurnResponse | null = null;
 
-          if (retryable && attempt < maxAttempts) {
-            await new Promise((resolve) => setTimeout(resolve, 450 * attempt));
-            continue;
+        for await (const event of readNDJSON(response)) {
+          if (event.type === "token" && typeof event.content === "string") {
+            setMessages((currentMessages) =>
+              currentMessages.map((m) =>
+                m.id === streamingPlaceholder.id
+                  ? { ...m, content: m.content + event.content }
+                  : m,
+              ),
+            );
+          } else if (event.type === "done") {
+            const parsed = chatTurnResponseSchema.safeParse(event);
+            if (parsed.success) {
+              finalPayload = parsed.data;
+            }
+          } else if (event.type === "error") {
+            setError(typeof event.message === "string" ? event.message : "Streaming error");
           }
-
-          setError(lastErrorMessage);
-          setRecommendation(null);
-          setMessages((currentMessages) =>
-            currentMessages.filter((messageItem) => messageItem.id !== optimisticMessage.id),
-          );
-
-          return null;
         }
 
-        const payload = chatTurnResponseSchema.parse(await response.json());
-
-        if (latestRequestIdRef.current !== optimisticMessage.id) {
-          return payload;
+        if (finalPayload && latestRequestIdRef.current === optimisticMessage.id) {
+          setSessionId(finalPayload.session.id);
+          setMessages(dedupeMessages(finalPayload.messages));
+          setRecommendation(finalPayload.recommendation);
+          setUsage(finalPayload.usage);
+          return finalPayload;
         }
 
+        // If no done event but we got tokens, remove the streaming flag
+        setMessages((currentMessages) =>
+          currentMessages.map((m) =>
+            m.id === streamingPlaceholder.id ? { ...m, streaming: false } : m,
+          ),
+        );
+
+        return finalPayload;
+      }
+
+      // Fallback: regular JSON response (non-streaming)
+      const payload = chatTurnResponseSchema.parse(await response.json());
+
+      if (latestRequestIdRef.current === optimisticMessage.id) {
         setSessionId(payload.session.id);
         setMessages(dedupeMessages(payload.messages));
         setRecommendation(payload.recommendation);
         setUsage(payload.usage);
-
-        return payload;
       }
 
-      setError(lastErrorMessage);
-      setRecommendation(null);
-      setMessages((currentMessages) =>
-        currentMessages.filter((messageItem) => messageItem.id !== optimisticMessage.id),
-      );
-
-      return null;
+      return payload;
     } catch {
       setError("Unable to process the chat turn.");
       setRecommendation(null);
       setMessages((currentMessages) =>
-        currentMessages.filter((messageItem) => messageItem.id !== optimisticMessage.id),
+        currentMessages.filter(
+          (m) => m.id !== optimisticMessage.id && m.id !== streamingPlaceholder.id,
+        ),
       );
 
       return null;

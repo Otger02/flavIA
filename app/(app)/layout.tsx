@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { LogoutButton } from "@/components/auth/logout-button";
 import { requireUser } from "@/features/auth/server/require-user";
 
 type AppLayoutProps = {
@@ -24,6 +25,7 @@ export default async function AppLayout({ children }: AppLayoutProps) {
             <Link href="/chat" className="transition-colors hover:text-stone-900">Chat</Link>
             <Link href="/library" className="transition-colors hover:text-stone-900">Biblioteca</Link>
             <Link href="/account" className="transition-colors hover:text-stone-900">Cuenta</Link>
+            <LogoutButton />
           </nav>
         </header>
         <main className="flex-1">{children}</main>

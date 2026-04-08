@@ -2,9 +2,10 @@ import type { ChatMessage } from "@/features/chat/types";
 
 type ChatMessageItemProps = {
   message: ChatMessage;
+  streaming?: boolean;
 };
 
-export function ChatMessageItem({ message }: ChatMessageItemProps) {
+export function ChatMessageItem({ message, streaming }: ChatMessageItemProps) {
   const isUser = message.role === "user";
 
   return (
@@ -19,7 +20,12 @@ export function ChatMessageItem({ message }: ChatMessageItemProps) {
         <p className={`mb-1.5 text-[10px] uppercase tracking-[0.2em] ${isUser ? "text-rose-200/70" : "text-rose-400/70"}`}>
           {isUser ? "Tú" : "Flavia"}
         </p>
-        <p className="whitespace-pre-wrap leading-relaxed">{message.content}</p>
+        <p className="whitespace-pre-wrap leading-relaxed">
+          {message.content}
+          {streaming ? (
+            <span className="ml-0.5 inline-block h-4 w-1.5 animate-pulse bg-rose-400/70" />
+          ) : null}
+        </p>
       </div>
     </article>
   );

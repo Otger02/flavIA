@@ -5,21 +5,26 @@ import { useEffect, useRef } from "react";
 import { ChatMessageItem } from "@/components/chat/chat-message-item";
 import type { ChatMessage } from "@/features/chat/types";
 
+type ClientChatMessage = ChatMessage & { streaming?: boolean };
+
 type ChatMessageListProps = {
   hasPersistedSession: boolean;
   loading: boolean;
-  messages: ChatMessage[];
+  messages: ClientChatMessage[];
 };
 
 export function ChatMessageList({ hasPersistedSession, loading, messages }: ChatMessageListProps) {
   const endRef = useRef<HTMLDivElement | null>(null);
   const previousLengthRef = useRef(messages.length);
 
+  // Track last message content for streaming scroll
+  const lastMessageContent = messages.at(-1)?.content ?? "";
+
   useEffect(() => {
     const nextBehavior = messages.length > previousLengthRef.current ? "smooth" : "auto";
     endRef.current?.scrollIntoView({ behavior: nextBehavior, block: "end" });
     previousLengthRef.current = messages.length;
-  }, [messages, loading]);
+  }, [messages.length, lastMessageContent, loading]);
 
   return (
     <div className="flex min-h-full flex-col gap-3 p-4">
@@ -43,9 +48,11 @@ export function ChatMessageList({ hasPersistedSession, loading, messages }: Chat
           </p>
         </div>
       ) : (
-        messages.map((message) => <ChatMessageItem key={message.id} message={message} />)
+        messages.map((message) => (
+          <ChatMessageItem key={message.id} message={message} streaming={message.streaming} />
+        ))
       )}
-      {loading ? (
+      {loading && !messages.some((m) => m.streaming) ? (
         <div className="self-start">
           <div className="flex items-center gap-2 rounded-2xl rounded-bl-md border border-rose-200/40 bg-rose-50/60 px-4 py-3">
             <div className="flex gap-1">
