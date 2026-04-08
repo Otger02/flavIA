@@ -13,7 +13,7 @@ export default function LoginPage() {
   const searchParams = useSearchParams();
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
-  const [code, setCode] = useState(["", "", "", "", "", ""]);
+  const [code, setCode] = useState(["", "", "", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -64,7 +64,7 @@ export default function LoginPage() {
 
     if (verifyError) {
       setError("Código incorrecto o expirado. Revisa e intenta de nuevo.");
-      setCode(["", "", "", "", "", ""]);
+      setCode(["", "", "", "", "", "", "", ""]);
       setLoading(false);
       setTimeout(() => inputRefs.current[0]?.focus(), 50);
       return;
@@ -81,12 +81,12 @@ export default function LoginPage() {
     newCode[index] = digit;
     setCode(newCode);
 
-    if (digit && index < 5) {
+    if (digit && index < 7) {
       inputRefs.current[index + 1]?.focus();
     }
 
     const fullCode = newCode.join("");
-    if (fullCode.length === 6) {
+    if (fullCode.length === 8) {
       void verifyCode(fullCode);
     }
   }
@@ -99,17 +99,17 @@ export default function LoginPage() {
 
   function handleCodePaste(event: React.ClipboardEvent<HTMLInputElement>) {
     event.preventDefault();
-    const pasted = event.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    const pasted = event.clipboardData.getData("text").replace(/\D/g, "").slice(0, 8);
     if (!pasted) return;
 
     const newCode = [...code];
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 8; i++) {
       newCode[i] = pasted[i] || "";
     }
     setCode(newCode);
 
     const nextEmpty = newCode.findIndex((d) => !d);
-    inputRefs.current[nextEmpty === -1 ? 5 : nextEmpty]?.focus();
+    inputRefs.current[nextEmpty === -1 ? 7 : nextEmpty]?.focus();
 
     if (pasted.length === 6) {
       void verifyCode(pasted);
@@ -161,7 +161,7 @@ export default function LoginPage() {
                   onKeyDown={(e) => handleCodeKeyDown(i, e)}
                   onPaste={i === 0 ? handleCodePaste : undefined}
                   disabled={loading}
-                  className="h-12 w-10 rounded-xl border border-stone-300/80 bg-white text-center text-lg font-medium text-stone-900 outline-none focus:border-rose-300 focus:ring-2 focus:ring-rose-200/50 disabled:opacity-60"
+                  className="h-12 w-9 rounded-lg border border-stone-300/80 bg-white text-center text-lg font-medium text-stone-900 outline-none focus:border-rose-300 focus:ring-2 focus:ring-rose-200/50 disabled:opacity-60"
                 />
               ))}
             </div>
@@ -178,7 +178,7 @@ export default function LoginPage() {
               type="button"
               onClick={() => {
                 setStep("email");
-                setCode(["", "", "", "", "", ""]);
+                setCode(["", "", "", "", "", "", "", ""]);
                 setError(null);
               }}
               className="mt-6 text-xs text-stone-500 underline underline-offset-2 hover:text-stone-700"
