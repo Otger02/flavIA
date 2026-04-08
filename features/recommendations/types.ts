@@ -23,6 +23,7 @@ export const productRecommendationSchema = z.object({
   description: z.string(),
   href: z.string(),
   score: z.number(),
+  imageUrl: z.string().nullable().optional(),
 });
 
 export const recommendationRequestSchema = z.object({
@@ -46,6 +47,7 @@ export const recommendationCardSchema = z.object({
   logId: z.string().nullable(),
   rationale: z.string(),
   score: z.number(),
+  imageUrl: z.string().nullable().optional(),
 });
 
 export const recommendationLogInputSchema = z.object({

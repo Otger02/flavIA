@@ -62,6 +62,7 @@ export async function chooseRecommendation({
         logId: null,
         rationale: "Product suggestion unlocked after the fifth turn.",
         score: topProduct.score,
+        imageUrl: topProduct.imageUrl ?? null,
       },
     };
   }

@@ -8,7 +8,7 @@ import type {
 } from "@/features/recommendations/types";
 
 type ProductItemRow = Database["public"]["Tables"]["product_items"]["Row"];
-type ProductItemSelect = Pick<ProductItemRow, "id" | "title" | "description" | "external_url" | "slug" | "priority">;
+type ProductItemSelect = Pick<ProductItemRow, "id" | "title" | "description" | "external_url" | "slug" | "priority" | "image_url">;
 
 function mapProductItem(row: ProductItemSelect): ProductRecommendation {
   return {
@@ -17,6 +17,7 @@ function mapProductItem(row: ProductItemSelect): ProductRecommendation {
     description: row.description,
     href: row.external_url ?? `/products/${row.slug}`,
     score: row.priority ?? 0,
+    imageUrl: row.image_url ?? null,
   };
 }
 
@@ -28,7 +29,7 @@ export async function getProductRecommendations(
 
   let query = supabase
     .from("product_items")
-    .select("id, title, description, external_url, slug, priority, topic_tags")
+    .select("id, title, description, external_url, slug, priority, topic_tags, image_url")
     .order("priority", { ascending: false, nullsFirst: false })
     .limit(4);
 
