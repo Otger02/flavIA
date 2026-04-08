@@ -245,12 +245,15 @@ export async function processChatTurn({
     });
     const userTurnCount = history.filter((message) => message.role === "user").length;
 
-    const generatedReply = await generateChatResponse(context).catch(() => ({
-      content:
-        "Estoy teniendo un problema temporal para responder con normalidad. Intenta de nuevo en unos segundos.",
-      model: "fallback",
-      provider: "openai" as const,
-    }));
+    const generatedReply = await generateChatResponse(context).catch((error) => {
+      console.error("[chat] generateChatResponse threw:", error);
+      return {
+        content:
+          "Estoy teniendo un problema temporal para responder con normalidad. Intenta de nuevo en unos segundos.",
+        model: "fallback",
+        provider: "openai" as const,
+      };
+    });
 
     const recommendationRequest = {
       userId,

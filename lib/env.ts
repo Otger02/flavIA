@@ -68,10 +68,10 @@ export function getServerEnv(): ServerEnv {
 }
 
 export function getAiProviderKeys() {
-  const { OPENAI_API_KEY, ANTHROPIC_API_KEY } = getServerEnv();
+  assertServerOnly();
 
-  return {
-    openAiApiKey: OPENAI_API_KEY,
-    anthropicApiKey: ANTHROPIC_API_KEY,
-  };
+  const openAiApiKey = process.env.OPENAI_API_KEY?.trim() || undefined;
+  const anthropicApiKey = process.env.ANTHROPIC_API_KEY?.trim() || undefined;
+
+  return { openAiApiKey, anthropicApiKey };
 }

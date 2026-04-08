@@ -122,8 +122,13 @@ export async function generateChatResponse(context: ChatContext): Promise<Genera
     }
   }
 
+  if (errors.length > 0) {
+    console.error("[AI] All providers failed:", errors.join("; "));
+  } else {
+    console.error("[AI] No API keys configured. Set OPENAI_API_KEY or ANTHROPIC_API_KEY.");
+  }
+
   const latestUserMessage = getLatestUserMessage(context);
-  void errors;
 
   return {
     content: latestUserMessage
