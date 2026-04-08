@@ -1,14 +1,27 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f7f3ec;
+  --background: #faf5ef;
   --foreground: #1c140d;
-  --muted: #d9ccb9;
-  --accent: #9f6f4a;
+  --muted: #e8d5c4;
+  --accent: #c4605a;
+  --surface: #fff9f5;
+  --surface-rose: rgba(220, 120, 110, 0.06);
+  --shadow-warm: rgba(180, 100, 80, 0.10);
+  --shadow-deep: rgba(80, 30, 20, 0.18);
+  --rose-glow: rgba(220, 100, 100, 0.12);
+  --cream: #fef6ee;
+  --blush: #f5ddd5;
+  --rose-soft: #e8a0a0;
 }
 
 body {
-  background: radial-gradient(circle at top, #fff8ef 0%, var(--background) 48%, #efe4d6 100%);
+  background: radial-gradient(
+    ellipse at top,
+    var(--cream) 0%,
+    var(--background) 40%,
+    var(--blush) 100%
+  );
   color: var(--foreground);
   min-height: 100vh;
 }

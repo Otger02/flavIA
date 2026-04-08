@@ -7,7 +7,7 @@ export async function requireUser() {
   const user = await getUser();
 
   if (!user) {
-    redirect("/");
+    redirect("/login");
   }
 
   return user;

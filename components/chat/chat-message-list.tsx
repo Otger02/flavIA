@@ -22,22 +22,41 @@ export function ChatMessageList({ hasPersistedSession, loading, messages }: Chat
   }, [messages, loading]);
 
   return (
-    <div className="flex min-h-[24rem] flex-col gap-3 overflow-y-auto rounded-[1.25rem] border border-white/10 bg-stone-950/40 p-4">
+    <div className="flex min-h-[28rem] flex-col gap-3 overflow-y-auto rounded-[1.25rem] border border-white/[0.06] bg-stone-950/60 p-4">
       {messages.length === 0 ? (
-        <div className="flex min-h-[16rem] flex-col items-start justify-center rounded-[1rem] border border-dashed border-white/10 bg-white/[0.02] px-5 py-6">
-          <p className="text-sm font-medium text-white">
-            {hasPersistedSession ? "Esta sesión todavía no tiene historial" : "Aún no tienes conversaciones previas"}
-          </p>
-          <p className="mt-2 max-w-xl text-sm leading-6 text-stone-400">
+        <div className="flex flex-1 flex-col items-center justify-center px-5 py-10 text-center">
+          <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-rose-500/10">
+            <svg width="28" height="28" fill="none" viewBox="0 0 24 24" className="text-rose-400/70">
+              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 21a9 9 0 100-18 9 9 0 000 18z" />
+              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 8v4m0 4h.01" />
+            </svg>
+          </div>
+          <p className="font-[family-name:var(--font-display)] text-lg text-white">
             {hasPersistedSession
-              ? "Puedes enviar tu primer mensaje y Flavia guardará esta conversación automáticamente."
-              : "Envía tu primer mensaje para crear una sesión persistida y empezar a construir contexto."}
+              ? "Esta conversación está lista para ti"
+              : "Empieza cuando quieras"}
+          </p>
+          <p className="mt-2 max-w-sm text-sm leading-6 text-stone-500">
+            {hasPersistedSession
+              ? "Escribe lo que necesites. Flavia recuerda esta sesión."
+              : "Cuéntame lo que te ronda. Sin filtro, sin juicio."}
           </p>
         </div>
       ) : (
         messages.map((message) => <ChatMessageItem key={message.id} message={message} />)
       )}
-      {loading ? <p className="text-sm text-stone-400">Esperando la respuesta de Flavia...</p> : null}
+      {loading ? (
+        <div className="self-start">
+          <div className="flex items-center gap-2 rounded-2xl rounded-bl-md border border-white/[0.06] bg-white/[0.05] px-4 py-3">
+            <div className="flex gap-1">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-rose-400/60" style={{ animationDelay: "0ms" }} />
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-rose-400/60" style={{ animationDelay: "150ms" }} />
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-rose-400/60" style={{ animationDelay: "300ms" }} />
+            </div>
+            <span className="text-xs text-stone-500">Flavia está escribiendo...</span>
+          </div>
+        </div>
+      ) : null}
       <div ref={endRef} />
     </div>
   );

@@ -16,7 +16,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "Flavia",
-  description: "Conversational wellness platform base scaffold.",
+  description: "Acompañamiento íntimo con Flavia Dos Santos. Conversaciones que transforman tu vida sexual y emocional.",
 };
 
 export default function RootLayout({
@@ -26,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${fraunces.variable} ${inter.variable}`}>
-      <body className="min-h-screen bg-stone-50 font-[family-name:var(--font-body)] text-stone-950 antialiased">
+      <body className="min-h-screen font-[family-name:var(--font-body)] text-stone-950 antialiased">
         <PostHogProvider />
         {children}
       </body>

@@ -6,19 +6,22 @@ type MarketingLayoutProps = {
 
 export default function MarketingLayout({ children }: MarketingLayoutProps) {
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_#fff8ef_0%,_#f7f3ec_48%,_#efe4d6_100%)]">
+    <div className="min-h-screen">
       <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-6 py-10 sm:px-10 lg:px-12">
         <header className="mb-12 flex items-center justify-between gap-4">
-          <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-stone-500">Flavia</p>
-            <p className="mt-2 font-[family-name:var(--font-display)] text-2xl text-stone-900">
-              Marketing shell
-            </p>
-          </div>
-          <nav className="flex gap-3 text-sm text-stone-600">
-            <Link href="/">Inicio</Link>
-            <Link href="/plans">Planes</Link>
-            <Link href="/library">Biblioteca</Link>
+          <Link href="/" className="group">
+            <p className="text-xs uppercase tracking-[0.3em] text-stone-400 transition-colors group-hover:text-stone-600">Acompañamiento íntimo</p>
+            <p className="mt-1 font-[family-name:var(--font-display)] text-2xl text-stone-900">Flavia</p>
+          </Link>
+          <nav className="flex items-center gap-4 text-sm text-stone-600">
+            <Link href="/library" className="transition-colors hover:text-stone-900">Biblioteca</Link>
+            <Link href="/plans" className="transition-colors hover:text-stone-900">Planes</Link>
+            <Link
+              href="/login"
+              className="rounded-full bg-gradient-to-r from-rose-400 to-rose-500 px-5 py-2 text-sm font-medium text-white shadow-[0_8px_20px_rgba(220,100,100,0.18)] transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(220,100,100,0.25)]"
+            >
+              Entrar
+            </Link>
           </nav>
         </header>
         <main className="flex-1">{children}</main>

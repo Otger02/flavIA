@@ -45,36 +45,33 @@ export function ChatInput({ disabled = false, loading = false, onSendMessage }: 
   }
 
   const isBlocked = disabled || loading || submitting;
-  const helperText = disabled
-    ? "El chat está bloqueado para esta cuenta ahora mismo."
-    : loading || submitting
-      ? "Flavia está procesando tu mensaje."
-      : "Los mensajes se guardan automáticamente en Supabase.";
 
   return (
-    <form className="mt-4 space-y-3" onSubmit={handleSubmit}>
-      <textarea
-        ref={textareaRef}
-        value={draft}
-        onChange={(event) => setDraft(event.target.value)}
-        rows={4}
-        placeholder="Write your next message..."
-        maxLength={CHAT_MAX_INPUT_LENGTH}
-        disabled={isBlocked}
-        className="w-full rounded-2xl border border-white/10 bg-stone-900 px-4 py-3 text-sm text-white outline-none placeholder:text-stone-500 disabled:opacity-60"
-      />
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <p className="text-xs text-stone-400">{helperText}</p>
-          <p className="mt-1 text-[11px] text-stone-500">{draft.length}/{CHAT_MAX_INPUT_LENGTH}</p>
-        </div>
+    <form className="mt-4" onSubmit={handleSubmit}>
+      <div className="flex items-end gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.03] p-2">
+        <textarea
+          ref={textareaRef}
+          value={draft}
+          onChange={(event) => setDraft(event.target.value)}
+          rows={2}
+          placeholder="Escribe lo que sientes..."
+          maxLength={CHAT_MAX_INPUT_LENGTH}
+          disabled={isBlocked}
+          className="flex-1 resize-none bg-transparent px-3 py-2 text-sm text-white outline-none placeholder:text-stone-600 disabled:opacity-60"
+        />
         <button
           type="submit"
           disabled={isBlocked || draft.trim().length === 0}
-          className="rounded-full bg-stone-100 px-5 py-2 text-sm font-medium text-stone-900 disabled:opacity-60"
+          className="flex-shrink-0 rounded-xl bg-gradient-to-r from-rose-400 to-rose-500 px-5 py-2.5 text-sm font-medium text-white shadow-[0_6px_16px_rgba(220,100,100,0.20)] transition duration-200 ease-out hover:-translate-y-0.5 disabled:opacity-40 disabled:hover:translate-y-0"
         >
-          {loading || submitting ? "Sending..." : "Send"}
+          {loading || submitting ? "..." : "Enviar"}
         </button>
+      </div>
+      <div className="mt-2 flex items-center justify-between px-1">
+        <p className="text-[11px] text-stone-600">
+          {disabled ? "Chat pausado" : loading || submitting ? "Procesando..." : ""}
+        </p>
+        <p className="text-[11px] text-stone-700">{draft.length}/{CHAT_MAX_INPUT_LENGTH}</p>
       </div>
     </form>
   );

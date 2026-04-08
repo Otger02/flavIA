@@ -24,48 +24,37 @@ export function ChatShell({ initialMessages, initialSessionId, initialUsage }: C
   const isInputDisabled = loading || usage?.requiresUpgrade;
 
   return (
-    <section className="grid gap-6 lg:grid-cols-[1fr_22rem]">
-      <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
-        <div className="mb-4 flex items-center justify-between gap-3">
+    <section className="mx-auto w-full max-w-3xl">
+      <div className="rounded-[2rem] border border-rose-900/15 bg-gradient-to-b from-stone-950/80 to-stone-950/95 p-6 shadow-[0_30px_80px_rgba(40,15,15,0.30)] backdrop-blur-sm">
+        <div className="mb-5 flex items-center justify-between gap-3">
           <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-stone-400">Chat</p>
-            <h1 className="mt-2 font-[family-name:var(--font-display)] text-3xl text-white">
-              Conversational workspace
-            </h1>
+            <h1 className="font-[family-name:var(--font-display)] text-3xl text-white">Flavia</h1>
+            <p className="mt-1 text-sm text-rose-300/60">Tu espacio de conversación íntima</p>
           </div>
-          <p className="text-xs text-stone-400">{loading ? "Sending..." : "Ready"}</p>
+          <div className="flex items-center gap-2">
+            <span className={`h-2 w-2 rounded-full ${loading ? "animate-pulse bg-rose-400" : "bg-emerald-400/80"}`} />
+            <p className="text-xs text-stone-500">{loading ? "Escribiendo..." : "Disponible"}</p>
+          </div>
         </div>
 
         {usage?.requiresUpgrade ? <PaywallCard message={usage.reason ?? undefined} /> : null}
+
         <ChatMessageList
           hasPersistedSession={Boolean(sessionId || initialSessionId)}
           loading={loading}
           messages={messages}
         />
+
         {recommendation ? (
           <RecommendationCard recommendation={recommendation} />
-        ) : hasHistory ? (
-          <div className="mt-4 rounded-2xl border border-dashed border-white/10 bg-white/[0.03] p-4 text-sm leading-6 text-stone-400">
-            No hay una recomendación para este turno todavía. Cuando el contexto encaje, aparecerá aquí sin interrumpir la conversación.
-          </div>
         ) : null}
-        {usage ? <ChatUsageIndicator usage={usage} /> : null}
-        <ChatInput disabled={isInputDisabled} loading={loading} onSendMessage={sendMessage} />
-        {error ? <p className="mt-3 text-sm text-red-300">{error}</p> : null}
-      </div>
 
-      <aside className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5 text-sm text-stone-300">
-        <p className="text-sm uppercase tracking-[0.3em] text-stone-400">Session</p>
-        <p className="mt-4 break-all leading-6">{sessionId ?? "A new session will be created on first message."}</p>
-        <p className="mt-6 leading-6 text-stone-400">
-          Reloading this page restores the latest stored session and its recent persisted history.
-        </p>
-        {!hasHistory ? (
-          <div className="mt-6 rounded-[1rem] border border-dashed border-white/10 bg-white/[0.03] p-4 text-sm leading-6 text-stone-400">
-            No hay historial cargado en esta sesión todavía. El primer mensaje activará el flujo completo y la persistencia.
-          </div>
-        ) : null}
-      </aside>
+        {usage ? <ChatUsageIndicator usage={usage} /> : null}
+
+        <ChatInput disabled={isInputDisabled} loading={loading} onSendMessage={sendMessage} />
+
+        {error ? <p className="mt-3 text-sm text-rose-300">{error}</p> : null}
+      </div>
     </section>
   );
 }
