@@ -2,6 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { getUser } from "@/features/auth/server/get-user";
+import { getUserPlan } from "@/features/billing/server/get-user-plan";
+import { BILLING_FREE_PLAN } from "@/features/billing/constants";
 import { getLibraryItemBySlug } from "@/features/library/server/get-library-item-by-slug";
 
 export const dynamic = "force-dynamic";
@@ -40,6 +43,69 @@ export default async function LibraryItemPage({ params }: LibraryItemPageProps) 
 
   if (!item) {
     notFound();
+  }
+
+  // Gate premium content behind auth + active plan
+  if (item.isPremium) {
+    const user = await getUser();
+    const plan = user ? await getUserPlan({ userId: user.id }) : null;
+    const hasAccess = plan && plan.plan !== BILLING_FREE_PLAN && plan.status !== "canceled";
+
+    if (!hasAccess) {
+      return (
+        <article className="mx-auto max-w-4xl space-y-8">
+          <header className="space-y-4">
+            {item.coverImageUrl ? (
+              <div className="overflow-hidden rounded-[2rem] border border-stone-300/70 bg-stone-200 shadow-[0_20px_60px_rgba(61,42,24,0.08)]">
+                <Image
+                  src={item.coverImageUrl}
+                  alt={item.title}
+                  width={1600}
+                  height={900}
+                  className="aspect-[16/9] w-full object-cover"
+                />
+              </div>
+            ) : null}
+            <span className="inline-block rounded-full bg-rose-100 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.15em] text-rose-600">
+              Premium
+            </span>
+            <h1 className="font-[family-name:var(--font-display)] text-5xl leading-none text-stone-900">
+              {item.title}
+            </h1>
+            {item.excerpt ? <p className="max-w-3xl text-lg leading-8 text-stone-700">{item.excerpt}</p> : null}
+          </header>
+
+          <section className="rounded-[2rem] border border-rose-200/60 bg-gradient-to-b from-white to-rose-50/50 p-8 text-center shadow-[0_20px_60px_rgba(180,120,100,0.10)]">
+            <p className="font-[family-name:var(--font-display)] text-2xl text-stone-900">
+              Este contenido es exclusivo para suscriptoras
+            </p>
+            <p className="mx-auto mt-3 max-w-md text-base leading-7 text-stone-600">
+              Con Flavia Plus tienes acceso a toda la biblioteca, recomendaciones personalizadas y conversaciones ilimitadas.
+            </p>
+            <div className="mt-6 flex flex-col items-center gap-3">
+              {user ? (
+                <Link
+                  href="/plans"
+                  className="rounded-full bg-gradient-to-r from-rose-400 to-rose-500 px-8 py-3 text-sm font-medium text-white shadow-[0_12px_30px_rgba(220,100,100,0.20)] transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_16px_40px_rgba(220,100,100,0.30)]"
+                >
+                  Quiero Flavia Plus
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    className="rounded-full bg-gradient-to-r from-rose-400 to-rose-500 px-8 py-3 text-sm font-medium text-white shadow-[0_12px_30px_rgba(220,100,100,0.20)] transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_16px_40px_rgba(220,100,100,0.30)]"
+                  >
+                    Entra para suscribirte
+                  </Link>
+                  <p className="text-xs text-stone-500">Ya tienes cuenta? <Link href="/login" className="underline underline-offset-2 hover:text-stone-700">Inicia sesión</Link></p>
+                </>
+              )}
+            </div>
+          </section>
+        </article>
+      );
+    }
   }
 
   return (
