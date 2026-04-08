@@ -11,8 +11,9 @@ type GetChatHistoryParams = {
 };
 
 type ChatMessageRow = Database["public"]["Tables"]["chat_messages"]["Row"];
+type ChatMessageSelect = Pick<ChatMessageRow, "id" | "session_id" | "role" | "content" | "created_at">;
 
-function mapChatMessage(row: ChatMessageRow): ChatMessage {
+function mapChatMessage(row: ChatMessageSelect): ChatMessage {
   return {
     id: row.id,
     sessionId: row.session_id,

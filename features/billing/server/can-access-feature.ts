@@ -3,7 +3,7 @@ import "server-only";
 import {
   BILLING_FEATURE_KEYS,
   BILLING_FREE_PLAN,
-  BILLING_PREMIUM_PLAN,
+  BILLING_PLUS_PLAN,
   BILLING_PRO_PLAN,
 } from "@/features/billing/constants";
 import type {
@@ -20,7 +20,7 @@ type CanAccessFeatureParams = {
 const requiredPlanByFeature: Record<BillingFeatureKey, UserPlan["plan"]> = {
   [BILLING_FEATURE_KEYS.chatPriority]: BILLING_PRO_PLAN,
   [BILLING_FEATURE_KEYS.extendedLibrary]: BILLING_PRO_PLAN,
-  [BILLING_FEATURE_KEYS.premiumRecommendations]: BILLING_PREMIUM_PLAN,
+  [BILLING_FEATURE_KEYS.premiumRecommendations]: BILLING_PLUS_PLAN,
 };
 
 export async function canAccessFeature({
@@ -38,7 +38,7 @@ export async function canAccessFeature({
   const requiredPlan = requiredPlanByFeature[feature];
   const allowed =
     plan.plan === requiredPlan ||
-    (requiredPlan === BILLING_PRO_PLAN && plan.plan === BILLING_PREMIUM_PLAN);
+    (requiredPlan === BILLING_PRO_PLAN && plan.plan === BILLING_PLUS_PLAN);
 
   return {
     allowed,

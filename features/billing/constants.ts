@@ -1,6 +1,7 @@
 export const BILLING_DEFAULT_CURRENCY = "eur";
 export const BILLING_FREE_PLAN = "free";
 export const BILLING_PRO_PLAN = "pro";
+export const BILLING_PLUS_PLAN = "plus";
 export const BILLING_PREMIUM_PLAN = "premium";
 export const BILLING_PLUS_PRODUCT_NAME = "Flavia Plus";
 

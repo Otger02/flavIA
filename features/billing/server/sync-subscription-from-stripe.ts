@@ -36,7 +36,7 @@ function mapPriceIdToPlan(priceId: string | null | undefined) {
   const { flaviaPlusPriceId } = getStripeServerConfig();
 
   if (priceId === flaviaPlusPriceId) {
-    return "pro" as const;
+    return "plus" as const;
   }
 
   return "free" as const;
@@ -60,13 +60,11 @@ async function upsertSubscriptionFromStripeSubscription(subscription: Stripe.Sub
   const { error } = await supabase.from("subscriptions").upsert(
     {
       user_id: userId,
-      plan: mapPriceIdToPlan(priceId),
+      plan_slug: mapPriceIdToPlan(priceId),
       status: mapStripeSubscriptionStatus(subscription.status),
       stripe_customer_id: customerId,
-      stripe_price_id: priceId,
       stripe_subscription_id: subscription.id,
       current_period_end: currentPeriodEnd,
-      updated_at: new Date().toISOString(),
     },
     { onConflict: "user_id" },
   );

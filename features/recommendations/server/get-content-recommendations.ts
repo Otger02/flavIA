@@ -8,14 +8,15 @@ import type {
 } from "@/features/recommendations/types";
 
 type ContentItemRow = Database["public"]["Tables"]["content_items"]["Row"];
+type ContentItemSelect = Pick<ContentItemRow, "id" | "title" | "excerpt" | "slug" | "priority">;
 
-function mapContentItem(row: ContentItemRow): ContentRecommendation {
+function mapContentItem(row: ContentItemSelect): ContentRecommendation {
   return {
     id: row.id,
     title: row.title,
-    description: row.description,
-    href: row.href,
-    score: row.score ?? 0,
+    description: row.excerpt,
+    href: `/content/${row.slug}`,
+    score: row.priority ?? 0,
   };
 }
 
@@ -27,8 +28,8 @@ export async function getContentRecommendations(
 
   let query = supabase
     .from("content_items")
-    .select("id, title, description, href, score, topic_tags")
-    .order("score", { ascending: false, nullsFirst: false })
+    .select("id, title, excerpt, slug, priority, topic_tags")
+    .order("priority", { ascending: false, nullsFirst: false })
     .limit(6);
 
   if (topicTag) {

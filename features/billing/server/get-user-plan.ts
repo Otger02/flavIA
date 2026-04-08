@@ -10,14 +10,14 @@ type GetUserPlanParams = {
 };
 
 type SubscriptionRow = Database["public"]["Tables"]["subscriptions"]["Row"];
+type SubscriptionSelect = Pick<SubscriptionRow, "user_id" | "plan_slug" | "status" | "stripe_customer_id" | "stripe_subscription_id" | "current_period_end">;
 
-function mapSubscriptionToUserPlan(row: SubscriptionRow): UserPlan {
+function mapSubscriptionToUserPlan(row: SubscriptionSelect): UserPlan {
   return {
     userId: row.user_id,
-    plan: row.plan,
-    status: row.status,
+    plan: row.plan_slug,
+    status: row.status as UserPlan["status"],
     stripeCustomerId: row.stripe_customer_id,
-    stripePriceId: row.stripe_price_id,
     stripeSubscriptionId: row.stripe_subscription_id,
     currentPeriodEnd: row.current_period_end,
   };
@@ -28,7 +28,7 @@ export async function getUserPlan({ userId }: GetUserPlanParams): Promise<UserPl
   const { data, error } = await supabase
     .from("subscriptions")
     .select(
-      "user_id, plan, status, stripe_customer_id, stripe_price_id, stripe_subscription_id, current_period_end, created_at, updated_at",
+      "user_id, plan_slug, status, stripe_customer_id, stripe_subscription_id, current_period_end",
     )
     .eq("user_id", userId)
     .maybeSingle();
@@ -46,7 +46,6 @@ export async function getUserPlan({ userId }: GetUserPlanParams): Promise<UserPl
     plan: BILLING_FREE_PLAN,
     status: "inactive",
     stripeCustomerId: null,
-    stripePriceId: null,
     stripeSubscriptionId: null,
     currentPeriodEnd: null,
   };

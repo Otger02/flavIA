@@ -49,8 +49,8 @@ export async function getClickedRecommendations({
       ? supabase.from("content_items").select("id, title").in("id", contentIds)
       : Promise.resolve({ data: [] as Pick<ContentItemRow, "id" | "title">[], error: null }),
     productIds.length > 0
-      ? supabase.from("product_items").select("id, name").in("id", productIds)
-      : Promise.resolve({ data: [] as Pick<ProductItemRow, "id" | "name">[], error: null }),
+      ? supabase.from("product_items").select("id, title").in("id", productIds)
+      : Promise.resolve({ data: [] as Pick<ProductItemRow, "id" | "title">[], error: null }),
   ]);
 
   if (contentResult.error) {
@@ -62,7 +62,7 @@ export async function getClickedRecommendations({
   }
 
   const contentTitleById = new Map(contentResult.data.map((item) => [item.id, item.title]));
-  const productTitleById = new Map(productResult.data.map((item) => [item.id, item.name]));
+  const productTitleById = new Map(productResult.data.map((item) => [item.id, item.title]));
 
   return logs.flatMap((log) => {
     const title = log.item_type === "content" ? contentTitleById.get(log.item_id) : productTitleById.get(log.item_id);

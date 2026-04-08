@@ -10,15 +10,18 @@ type CreateChatSessionParams = {
 };
 
 type ChatSessionRow = Database["public"]["Tables"]["chat_sessions"]["Row"];
+type ChatSessionSelect = Pick<ChatSessionRow, "id" | "user_id" | "created_at" | "started_at" | "active_topic" | "message_count" | "free_messages_used" | "hit_paywall">;
 
-function mapChatSession(row: ChatSessionRow): ChatSession {
+function mapChatSession(row: ChatSessionSelect): ChatSession {
   return {
     id: row.id,
     userId: row.user_id,
     createdAt: row.created_at,
-    updatedAt: row.updated_at,
-    status: row.status,
+    startedAt: row.started_at,
     activeTopic: row.active_topic,
+    messageCount: row.message_count,
+    freeMessagesUsed: row.free_messages_used,
+    hitPaywall: row.hit_paywall,
   };
 }
 
@@ -31,7 +34,7 @@ export async function createChatSession({
   if (sessionId) {
     const { data: existingSession, error: fetchError } = await supabase
       .from("chat_sessions")
-      .select("id, user_id, created_at, updated_at, status, active_topic")
+      .select("id, user_id, created_at, started_at, active_topic, message_count, free_messages_used, hit_paywall")
       .eq("id", sessionId)
       .eq("user_id", userId)
       .maybeSingle();
@@ -46,13 +49,13 @@ export async function createChatSession({
   }
 
   const insertPayload = sessionId
-    ? { id: sessionId, user_id: userId, status: "active" as const }
-    : { user_id: userId, status: "active" as const };
+    ? { id: sessionId, user_id: userId }
+    : { user_id: userId };
 
   const { data: createdSession, error: insertError } = await supabase
     .from("chat_sessions")
     .insert(insertPayload)
-    .select("id, user_id, created_at, updated_at, status, active_topic")
+    .select("id, user_id, created_at, started_at, active_topic, message_count, free_messages_used, hit_paywall")
     .single();
 
   if (insertError) {

@@ -44,10 +44,9 @@ export async function createCheckoutSession(
   await supabase.from("subscriptions").upsert(
     {
       user_id: input.userId,
-      plan: input.plan,
+      plan_slug: input.plan,
       status: "inactive",
       stripe_customer_id: customerId,
-      updated_at: new Date().toISOString(),
     },
     { onConflict: "user_id" },
   );

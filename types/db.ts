@@ -11,28 +11,40 @@ export type Database = {
     Tables: {
       chat_messages: {
         Row: {
-          content: string;
-          created_at: string;
           id: string;
-          role: "system" | "user" | "assistant";
           session_id: string;
           user_id: string;
+          role: "system" | "user" | "assistant";
+          content: string;
+          message_type: string;
+          active_topic_snapshot: string | null;
+          help_mode_snapshot: string | null;
+          metadata: Json;
+          created_at: string;
         };
         Insert: {
-          content: string;
-          created_at?: string;
           id?: string;
-          role: "system" | "user" | "assistant";
           session_id: string;
           user_id: string;
+          role: "system" | "user" | "assistant";
+          content: string;
+          message_type?: string;
+          active_topic_snapshot?: string | null;
+          help_mode_snapshot?: string | null;
+          metadata?: Json;
+          created_at?: string;
         };
         Update: {
-          content?: string;
-          created_at?: string;
           id?: string;
-          role?: "system" | "user" | "assistant";
           session_id?: string;
           user_id?: string;
+          role?: "system" | "user" | "assistant";
+          content?: string;
+          message_type?: string;
+          active_topic_snapshot?: string | null;
+          help_mode_snapshot?: string | null;
+          metadata?: Json;
+          created_at?: string;
         };
         Relationships: [
           {
@@ -44,152 +56,228 @@ export type Database = {
           },
         ];
       };
-      chat_failure_metrics: {
-        Row: {
-          created_at: string;
-          error_code: string;
-          error_message: string;
-          id: string;
-          session_id: string;
-          user_id: string;
-        };
-        Insert: {
-          created_at?: string;
-          error_code: string;
-          error_message: string;
-          id?: string;
-          session_id: string;
-          user_id: string;
-        };
-        Update: {
-          created_at?: string;
-          error_code?: string;
-          error_message?: string;
-          id?: string;
-          session_id?: string;
-          user_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "chat_failure_metrics_session_id_fkey";
-            columns: ["session_id"];
-            isOneToOne: false;
-            referencedRelation: "chat_sessions";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
       chat_sessions: {
         Row: {
-          active_topic: "desire" | "couple_connection" | "self_connection" | "communication" | "body_confidence" | "routine" | "curiosity" | null;
-          created_at: string;
           id: string;
-          status: "active" | "archived";
-          updated_at: string;
           user_id: string;
+          started_at: string;
+          ended_at: string | null;
+          entry_source: string | null;
+          entry_topic: string | null;
+          active_topic: "desire" | "couple_connection" | "self_connection" | "communication" | "body_confidence" | "routine" | "curiosity" | null;
+          help_mode: string | null;
+          message_count: number;
+          free_messages_used: number;
+          hit_paywall: boolean;
+          converted_after_session: boolean;
+          created_at: string;
         };
         Insert: {
-          active_topic?: "desire" | "couple_connection" | "self_connection" | "communication" | "body_confidence" | "routine" | "curiosity" | null;
-          created_at?: string;
           id?: string;
-          status?: "active" | "archived";
-          updated_at?: string;
           user_id: string;
+          started_at?: string;
+          ended_at?: string | null;
+          entry_source?: string | null;
+          entry_topic?: string | null;
+          active_topic?: "desire" | "couple_connection" | "self_connection" | "communication" | "body_confidence" | "routine" | "curiosity" | null;
+          help_mode?: string | null;
+          message_count?: number;
+          free_messages_used?: number;
+          hit_paywall?: boolean;
+          converted_after_session?: boolean;
+          created_at?: string;
         };
         Update: {
-          active_topic?: "desire" | "couple_connection" | "self_connection" | "communication" | "body_confidence" | "routine" | "curiosity" | null;
-          created_at?: string;
           id?: string;
-          status?: "active" | "archived";
-          updated_at?: string;
           user_id?: string;
+          started_at?: string;
+          ended_at?: string | null;
+          entry_source?: string | null;
+          entry_topic?: string | null;
+          active_topic?: "desire" | "couple_connection" | "self_connection" | "communication" | "body_confidence" | "routine" | "curiosity" | null;
+          help_mode?: string | null;
+          message_count?: number;
+          free_messages_used?: number;
+          hit_paywall?: boolean;
+          converted_after_session?: boolean;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      profiles: {
+        Row: {
+          id: string;
+          email: string | null;
+          display_name: string | null;
+          preferred_language: string;
+          onboarding_completed: boolean;
+          relationship_status: string | null;
+          plan_status: string;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          email?: string | null;
+          display_name?: string | null;
+          preferred_language?: string;
+          onboarding_completed?: boolean;
+          relationship_status?: string | null;
+          plan_status?: string;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          email?: string | null;
+          display_name?: string | null;
+          preferred_language?: string;
+          onboarding_completed?: boolean;
+          relationship_status?: string | null;
+          plan_status?: string;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
         };
         Relationships: [];
       };
       content_items: {
         Row: {
-          description: string;
-          href: string;
           id: string;
-          score: number | null;
+          sanity_document_id: string | null;
+          slug: string;
           title: string;
+          excerpt: string;
+          cover_image_url: string | null;
+          content_type: string;
           topic_tags: string[] | null;
+          intent_tags: string[] | null;
+          is_premium: boolean;
+          is_active: boolean;
+          priority: number | null;
+          published_at: string | null;
+          created_at: string;
+          updated_at: string;
         };
         Insert: {
-          description: string;
-          href: string;
           id?: string;
-          score?: number | null;
+          sanity_document_id?: string | null;
+          slug: string;
           title: string;
+          excerpt: string;
+          cover_image_url?: string | null;
+          content_type: string;
           topic_tags?: string[] | null;
+          intent_tags?: string[] | null;
+          is_premium: boolean;
+          is_active: boolean;
+          priority?: number | null;
+          published_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
         };
         Update: {
-          description?: string;
-          href?: string;
           id?: string;
-          score?: number | null;
+          sanity_document_id?: string | null;
+          slug?: string;
           title?: string;
+          excerpt?: string;
+          cover_image_url?: string | null;
+          content_type?: string;
           topic_tags?: string[] | null;
+          intent_tags?: string[] | null;
+          is_premium?: boolean;
+          is_active?: boolean;
+          priority?: number | null;
+          published_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
         };
         Relationships: [];
       };
       product_items: {
         Row: {
-          description: string;
-          href: string;
           id: string;
-          name: string;
-          score: number | null;
+          slug: string;
+          title: string;
+          description: string;
+          image_url: string | null;
+          external_url: string | null;
+          brand_name: string | null;
           topic_tags: string[] | null;
+          intent_tags: string[] | null;
+          product_type: string | null;
+          is_active: boolean;
+          priority: number | null;
+          created_at: string;
+          updated_at: string;
         };
         Insert: {
-          description: string;
-          href: string;
           id?: string;
-          name: string;
-          score?: number | null;
+          slug: string;
+          title: string;
+          description: string;
+          image_url?: string | null;
+          external_url?: string | null;
+          brand_name?: string | null;
           topic_tags?: string[] | null;
+          intent_tags?: string[] | null;
+          product_type?: string | null;
+          is_active: boolean;
+          priority?: number | null;
+          created_at?: string;
+          updated_at?: string;
         };
         Update: {
-          description?: string;
-          href?: string;
           id?: string;
-          name?: string;
-          score?: number | null;
+          slug?: string;
+          title?: string;
+          description?: string;
+          image_url?: string | null;
+          external_url?: string | null;
+          brand_name?: string | null;
           topic_tags?: string[] | null;
+          intent_tags?: string[] | null;
+          product_type?: string | null;
+          is_active?: boolean;
+          priority?: number | null;
+          created_at?: string;
+          updated_at?: string;
         };
         Relationships: [];
       };
       recommendation_logs: {
         Row: {
-          active_topic: "desire" | "couple_connection" | "self_connection" | "communication" | "body_confidence" | "routine" | "curiosity" | null;
+          id: string;
+          user_id: string;
+          session_id: string;
+          item_type: "content" | "product";
+          item_id: string;
+          active_topic: string | null;
           clicked_at: string | null;
           created_at: string;
-          id: string;
-          item_id: string;
-          item_type: "content" | "product";
-          session_id: string;
-          user_id: string;
         };
         Insert: {
-          active_topic?: "desire" | "couple_connection" | "self_connection" | "communication" | "body_confidence" | "routine" | "curiosity" | null;
+          id?: string;
+          user_id: string;
+          session_id: string;
+          item_type: "content" | "product";
+          item_id: string;
+          active_topic?: string | null;
           clicked_at?: string | null;
           created_at?: string;
-          id?: string;
-          item_id: string;
-          item_type: "content" | "product";
-          session_id: string;
-          user_id: string;
         };
         Update: {
-          active_topic?: "desire" | "couple_connection" | "self_connection" | "communication" | "body_confidence" | "routine" | "curiosity" | null;
+          id?: string;
+          user_id?: string;
+          session_id?: string;
+          item_type?: "content" | "product";
+          item_id?: string;
+          active_topic?: string | null;
           clicked_at?: string | null;
           created_at?: string;
-          id?: string;
-          item_id?: string;
-          item_type?: "content" | "product";
-          session_id?: string;
-          user_id?: string;
         };
         Relationships: [
           {
@@ -203,37 +291,46 @@ export type Database = {
       };
       subscriptions: {
         Row: {
-          created_at: string;
-          current_period_end: string | null;
-          plan: "free" | "pro" | "premium";
-          status: "inactive" | "trialing" | "active" | "past_due" | "canceled";
-          stripe_customer_id: string | null;
-          stripe_price_id: string | null;
-          stripe_subscription_id: string | null;
-          updated_at: string;
+          id: string;
           user_id: string;
+          stripe_customer_id: string | null;
+          stripe_subscription_id: string | null;
+          plan_slug: "free" | "pro" | "plus";
+          status: string;
+          trial_ends_at: string | null;
+          current_period_start: string | null;
+          current_period_end: string | null;
+          cancel_at_period_end: boolean;
+          created_at: string;
+          updated_at: string;
         };
         Insert: {
-          created_at?: string;
-          current_period_end?: string | null;
-          plan?: "free" | "pro" | "premium";
-          status?: "inactive" | "trialing" | "active" | "past_due" | "canceled";
-          stripe_customer_id?: string | null;
-          stripe_price_id?: string | null;
-          stripe_subscription_id?: string | null;
-          updated_at?: string;
+          id?: string;
           user_id: string;
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          plan_slug?: "free" | "pro" | "plus";
+          status?: string;
+          trial_ends_at?: string | null;
+          current_period_start?: string | null;
+          current_period_end?: string | null;
+          cancel_at_period_end?: boolean;
+          created_at?: string;
+          updated_at?: string;
         };
         Update: {
-          created_at?: string;
-          current_period_end?: string | null;
-          plan?: "free" | "pro" | "premium";
-          status?: "inactive" | "trialing" | "active" | "past_due" | "canceled";
-          stripe_customer_id?: string | null;
-          stripe_price_id?: string | null;
-          stripe_subscription_id?: string | null;
-          updated_at?: string;
+          id?: string;
           user_id?: string;
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          plan_slug?: "free" | "pro" | "plus";
+          status?: string;
+          trial_ends_at?: string | null;
+          current_period_start?: string | null;
+          current_period_end?: string | null;
+          cancel_at_period_end?: boolean;
+          created_at?: string;
+          updated_at?: string;
         };
         Relationships: [];
       };

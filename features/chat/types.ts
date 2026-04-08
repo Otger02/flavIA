@@ -23,9 +23,11 @@ export const chatSessionSchema = z.object({
   id: z.string(),
   userId: z.string(),
   createdAt: z.string(),
-  updatedAt: z.string(),
-  status: z.enum(["active", "archived"]),
+  startedAt: z.string(),
   activeTopic: chatTopicSchema.nullable(),
+  messageCount: z.number().int().nonnegative(),
+  freeMessagesUsed: z.number().int().nonnegative(),
+  hitPaywall: z.boolean(),
 });
 
 export const chatTurnRequestSchema = z.object({

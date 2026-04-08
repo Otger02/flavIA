@@ -196,7 +196,6 @@ async function persistActiveTopic(session: ChatSession, userId: string, activeTo
   return {
     ...session,
     activeTopic,
-    updatedAt: new Date().toISOString(),
   };
 }
 

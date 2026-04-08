@@ -13,8 +13,9 @@ type SaveChatMessageParams = {
 };
 
 type ChatMessageRow = Database["public"]["Tables"]["chat_messages"]["Row"];
+type ChatMessageSelect = Pick<ChatMessageRow, "id" | "session_id" | "role" | "content" | "created_at">;
 
-function mapChatMessage(row: ChatMessageRow): ChatMessage {
+function mapChatMessage(row: ChatMessageSelect): ChatMessage {
   return {
     id: row.id,
     sessionId: row.session_id,
@@ -31,8 +32,6 @@ export async function saveChatMessage({
   content,
   metadata,
 }: SaveChatMessageParams): Promise<ChatMessage> {
-  void metadata;
-
   const supabase = await createServerSupabaseClient();
 
   const { data: message, error: insertError } = await supabase
@@ -42,22 +41,13 @@ export async function saveChatMessage({
       user_id: userId,
       role,
       content,
+      metadata: (metadata ?? {}) as Database["public"]["Tables"]["chat_messages"]["Insert"]["metadata"],
     })
     .select("id, session_id, role, content, created_at, user_id")
     .single();
 
   if (insertError) {
     throw new Error(`Unable to save chat message: ${insertError.message}`);
-  }
-
-  const { error: updateSessionError } = await supabase
-    .from("chat_sessions")
-    .update({ updated_at: new Date().toISOString() })
-    .eq("id", sessionId)
-    .eq("user_id", userId);
-
-  if (updateSessionError) {
-    throw new Error(`Unable to update chat session timestamp: ${updateSessionError.message}`);
   }
 
   return mapChatMessage(message);

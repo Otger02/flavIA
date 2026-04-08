@@ -9,15 +9,18 @@ type GetLatestChatSessionParams = {
 };
 
 type ChatSessionRow = Database["public"]["Tables"]["chat_sessions"]["Row"];
+type ChatSessionSelect = Pick<ChatSessionRow, "id" | "user_id" | "created_at" | "started_at" | "active_topic" | "message_count" | "free_messages_used" | "hit_paywall">;
 
-function mapChatSession(row: ChatSessionRow): ChatSession {
+function mapChatSession(row: ChatSessionSelect): ChatSession {
   return {
     id: row.id,
     userId: row.user_id,
     createdAt: row.created_at,
-    updatedAt: row.updated_at,
-    status: row.status,
+    startedAt: row.started_at,
     activeTopic: row.active_topic,
+    messageCount: row.message_count,
+    freeMessagesUsed: row.free_messages_used,
+    hitPaywall: row.hit_paywall,
   };
 }
 
@@ -28,9 +31,9 @@ export async function getLatestChatSession({
 
   const { data, error } = await supabase
     .from("chat_sessions")
-    .select("id, user_id, created_at, updated_at, status, active_topic")
+    .select("id, user_id, created_at, started_at, active_topic, message_count, free_messages_used, hit_paywall")
     .eq("user_id", userId)
-    .order("updated_at", { ascending: false })
+    .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
 

@@ -186,7 +186,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="text-sm text-white">{formatTopic(session.activeTopic)}</p>
-                      <p className="mt-1 text-sm text-stone-400">{formatDate(session.updatedAt) ?? "Sin fecha"}</p>
+                      <p className="mt-1 text-sm text-stone-400">{formatDate(session.createdAt) ?? "Sin fecha"}</p>
                     </div>
                     <span className="rounded-full bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.15em] text-stone-300">
                       {session.messageCount} mensajes

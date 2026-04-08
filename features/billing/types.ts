@@ -4,14 +4,14 @@ import {
   BILLING_DEFAULT_CURRENCY,
   BILLING_FEATURE_KEYS,
   BILLING_FREE_PLAN,
-  BILLING_PREMIUM_PLAN,
+  BILLING_PLUS_PLAN,
   BILLING_PRO_PLAN,
 } from "@/features/billing/constants";
 
 export const billingPlanSchema = z.enum([
   BILLING_FREE_PLAN,
   BILLING_PRO_PLAN,
-  BILLING_PREMIUM_PLAN,
+  BILLING_PLUS_PLAN,
 ]);
 
 export const billingFeatureKeySchema = z.enum([
@@ -25,7 +25,6 @@ export const userPlanSchema = z.object({
   plan: billingPlanSchema,
   status: z.enum(["inactive", "trialing", "active", "past_due", "canceled"]),
   stripeCustomerId: z.string().nullable(),
-  stripePriceId: z.string().nullable(),
   stripeSubscriptionId: z.string().nullable(),
   currentPeriodEnd: z.string().nullable(),
 });
