@@ -109,7 +109,7 @@ async function runScenario(scenario: TestScenario) {
     activeTopic: scenario.topic,
     userStateSummary: null,
     sessionId: "test-" + Date.now(),
-  });
+  } as any);
 
   const conversationMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
     { role: "system", content: systemPrompt },
