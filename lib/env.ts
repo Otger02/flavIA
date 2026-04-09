@@ -22,13 +22,14 @@ const publicEnvSchema = z.object({
 const serverEnvSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
   STRIPE_SECRET_KEY: z.string().min(1),
-  STRIPE_WEBHOOK_SECRET: z.string().min(1),
+  STRIPE_WEBHOOK_SECRET: emptyStringToUndefined(z.string().min(1)),
   STRIPE_FLAVIA_PLUS_PRICE_ID: z.string().min(1),
   SANITY_PROJECT_ID: z.string().min(1),
   SANITY_DATASET: z.string().min(1),
   SANITY_API_VERSION: z.iso.date(),
   OPENAI_API_KEY: emptyStringToUndefined(z.string().min(1)),
   ANTHROPIC_API_KEY: emptyStringToUndefined(z.string().min(1)),
+  RESEND_API_KEY: emptyStringToUndefined(z.string().min(1)),
 });
 
 export type PublicEnv = z.infer<typeof publicEnvSchema>;
@@ -64,6 +65,7 @@ export function getServerEnv(): ServerEnv {
     SANITY_API_VERSION: process.env.SANITY_API_VERSION,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
   });
 }
 

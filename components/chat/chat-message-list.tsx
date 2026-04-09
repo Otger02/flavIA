@@ -49,7 +49,7 @@ export function ChatMessageList({ hasPersistedSession, loading, messages }: Chat
         </div>
       ) : (
         messages.map((message) => (
-          <ChatMessageItem key={message.id} message={message} streaming={message.streaming} />
+          <ChatMessageItem key={message.id} message={message} streaming={message.streaming} createdAt={message.createdAt} />
         ))
       )}
       {loading && !messages.some((m) => m.streaming) ? (

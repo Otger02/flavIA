@@ -1,4 +1,10 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Página no encontrada",
+  description: "La página que buscas no existe. Vuelve al inicio o a tu espacio personal en Flavia.",
+};
 
 export default function NotFound() {
   return (

@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import { TrackViewEvent } from "@/components/analytics/track-view-event";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/track";
 import { getUser } from "@/features/auth/server/get-user";
@@ -5,6 +7,12 @@ import { ChatShell } from "@/components/chat/chat-shell";
 import { enforceUsagePolicy } from "@/features/chat/server/enforce-usage-policy";
 import { getChatHistory } from "@/features/chat/server/get-chat-history";
 import { getLatestChatSession } from "@/features/chat/server/get-latest-chat-session";
+
+export const metadata: Metadata = {
+  title: "Chat con Flavia",
+  description:
+    "Conversa con Flavia sobre lo que necesites: deseo, límites, comunicación, placer. Un espacio íntimo y sin juicio.",
+};
 
 type ChatPageProps = {
   searchParams: Promise<{ topic?: string }>;

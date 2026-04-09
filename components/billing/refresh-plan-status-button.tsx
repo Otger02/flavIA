@@ -22,11 +22,11 @@ export function RefreshPlanStatusButton() {
         type="button"
         onClick={handleRefresh}
         disabled={isPending}
-        className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-medium text-stone-100 transition hover:bg-white/10 disabled:opacity-60"
+        className="rounded-full border border-stone-200/60 bg-white/80 px-4 py-2 text-xs font-medium text-stone-700 transition hover:-translate-y-0.5 hover:bg-stone-50 disabled:opacity-60"
       >
         {isPending ? "Actualizando..." : "Refrescar estado del plan"}
       </button>
-      {justRefreshed ? <p className="text-xs text-stone-400">Estado refrescado.</p> : null}
+      {justRefreshed ? <p className="text-xs text-stone-500">Estado refrescado.</p> : null}
     </div>
   );
 }

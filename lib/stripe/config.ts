@@ -15,6 +15,6 @@ export function getStripeServerConfig() {
   return {
     flaviaPlusPriceId: env.STRIPE_FLAVIA_PLUS_PRICE_ID,
     secretKey: env.STRIPE_SECRET_KEY,
-    webhookSecret: env.STRIPE_WEBHOOK_SECRET,
+    webhookSecret: env.STRIPE_WEBHOOK_SECRET ?? "",
   };
 }

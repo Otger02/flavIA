@@ -289,6 +289,30 @@ export type Database = {
           },
         ];
       };
+      user_favorites: {
+        Row: {
+          id: string;
+          user_id: string;
+          item_type: string;
+          item_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          item_type: string;
+          item_id: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          item_type?: string;
+          item_id?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       user_feedback: {
         Row: {
           id: string;
@@ -309,6 +333,33 @@ export type Database = {
           user_id?: string;
           category?: string;
           message?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      user_stories: {
+        Row: {
+          id: string;
+          user_id: string;
+          content: string;
+          is_anonymous: boolean;
+          status: "pending" | "approved" | "rejected";
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          content: string;
+          is_anonymous?: boolean;
+          status?: "pending" | "approved" | "rejected";
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          content?: string;
+          is_anonymous?: boolean;
+          status?: "pending" | "approved" | "rejected";
           created_at?: string;
         };
         Relationships: [];

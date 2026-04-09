@@ -23,6 +23,12 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const session = await createCheckoutSession(parsed.data);
-  return NextResponse.json(session, { status: 200 });
+  try {
+    const session = await createCheckoutSession(parsed.data);
+    return NextResponse.json(session, { status: 200 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Checkout failed";
+    console.error("[checkout] Error:", message);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }

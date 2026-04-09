@@ -54,7 +54,10 @@ async function upsertSubscriptionFromStripeSubscription(subscription: Stripe.Sub
     typeof subscription.customer === "string" ? subscription.customer : subscription.customer?.id ?? null;
 
   if (!userId) {
-    throw new Error("Stripe subscription is missing userId metadata.");
+    // subscription.created/updated events may fire before checkout.session.completed
+    // copies the userId metadata — skip gracefully and let checkout handler sync it
+    console.warn(`[billing] Skipping subscription ${subscription.id}: no userId in metadata yet.`);
+    return;
   }
 
   const { error } = await supabase.from("subscriptions").upsert(
@@ -105,10 +108,10 @@ export async function syncSubscriptionFromStripe(
 
     if (session.subscription) {
       const stripe = new Stripe(getStripeServerConfig().secretKey);
-      const subscription = await stripe.subscriptions.retrieve(String(session.subscription));
+      let subscription = await stripe.subscriptions.retrieve(String(session.subscription));
 
       if (session.metadata?.userId && !subscription.metadata.userId) {
-        await stripe.subscriptions.update(subscription.id, {
+        subscription = await stripe.subscriptions.update(subscription.id, {
           metadata: {
             ...subscription.metadata,
             userId: session.metadata.userId,
@@ -147,6 +150,19 @@ export async function syncSubscriptionFromStripe(
     input.eventType === "customer.subscription.deleted"
   ) {
     const subscription = eventObject as Stripe.Subscription;
+
+    // If no userId yet, re-fetch from Stripe in case checkout handler already set it
+    if (!subscription.metadata.userId && !subscription.metadata.supabaseUserId) {
+      const stripe = new Stripe(getStripeServerConfig().secretKey);
+      const fresh = await stripe.subscriptions.retrieve(subscription.id);
+      if (fresh.metadata.userId || fresh.metadata.supabaseUserId) {
+        await upsertSubscriptionFromStripeSubscription(fresh);
+        return { handled: true, eventType: input.eventType, subscriptionId: fresh.id };
+      }
+      // Still no userId — skip, checkout.session.completed will handle it
+      return { handled: true, eventType: input.eventType, subscriptionId: subscription.id };
+    }
+
     await upsertSubscriptionFromStripeSubscription(subscription);
 
     return {

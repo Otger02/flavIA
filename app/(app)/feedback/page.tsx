@@ -1,5 +1,13 @@
+import type { Metadata } from "next";
+
 import { requireUser } from "@/features/auth/server/require-user";
 import { FeedbackForm } from "@/components/feedback/feedback-form";
+
+export const metadata: Metadata = {
+  title: "Feedback",
+  description:
+    "Cuéntanos qué te gustaría que Flavia hablase, qué contenido te ayudaría, o cualquier idea que tengas. Tu voz importa.",
+};
 
 export default async function FeedbackPage() {
   const user = await requireUser();

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 
 import { ChatInput } from "@/components/chat/chat-input";
 import { ChatMessageList } from "@/components/chat/chat-message-list";
@@ -54,10 +55,19 @@ export function ChatShell({ initialMessages, initialSessionId, initialUsage, ini
   return (
     <div className="flex h-[calc(100vh-7rem)] flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between gap-3 px-1 pb-4">
-        <div>
-          <h1 className="font-[family-name:var(--font-display)] text-3xl text-stone-900">Flavia</h1>
-          <p className="mt-0.5 text-sm text-stone-500">Tu espacio de conversación íntima</p>
+      <div className="flex items-center justify-between gap-3 rounded-xl bg-gradient-to-r from-rose-50/50 to-white/50 p-4 border-b border-rose-200/30">
+        <div className="flex items-center gap-3">
+          <Image
+            src="/flavia-avatar.jpeg"
+            alt="Flavia"
+            width={48}
+            height={48}
+            className="rounded-full object-cover ring-2 ring-rose-200/40 shadow-sm"
+          />
+          <div>
+            <h1 className="font-[family-name:var(--font-display)] text-3xl text-stone-900">Flavia</h1>
+            <p className="mt-0.5 text-sm text-stone-500">Tu espacio de conversación íntima</p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <span className={`h-2 w-2 rounded-full ${loading ? "animate-pulse bg-rose-400" : "bg-emerald-400/80"}`} />

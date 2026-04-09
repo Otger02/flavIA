@@ -1,0 +1,17 @@
+{
+  "name": "Flavia — Acompañamiento íntimo",
+  "short_name": "Flavia",
+  "description": "Tu espacio seguro para hablar de sexualidad, deseo y relaciones",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#fef6ee",
+  "theme_color": "#c4605a",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

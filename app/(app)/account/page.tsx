@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import { BillingReturnNotice } from "@/components/billing/billing-return-notice";
 import { BillingActionButton } from "@/components/billing/billing-action-button";
 import { RefreshPlanStatusButton } from "@/components/billing/refresh-plan-status-button";
@@ -6,6 +8,12 @@ import { BILLING_FREE_PLAN, BILLING_PLUS_PRODUCT_NAME } from "@/features/billing
 import { getUserPlan } from "@/features/billing/server/get-user-plan";
 import { getRecentChatSessions } from "@/features/chat/server/get-recent-chat-sessions";
 import { getClickedRecommendations } from "@/features/recommendations/server/get-clicked-recommendations";
+
+export const metadata: Metadata = {
+  title: "Mi Cuenta",
+  description:
+    "Gestiona tu suscripción, revisa tus conversaciones recientes y controla tu cuenta en Flavia.",
+};
 
 type AccountPageProps = {
   searchParams: Promise<{
@@ -49,9 +57,9 @@ function formatStatus(status: string) {
 
 function EmptyState({ description, title }: { description: string; title: string }) {
   return (
-    <div className="rounded-[1.75rem] border border-dashed border-white/10 bg-white/[0.03] p-5">
-      <p className="text-sm font-medium text-white">{title}</p>
-      <p className="mt-2 text-sm leading-6 text-stone-400">{description}</p>
+    <div className="rounded-[1.5rem] border border-dashed border-stone-200/50 bg-white/40 p-5">
+      <p className="text-sm font-medium text-stone-900">{title}</p>
+      <p className="mt-2 text-sm leading-6 text-stone-500">{description}</p>
     </div>
   );
 }
@@ -76,24 +84,24 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
       <BillingReturnNotice status={checkoutStatus} awaitingSync={awaitingSync} />
 
       <div className="space-y-4">
-        <p className="text-sm uppercase tracking-[0.3em] text-stone-400">Account</p>
-        <h1 className="font-[family-name:var(--font-display)] text-4xl text-white">Tu cuenta en Flavia</h1>
-        <p className="max-w-2xl text-base leading-7 text-stone-300">
+        <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">Cuenta</p>
+        <h1 className="font-[family-name:var(--font-display)] text-4xl text-stone-900">Tu cuenta en Flavia</h1>
+        <p className="max-w-2xl text-base leading-7 text-stone-600">
           Estado actual, continuidad de conversaciones y señales de actividad reciente en un solo sitio.
         </p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1.3fr_0.9fr]">
-        <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 shadow-[0_20px_80px_rgba(0,0,0,0.25)]">
+        <section className="rounded-[2rem] border border-stone-200/50 bg-white/80 p-6 shadow-[0_20px_60px_rgba(180,120,100,0.08)] backdrop-blur">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="space-y-3">
-              <p className="text-xs uppercase tracking-[0.25em] text-stone-400">Billing</p>
-              <h2 className="font-[family-name:var(--font-display)] text-3xl text-white">{plan.plan === "free" ? "Plan Free" : BILLING_PLUS_PRODUCT_NAME}</h2>
+              <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">Billing</p>
+              <h2 className="font-[family-name:var(--font-display)] text-3xl text-stone-900">{plan.plan === "free" ? "Plan Free" : BILLING_PLUS_PRODUCT_NAME}</h2>
               <div className="flex flex-wrap gap-2">
-                <span className="rounded-full bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.15em] text-stone-200">
+                <span className="rounded-full bg-rose-50 px-3 py-1 text-xs font-medium uppercase tracking-[0.15em] text-rose-600">
                   {formatStatus(plan.status)}
                 </span>
-                <span className="rounded-full bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.15em] text-stone-400">
+                <span className="rounded-full bg-stone-100 px-3 py-1 text-xs uppercase tracking-[0.15em] text-stone-500">
                   {plan.plan}
                 </span>
               </div>
@@ -102,10 +110,10 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
               {hasBillingAccess ? (
                 <BillingActionButton
                   mode="manage"
-                  label="Manage Billing"
-                  pendingLabel="Opening billing portal..."
+                  label="Gestionar"
+                  pendingLabel="Abriendo portal..."
                   returnPath="/account"
-                  className="rounded-full border border-white/15 bg-white px-5 py-3 text-sm font-medium text-stone-950 transition hover:bg-stone-200 disabled:opacity-60"
+                  className="rounded-full bg-gradient-to-r from-rose-400 to-rose-500 px-5 py-2.5 text-xs font-medium text-white shadow-[0_8px_20px_rgba(220,100,100,0.20)] transition duration-200 hover:-translate-y-0.5 disabled:opacity-60"
                 />
               ) : null}
               <RefreshPlanStatusButton />
@@ -113,19 +121,19 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
           </div>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
-            <div className="rounded-[1.5rem] bg-black/20 p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-stone-500">Estado de suscripción</p>
-              <p className="mt-3 text-lg text-white">{formatStatus(plan.status)}</p>
-              <p className="mt-2 text-sm leading-6 text-stone-400">
+            <div className="rounded-[1.5rem] border border-rose-200/40 bg-rose-50/50 p-4">
+              <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">Estado de suscripción</p>
+              <p className="mt-3 text-lg font-medium text-stone-900">{formatStatus(plan.status)}</p>
+              <p className="mt-2 text-sm leading-6 text-stone-500">
                 {plan.plan === "free"
                   ? "Estás usando la capa gratuita de Flavia."
                   : "Tu suscripción está conectada a Stripe y disponible para gestión."}
               </p>
             </div>
-            <div className="rounded-[1.5rem] bg-black/20 p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-stone-500">Próxima renovación</p>
-              <p className="mt-3 text-lg text-white">{renewalDate ?? "No disponible"}</p>
-              <p className="mt-2 text-sm leading-6 text-stone-400">
+            <div className="rounded-[1.5rem] border border-rose-200/40 bg-rose-50/50 p-4">
+              <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">Próxima renovación</p>
+              <p className="mt-3 text-lg font-medium text-stone-900">{renewalDate ?? "No disponible"}</p>
+              <p className="mt-2 text-sm leading-6 text-stone-500">
                 {renewalDate
                   ? "Fecha sincronizada desde la suscripción actual."
                   : "Aparecerá aquí cuando exista un ciclo activo o en prueba."}
@@ -134,7 +142,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
           </div>
 
           {!hasBillingAccess ? (
-            <div className="mt-6 rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-4 text-sm leading-6 text-stone-300">
+            <div className="mt-6 rounded-[1.5rem] border border-stone-200/50 bg-stone-50/50 p-4 text-sm leading-6 text-stone-600">
               {awaitingSync
                 ? "Tu pago ya ha vuelto de Stripe. Estamos esperando la sincronización final de la suscripción para habilitar el portal de billing."
                 : "Todavía no hay un portal de billing asociado a esta cuenta. Cuando actives un plan de pago, podrás gestionarlo desde aquí."}
@@ -142,36 +150,36 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
           ) : null}
 
           {awaitingSync ? (
-            <p className="mt-4 text-sm text-stone-400">
+            <p className="mt-4 text-sm text-stone-500">
               Si no ves el cambio inmediatamente, usa Refrescar estado del plan mientras Stripe termina de propagar el webhook.
             </p>
           ) : null}
         </section>
 
-        <section className="rounded-[2rem] border border-white/10 bg-gradient-to-b from-white/[0.05] to-white/[0.02] p-6">
-          <p className="text-xs uppercase tracking-[0.25em] text-stone-400">Resumen</p>
+        <section className="rounded-[2rem] border border-stone-200/50 bg-gradient-to-b from-white/90 to-rose-50/30 p-6 shadow-[0_16px_50px_rgba(180,120,100,0.06)]">
+          <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">Resumen</p>
           <div className="mt-6 space-y-4">
             <div>
-              <p className="text-sm text-stone-400">Email</p>
-              <p className="mt-1 text-base text-white">{user.email ?? "No disponible"}</p>
+              <p className="text-sm text-stone-500">Email</p>
+              <p className="mt-1 text-base text-stone-900">{user.email ?? "No disponible"}</p>
             </div>
             <div>
-              <p className="text-sm text-stone-400">Conversaciones recientes</p>
-              <p className="mt-1 text-3xl font-semibold text-white">{recentSessions.length}</p>
+              <p className="text-sm text-stone-500">Conversaciones recientes</p>
+              <p className="mt-1 font-[family-name:var(--font-display)] text-3xl text-stone-900">{recentSessions.length}</p>
             </div>
             <div>
-              <p className="text-sm text-stone-400">Recomendaciones clicadas</p>
-              <p className="mt-1 text-3xl font-semibold text-white">{clickedRecommendations.length}</p>
+              <p className="text-sm text-stone-500">Recomendaciones clicadas</p>
+              <p className="mt-1 font-[family-name:var(--font-display)] text-3xl text-stone-900">{clickedRecommendations.length}</p>
             </div>
           </div>
         </section>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6">
+        <section className="rounded-[2rem] border border-stone-200/50 bg-white/80 p-6 shadow-[0_16px_50px_rgba(180,120,100,0.06)] backdrop-blur">
           <div className="mb-5">
-            <p className="text-xs uppercase tracking-[0.25em] text-stone-400">Últimas conversaciones</p>
-            <h2 className="mt-3 font-[family-name:var(--font-display)] text-2xl text-white">Continuidad del chat</h2>
+            <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">Últimas conversaciones</p>
+            <h2 className="mt-3 font-[family-name:var(--font-display)] text-2xl text-stone-900">Continuidad del chat</h2>
           </div>
 
           {recentSessions.length === 0 ? (
@@ -182,13 +190,13 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
           ) : (
             <div className="space-y-3">
               {recentSessions.map((session) => (
-                <article key={session.id} className="rounded-[1.5rem] border border-white/10 bg-black/20 p-4">
+                <article key={session.id} className="rounded-[1.25rem] border border-stone-200/50 bg-white/60 p-4 transition-colors hover:bg-rose-50/40">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <p className="text-sm text-white">{formatTopic(session.activeTopic)}</p>
-                      <p className="mt-1 text-sm text-stone-400">{formatDate(session.createdAt) ?? "Sin fecha"}</p>
+                      <p className="text-sm font-medium text-stone-900">{formatTopic(session.activeTopic)}</p>
+                      <p className="mt-1 text-xs text-stone-400">{formatDate(session.createdAt) ?? "Sin fecha"}</p>
                     </div>
-                    <span className="rounded-full bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.15em] text-stone-300">
+                    <span className="rounded-full bg-rose-50 px-3 py-1 text-[11px] font-medium text-rose-600">
                       {session.messageCount} mensajes
                     </span>
                   </div>
@@ -198,10 +206,10 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
           )}
         </section>
 
-        <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6">
+        <section className="rounded-[2rem] border border-stone-200/50 bg-white/80 p-6 shadow-[0_16px_50px_rgba(180,120,100,0.06)] backdrop-blur">
           <div className="mb-5">
-            <p className="text-xs uppercase tracking-[0.25em] text-stone-400">Interacciones</p>
-            <h2 className="mt-3 font-[family-name:var(--font-display)] text-2xl text-white">Recomendaciones abiertas</h2>
+            <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">Interacciones</p>
+            <h2 className="mt-3 font-[family-name:var(--font-display)] text-2xl text-stone-900">Recomendaciones abiertas</h2>
           </div>
 
           {clickedRecommendations.length === 0 ? (
@@ -212,13 +220,13 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
           ) : (
             <div className="space-y-3">
               {clickedRecommendations.map((recommendation) => (
-                <article key={recommendation.id} className="rounded-[1.5rem] border border-white/10 bg-black/20 p-4">
+                <article key={recommendation.id} className="rounded-[1.25rem] border border-stone-200/50 bg-white/60 p-4 transition-colors hover:bg-rose-50/40">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <p className="text-sm text-white">{recommendation.title}</p>
-                      <p className="mt-1 text-sm text-stone-400">{formatDate(recommendation.clickedAt) ?? "Sin fecha"}</p>
+                      <p className="text-sm font-medium text-stone-900">{recommendation.title}</p>
+                      <p className="mt-1 text-xs text-stone-400">{formatDate(recommendation.clickedAt) ?? "Sin fecha"}</p>
                     </div>
-                    <span className="rounded-full bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.15em] text-stone-300">
+                    <span className="rounded-full bg-rose-50 px-3 py-1 text-[11px] font-medium text-rose-600">
                       {recommendation.type}
                     </span>
                   </div>

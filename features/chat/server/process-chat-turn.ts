@@ -263,6 +263,33 @@ export async function processChatTurn({
       },
     };
 
+    // Count previous recommendations in this session
+    const supabaseForRecs = await createServerSupabaseClient();
+    const { count: previousRecommendationCount } = await (supabaseForRecs as any)
+      .from("recommendation_log")
+      .select("id", { count: "exact", head: true })
+      .eq("session_id", session.id);
+
+    const { data: lastRecLog } = await (supabaseForRecs as any)
+      .from("recommendation_log")
+      .select("created_at")
+      .eq("session_id", session.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single() as { data: { created_at: string } | null };
+
+    // Estimate the turn of the last recommendation (rough: count user messages before it)
+    let lastRecommendationTurn = 0;
+    if (lastRecLog) {
+      const { count: turnsBeforeLastRec } = await supabaseForRecs
+        .from("chat_messages")
+        .select("id", { count: "exact", head: true })
+        .eq("session_id", session.id)
+        .eq("role", "user")
+        .lte("created_at", lastRecLog.created_at);
+      lastRecommendationTurn = turnsBeforeLastRec ?? 0;
+    }
+
     const [contentRecommendations, productRecommendations] = await Promise.all([
       getContentRecommendations(recommendationRequest),
       getProductRecommendations(recommendationRequest),
@@ -271,8 +298,9 @@ export async function processChatTurn({
     const recommendationChoice = await chooseRecommendation({
       content: contentRecommendations,
       products: productRecommendations,
-      turnCount:
-        userTurnCount === 5 ? 3 : userTurnCount === 6 ? 5 : userTurnCount,
+      turnCount: userTurnCount,
+      previousRecommendationCount: previousRecommendationCount ?? 0,
+      lastRecommendationTurn,
     });
 
     let recommendation = recommendationChoice?.recommendation ?? null;
@@ -427,6 +455,32 @@ export async function processChatTurnStream({
           context: { activeTopic: context.activeTopic },
         };
 
+        // Count previous recommendations in this session
+        const supabaseForRecs = await createServerSupabaseClient();
+        const { count: previousRecommendationCount } = await (supabaseForRecs as any)
+          .from("recommendation_log")
+          .select("id", { count: "exact", head: true })
+          .eq("session_id", session.id);
+
+        const { data: lastRecLog } = await (supabaseForRecs as any)
+          .from("recommendation_log")
+          .select("created_at")
+          .eq("session_id", session.id)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .single() as { data: { created_at: string } | null };
+
+        let lastRecommendationTurn = 0;
+        if (lastRecLog) {
+          const { count: turnsBeforeLastRec } = await supabaseForRecs
+            .from("chat_messages")
+            .select("id", { count: "exact", head: true })
+            .eq("session_id", session.id)
+            .eq("role", "user")
+            .lte("created_at", lastRecLog.created_at);
+          lastRecommendationTurn = turnsBeforeLastRec ?? 0;
+        }
+
         const [contentRecommendations, productRecommendations] = await Promise.all([
           getContentRecommendations(recommendationRequest),
           getProductRecommendations(recommendationRequest),
@@ -435,7 +489,9 @@ export async function processChatTurnStream({
         const recommendationChoice = await chooseRecommendation({
           content: contentRecommendations,
           products: productRecommendations,
-          turnCount: userTurnCount === 5 ? 3 : userTurnCount === 6 ? 5 : userTurnCount,
+          turnCount: userTurnCount,
+          previousRecommendationCount: previousRecommendationCount ?? 0,
+          lastRecommendationTurn,
         });
 
         let recommendation = recommendationChoice?.recommendation ?? null;

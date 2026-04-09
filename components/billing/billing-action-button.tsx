@@ -74,11 +74,11 @@ export function BillingActionButton({
         type="button"
         onClick={handleClick}
         disabled={disabled || isPending}
-        className={className ?? "rounded-full bg-stone-900 px-5 py-3 text-sm font-medium text-stone-50 disabled:opacity-60"}
+        className={className ?? "rounded-full bg-gradient-to-r from-rose-400 to-rose-500 px-5 py-3 text-sm font-medium text-white shadow-[0_8px_20px_rgba(220,100,100,0.20)] transition duration-200 hover:-translate-y-0.5 disabled:opacity-60"}
       >
-        {isPending ? pendingLabel ?? (mode === "checkout" ? "Redirecting to Stripe..." : "Opening billing...") : label}
+        {isPending ? pendingLabel ?? (mode === "checkout" ? "Redirigiendo a Stripe..." : "Abriendo billing...") : label}
       </button>
-      {error ? <p className="text-sm text-red-300">{error}</p> : null}
+      {error ? <p className="text-sm text-red-500">{error}</p> : null}
     </div>
   );
 }
