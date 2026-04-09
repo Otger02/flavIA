@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { getUser } from "@/features/auth/server/get-user";
+import { isCommunityEnabled } from "@/lib/feature-flags";
 
 type MarketingLayoutProps = {
   children: React.ReactNode;
@@ -10,6 +11,11 @@ type MarketingLayoutProps = {
 export default async function MarketingLayout({ children }: MarketingLayoutProps) {
   const user = await getUser();
   const isLoggedIn = !!user;
+  const communityEnabled = isCommunityEnabled();
+
+  const communityLink = communityEnabled
+    ? { href: "/comunidad", label: "Comunidad" }
+    : { href: "/stories", label: "Historias" };
 
   return (
     <div className="min-h-screen">
@@ -30,7 +36,7 @@ export default async function MarketingLayout({ children }: MarketingLayoutProps
             <Link href="/plans" className="transition-colors hover:text-stone-900">Planes</Link>
             {isLoggedIn ? (
               <>
-                <Link href="/stories" className="transition-colors hover:text-stone-900">Historias</Link>
+                <Link href={communityLink.href} className="transition-colors hover:text-stone-900">{communityLink.label}</Link>
                 <Link href="/account" className="transition-colors hover:text-stone-900">Cuenta</Link>
               </>
             ) : (
@@ -50,7 +56,7 @@ export default async function MarketingLayout({ children }: MarketingLayoutProps
                     { href: "/chat", label: "Chat" },
                     { href: "/library", label: "Biblioteca" },
                     { href: "/plans", label: "Planes" },
-                    { href: "/stories", label: "Historias" },
+                    communityLink,
                     { href: "/account", label: "Cuenta" },
                   ]
                 : [

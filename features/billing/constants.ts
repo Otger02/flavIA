@@ -9,6 +9,9 @@ export const BILLING_FEATURE_KEYS = {
   chatPriority: "chat-priority",
   extendedLibrary: "extended-library",
   premiumRecommendations: "premium-recommendations",
+  communityCreateThread: "community-create-thread",
+  communityUnlimitedPosts: "community-unlimited-posts",
+  communityInviteFlavia: "community-invite-flavia",
 } as const;
 
 export const BILLING_WEBHOOK_RELEVANT_EVENTS = [

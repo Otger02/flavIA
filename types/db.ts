@@ -364,6 +364,195 @@ export type Database = {
         };
         Relationships: [];
       };
+      community_threads: {
+        Row: {
+          id: string;
+          user_id: string;
+          slug: string;
+          title: string;
+          body: string;
+          topic: string | null;
+          is_anonymous: boolean;
+          status: "published" | "hidden" | "removed";
+          is_pinned: boolean;
+          reply_count: number;
+          last_activity_at: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          slug: string;
+          title: string;
+          body: string;
+          topic?: string | null;
+          is_anonymous?: boolean;
+          status?: "published" | "hidden" | "removed";
+          is_pinned?: boolean;
+          reply_count?: number;
+          last_activity_at?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          slug?: string;
+          title?: string;
+          body?: string;
+          topic?: string | null;
+          is_anonymous?: boolean;
+          status?: "published" | "hidden" | "removed";
+          is_pinned?: boolean;
+          reply_count?: number;
+          last_activity_at?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "community_threads_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      community_comments: {
+        Row: {
+          id: string;
+          user_id: string;
+          target_type: "thread" | "library_item" | "story";
+          target_id: string;
+          parent_comment_id: string | null;
+          content: string;
+          is_anonymous: boolean;
+          status: "published" | "hidden" | "removed";
+          is_flavia_ai: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          target_type: "thread" | "library_item" | "story";
+          target_id: string;
+          parent_comment_id?: string | null;
+          content: string;
+          is_anonymous?: boolean;
+          status?: "published" | "hidden" | "removed";
+          is_flavia_ai?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          target_type?: "thread" | "library_item" | "story";
+          target_id?: string;
+          parent_comment_id?: string | null;
+          content?: string;
+          is_anonymous?: boolean;
+          status?: "published" | "hidden" | "removed";
+          is_flavia_ai?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "community_comments_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      community_reports: {
+        Row: {
+          id: string;
+          reporter_id: string;
+          target_type: "thread" | "comment" | "story";
+          target_id: string;
+          reason: "spam" | "harassment" | "misinformation" | "off_topic" | "inappropriate" | "other";
+          detail: string | null;
+          status: "pending" | "reviewed" | "actioned" | "dismissed";
+          reviewed_by: string | null;
+          reviewed_at: string | null;
+          action_taken: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          reporter_id: string;
+          target_type: "thread" | "comment" | "story";
+          target_id: string;
+          reason: "spam" | "harassment" | "misinformation" | "off_topic" | "inappropriate" | "other";
+          detail?: string | null;
+          status?: "pending" | "reviewed" | "actioned" | "dismissed";
+          reviewed_by?: string | null;
+          reviewed_at?: string | null;
+          action_taken?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          reporter_id?: string;
+          target_type?: "thread" | "comment" | "story";
+          target_id?: string;
+          reason?: "spam" | "harassment" | "misinformation" | "off_topic" | "inappropriate" | "other";
+          detail?: string | null;
+          status?: "pending" | "reviewed" | "actioned" | "dismissed";
+          reviewed_by?: string | null;
+          reviewed_at?: string | null;
+          action_taken?: string | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "community_reports_reporter_id_fkey";
+            columns: ["reporter_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      community_moderation_log: {
+        Row: {
+          id: string;
+          content_type: "thread" | "comment" | "story";
+          content_id: string;
+          decision: "approved" | "flagged" | "rejected";
+          confidence: number | null;
+          reason: string | null;
+          model: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          content_type: "thread" | "comment" | "story";
+          content_id: string;
+          decision: "approved" | "flagged" | "rejected";
+          confidence?: number | null;
+          reason?: string | null;
+          model?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          content_type?: "thread" | "comment" | "story";
+          content_id?: string;
+          decision?: "approved" | "flagged" | "rejected";
+          confidence?: number | null;
+          reason?: string | null;
+          model?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       subscriptions: {
         Row: {
           id: string;

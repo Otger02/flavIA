@@ -41,11 +41,11 @@ export default async function MarketingHomePage() {
       <WaveDivider variant="blush-to-cream" flip />
 
       <div className="space-y-14 lg:space-y-16">
-        <ChatDemo />
+        <ChatDemo isLoggedIn={isLoggedIn} />
 
         <WaveDivider variant="cream-to-blush" />
 
-        <Topics />
+        <Topics isLoggedIn={isLoggedIn} />
         <HowItWorks />
 
         <WaveDivider variant="blush-to-cream" />

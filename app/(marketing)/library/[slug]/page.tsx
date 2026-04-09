@@ -9,6 +9,9 @@ import { BILLING_FREE_PLAN } from "@/features/billing/constants";
 import { getLibraryItemBySlug } from "@/features/library/server/get-library-item-by-slug";
 import { getUserFavorites } from "@/features/favorites/server/get-user-favorites";
 import { FavoriteButton } from "@/components/library/favorite-button";
+import { CommentSection } from "@/components/community/comment-section";
+import { getComments } from "@/features/community/server/get-comments";
+import { isCommunityEnabled } from "@/lib/feature-flags";
 
 const TOPIC_COLORS: Record<string, { active: string; inactive: string }> = {
   desire: { active: "bg-rose-500 text-white", inactive: "bg-rose-50 text-rose-700 hover:bg-rose-100" },
@@ -234,12 +237,17 @@ export default async function LibraryItemPage({ params }: LibraryItemPageProps) 
             Si este tema te ha removido algo, Flavia puede ayudarte a profundizar.
           </p>
           <Link
-            href={`/chat?topic=${item.topicTags[0]}`}
+            href={user ? `/chat?topic=${item.topicTags[0]}` : "/login"}
             className="mt-6 inline-flex rounded-full bg-gradient-to-r from-rose-400 to-rose-500 px-7 py-3 text-sm font-medium text-white shadow-[0_12px_30px_rgba(220,100,100,0.22)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_16px_40px_rgba(220,100,100,0.30)]"
           >
-            Hablar con Flavia
+            {user ? "Hablar con Flavia" : "Entra para hablar con Flavia"}
           </Link>
         </section>
+      ) : null}
+
+      {/* Community comments on this article */}
+      {isCommunityEnabled() ? (
+        <LibraryComments slug={slug} userId={user?.id ?? null} />
       ) : null}
 
       {item.relatedContent.length > 0 ? (
@@ -286,5 +294,24 @@ export default async function LibraryItemPage({ params }: LibraryItemPageProps) 
         </section>
       ) : null}
     </article>
+  );
+}
+
+async function LibraryComments({ slug, userId }: { slug: string; userId: string | null }) {
+  const { comments, total } = await getComments({
+    targetType: "library_item",
+    targetId: slug,
+  });
+
+  return (
+    <section className="rounded-[2rem] border border-stone-200/50 bg-white/80 p-6 shadow-[0_2px_12px_rgba(180,120,100,0.04)]">
+      <CommentSection
+        targetType="library_item"
+        targetId={slug}
+        initialComments={comments}
+        initialTotal={total}
+        currentUserId={userId}
+      />
+    </section>
   );
 }

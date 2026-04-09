@@ -2,8 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { getUser } from "@/features/auth/server/get-user";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-
-const ADMIN_EMAILS = ["otger02@gmail.com"];
+import { ADMIN_EMAILS } from "@/lib/constants";
 
 export async function PATCH(request: NextRequest) {
   const user = await getUser();

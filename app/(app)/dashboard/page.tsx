@@ -98,27 +98,61 @@ export default async function DashboardPage() {
   const isFree = !viewer.plan || viewer.plan.plan === BILLING_FREE_PLAN;
   const { greeting } = getGreeting();
 
-  // Filter library by active topic if available, fallback to all
-  const topicItems = activeTopic
-    ? libraryItems.filter((item) => item.topicTags.includes(activeTopic))
-    : libraryItems;
-  const displayItems = (topicItems.length >= 3 ? topicItems : libraryItems).slice(0, 3);
-
   // Cross-reference favorites with library items to get full item data
   const favoriteItemIds = new Set(userFavorites.map((f) => f.itemId));
   const favoriteItems = libraryItems.filter((item) => favoriteItemIds.has(item.id));
 
+  // Filter library by active topic if available, fallback to all — exclude favorites to avoid dupes
+  const topicItems = activeTopic
+    ? libraryItems.filter((item) => item.topicTags.includes(activeTopic) && !favoriteItemIds.has(item.id))
+    : libraryItems.filter((item) => !favoriteItemIds.has(item.id));
+  const displayItems = (topicItems.length >= 3 ? topicItems : libraryItems.filter((item) => !favoriteItemIds.has(item.id))).slice(0, 3);
+
+  // Pick a daily Flavia quote based on date
+  const FLAVIA_QUOTES = [
+    "Lo que no se habla no existe.",
+    "El deseo es como un músculo — si lo ejercitas, se hace cada vez más fuerte.",
+    "La intimidad no empieza cuando se apaga la luz. Empieza en cómo te miran.",
+    "No hay una forma correcta de ser mujer en la cama. Hay tantas formas como mujeres.",
+    "Poner un límite no te vuelve fría. Te vuelve clara.",
+    "La sexualidad es como LEGO — nunca la armamos de la misma manera.",
+    "Preliminares arrancan cuando uno termina la relación sexual.",
+    "Hay que desconstruirse para construir.",
+    "Felicidad no es euforia. Felicidad es sinónimo de tranquilidad.",
+    "Una mujer que se liberta, liberta a otras mujeres.",
+  ];
+  const dayIndex = Math.floor(Date.now() / 86400000) % FLAVIA_QUOTES.length;
+  const dailyQuote = FLAVIA_QUOTES[dayIndex];
+
   return (
     <div className="space-y-8">
-      {/* Greeting */}
-      <div>
-        <h1 className="font-[family-name:var(--font-display)] text-4xl text-stone-900">
-          {greeting}
-        </h1>
-        <p className="mt-2 text-base leading-7 text-stone-600">
-          {hasSessions
-            ? "¿Qué necesitas hoy?"
-            : "Bienvenida. Este es tu lugar."}
+      {/* Greeting + quick chat button */}
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <h1 className="font-[family-name:var(--font-display)] text-4xl text-stone-900">
+            {greeting}
+          </h1>
+          <p className="mt-2 text-base leading-7 text-stone-600">
+            {hasSessions
+              ? "¿Qué necesitas hoy?"
+              : "Bienvenida. Este es tu lugar."}
+          </p>
+        </div>
+        <Link
+          href="/chat"
+          className="hidden shrink-0 rounded-full bg-gradient-to-r from-rose-400 to-rose-500 px-6 py-3 text-sm font-medium text-white shadow-[0_12px_30px_rgba(220,100,100,0.22)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_16px_40px_rgba(220,100,100,0.30)] sm:inline-flex"
+        >
+          Hablar con Flavia
+        </Link>
+      </div>
+
+      {/* Daily Flavia quote */}
+      <div className="rounded-[1.5rem] border border-rose-200/30 bg-gradient-to-r from-rose-50/40 via-white/60 to-rose-50/30 px-6 py-4">
+        <p className="text-center text-sm italic leading-7 text-stone-600">
+          &ldquo;{dailyQuote}&rdquo;
+        </p>
+        <p className="mt-1 text-center text-[10px] font-medium uppercase tracking-[0.2em] text-rose-300">
+          — Flavia Dos Santos
         </p>
       </div>
 

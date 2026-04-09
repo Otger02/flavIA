@@ -4,8 +4,7 @@ import { redirect } from "next/navigation";
 import { requireUser } from "@/features/auth/server/require-user";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { AdminStoryList } from "@/components/admin/admin-story-list";
-
-const ADMIN_EMAILS = ["otger02@gmail.com"];
+import { ADMIN_EMAILS } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Admin — Historias",

@@ -1,13 +1,19 @@
+import Link from "next/link";
+
 const TOPICS = [
-  { label: "Celos", icon: "~", color: "from-rose-100 to-rose-50" },
-  { label: "Comunicacion", icon: "::", color: "from-amber-100/80 to-orange-50" },
-  { label: "Deseo", icon: "*", color: "from-pink-100/80 to-rose-50" },
-  { label: "Pareja", icon: "<>", color: "from-rose-100/60 to-[#f5ddd5]/40" },
-  { label: "Limites", icon: "+", color: "from-orange-100/60 to-amber-50" },
-  { label: "Placer", icon: "o", color: "from-[#f5ddd5]/80 to-rose-50" },
+  { label: "Celos", slug: "jealousy", icon: "~", color: "from-rose-100 to-rose-50" },
+  { label: "Comunicacion", slug: "communication", icon: "::", color: "from-amber-100/80 to-orange-50" },
+  { label: "Deseo", slug: "desire", icon: "*", color: "from-pink-100/80 to-rose-50" },
+  { label: "Pareja", slug: "couple_connection", icon: "<>", color: "from-rose-100/60 to-[#f5ddd5]/40" },
+  { label: "Limites", slug: "boundaries", icon: "+", color: "from-orange-100/60 to-amber-50" },
+  { label: "Placer", slug: "pleasure", icon: "o", color: "from-[#f5ddd5]/80 to-rose-50" },
 ];
 
-export function Topics() {
+type TopicsProps = {
+  isLoggedIn?: boolean;
+};
+
+export function Topics({ isLoggedIn }: TopicsProps) {
   return (
     <section className="space-y-5">
       <div>
@@ -19,9 +25,9 @@ export function Topics() {
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {TOPICS.map((topic) => (
-          <button
+          <Link
             key={topic.label}
-            type="button"
+            href={isLoggedIn ? `/chat?topic=${topic.slug}` : "/login"}
             className="group rounded-2xl border border-rose-200/50 bg-white/78 px-5 py-4 text-left text-base font-medium text-stone-800 shadow-[0_10px_30px_rgba(196,96,90,0.05)] transition duration-200 ease-out hover:scale-[1.02] hover:bg-white hover:shadow-[0_18px_38px_rgba(196,96,90,0.10)]"
           >
             <span
@@ -30,7 +36,7 @@ export function Topics() {
               {topic.icon}
             </span>
             <span className="block">{topic.label}</span>
-          </button>
+          </Link>
         ))}
       </div>
     </section>

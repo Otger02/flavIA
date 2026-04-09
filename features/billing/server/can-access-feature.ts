@@ -21,6 +21,9 @@ const requiredPlanByFeature: Record<BillingFeatureKey, UserPlan["plan"]> = {
   [BILLING_FEATURE_KEYS.chatPriority]: BILLING_PRO_PLAN,
   [BILLING_FEATURE_KEYS.extendedLibrary]: BILLING_PRO_PLAN,
   [BILLING_FEATURE_KEYS.premiumRecommendations]: BILLING_PLUS_PLAN,
+  [BILLING_FEATURE_KEYS.communityCreateThread]: BILLING_PLUS_PLAN,
+  [BILLING_FEATURE_KEYS.communityUnlimitedPosts]: BILLING_PLUS_PLAN,
+  [BILLING_FEATURE_KEYS.communityInviteFlavia]: BILLING_PLUS_PLAN,
 };
 
 export async function canAccessFeature({

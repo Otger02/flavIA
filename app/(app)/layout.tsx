@@ -6,8 +6,8 @@ import { UpgradeBanner } from "@/components/billing/upgrade-banner";
 import { requireUser } from "@/features/auth/server/require-user";
 import { getViewerPlan } from "@/features/billing/server/get-viewer-plan";
 import { BILLING_FREE_PLAN } from "@/features/billing/constants";
-
-const ADMIN_EMAILS = ["otger02@gmail.com"];
+import { ADMIN_EMAILS } from "@/lib/constants";
+import { isCommunityEnabled } from "@/lib/feature-flags";
 
 type AppLayoutProps = {
   children: React.ReactNode;
@@ -20,15 +20,18 @@ export default async function AppLayout({ children }: AppLayoutProps) {
   const viewer = await getViewerPlan();
   const isAdmin = !!user.email && ADMIN_EMAILS.includes(user.email);
   const isFree = !viewer.plan || viewer.plan.plan === BILLING_FREE_PLAN;
+  const communityEnabled = isCommunityEnabled();
 
   const navLinks = [
     { href: "/dashboard", label: "Mi espacio" },
     { href: "/chat", label: "Chat" },
     { href: "/library", label: "Biblioteca" },
     { href: "/plans", label: "Planes" },
-    { href: "/stories", label: "Historias" },
+    ...(communityEnabled
+      ? [{ href: "/comunidad", label: "Comunidad" }]
+      : [{ href: "/stories", label: "Historias" }]),
     { href: "/account", label: "Cuenta" },
-    ...(isAdmin ? [{ href: "/admin/stories", label: "Admin" }] : []),
+    ...(isAdmin ? [{ href: "/admin", label: "Admin" }] : []),
   ];
 
   return (
@@ -44,10 +47,14 @@ export default async function AppLayout({ children }: AppLayoutProps) {
             <Link href="/chat" className="transition-colors hover:text-stone-900">Chat</Link>
             <Link href="/library" className="transition-colors hover:text-stone-900">Biblioteca</Link>
             <Link href="/plans" className="transition-colors hover:text-stone-900">Planes</Link>
-            <Link href="/stories" className="transition-colors hover:text-stone-900">Historias</Link>
+            {communityEnabled ? (
+              <Link href="/comunidad" className="transition-colors hover:text-stone-900">Comunidad</Link>
+            ) : (
+              <Link href="/stories" className="transition-colors hover:text-stone-900">Historias</Link>
+            )}
             <Link href="/account" className="transition-colors hover:text-stone-900">Cuenta</Link>
             {isAdmin && (
-              <Link href="/admin/stories" className="text-rose-400 transition-colors hover:text-rose-600">Admin</Link>
+              <Link href="/admin" className="text-rose-400 transition-colors hover:text-rose-600">Admin</Link>
             )}
             <LogoutButton />
           </nav>

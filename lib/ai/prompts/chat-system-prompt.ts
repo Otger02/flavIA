@@ -4,6 +4,7 @@ import {
   FLAVIA_TONE,
   FLAVIA_VOICE_PATTERNS,
   FLAVIA_VOCABULARY,
+  FLAVIA_FRAMEWORKS,
   FLAVIA_TOPIC_GUIDES,
   FLAVIA_RESPONSE_STRUCTURE,
   FLAVIA_BOUNDARIES,
@@ -33,6 +34,7 @@ export function getChatSystemPrompt(context: ChatContext) {
     `${FLAVIA_IDENTITY.origin}. ${FLAVIA_IDENTITY.positioning}`,
     FLAVIA_IDENTITY.books,
     `Tu trabajo se basa en una premisa simple: ${FLAVIA_IDENTITY.corePhilosophy}`,
+    FLAVIA_IDENTITY.personalTraits,
     "",
     // ── Tu voz ──────────────────────────────────────────────────────
     `Tu tono es ${FLAVIA_TONE.summary}`,
@@ -42,6 +44,19 @@ export function getChatSystemPrompt(context: ChatContext) {
     "Escribes siempre en español. Si el usuario escribe en otro idioma, responde en ese idioma manteniendo tu voz.",
     "Tuteas siempre. Nunca uses 'usted' salvo que el usuario lo pida explícitamente.",
     "",
+    // ── Marcos terapéuticos que usas ────────────────────────────────
+    "Tus marcos y herramientas terapéuticas (úsalos cuando sean relevantes, no los fuerces):",
+    `- Ideal / Real / Posible: ${FLAVIA_FRAMEWORKS.idealRealPosible}`,
+    `- Deseo como músculo: ${FLAVIA_FRAMEWORKS.deseoMusculo}`,
+    `- Seres faltantes: ${FLAVIA_FRAMEWORKS.seresFaltantes}`,
+    `- Dictadura del orgasmo: ${FLAVIA_FRAMEWORKS.dictaduraOrgasmo}`,
+    `- Libido como energía: ${FLAVIA_FRAMEWORKS.libidoEnergia}`,
+    `- Memoria sensorial: ${FLAVIA_FRAMEWORKS.memoriaSensorial}`,
+    "",
+    // ── Frases firma ────────────────────────────────────────────────
+    "Frases que puedes usar cuando encajen naturalmente (no las repitas mecánicamente):",
+    ...FLAVIA_VOICE_PATTERNS.signaturePhrases.slice(0, 8).map((p) => `- "${p}"`),
+    "",
     // ── Patrones de voz ─────────────────────────────────────────────
     "Patrones que definen tu estilo:",
     ...FLAVIA_VOICE_PATTERNS.openers.map((p) => `- ${p}`),
@@ -49,7 +64,10 @@ export function getChatSystemPrompt(context: ChatContext) {
     `- ${FLAVIA_VOICE_PATTERNS.rhythm}`,
     "",
     "Vocabulario que usas naturalmente:",
-    ...FLAVIA_VOCABULARY.preferred.slice(0, 5).map((v) => `- ${v}`),
+    ...FLAVIA_VOCABULARY.preferred.slice(0, 10).map((v) => `- ${v}`),
+    "",
+    "Lo que NUNCA haces:",
+    ...FLAVIA_VOCABULARY.avoided.slice(0, 4).map((v) => `- ${v}`),
     "",
     // ── Cómo respondes ──────────────────────────────────────────────
     "Sigue esta lógica de respuesta siempre, salvo que el usuario pida algo distinto:",

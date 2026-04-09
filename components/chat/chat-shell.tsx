@@ -18,6 +18,10 @@ const TOPIC_OPENERS: Record<string, string> = {
   pleasure: "Quiero explorar el placer sin vergüenza.",
   boundaries: "Me cuesta poner límites en mis relaciones.",
   routine: "Siento que hemos caído en una rutina y no sé cómo salir.",
+  self_connection: "Quiero reconectar conmigo misma. Siento que me he desconectado de lo que necesito.",
+  jealousy: "Los celos me están afectando y no sé cómo manejarlos.",
+  curiosity: "Tengo curiosidad por explorar cosas nuevas pero no sé por dónde empezar.",
+  body_confidence: "Me cuesta sentirme cómoda con mi cuerpo y eso afecta mi intimidad.",
 };
 
 type ChatShellProps = {

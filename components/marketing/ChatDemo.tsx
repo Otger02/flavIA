@@ -1,4 +1,10 @@
-export function ChatDemo() {
+import Link from "next/link";
+
+type ChatDemoProps = {
+  isLoggedIn?: boolean;
+};
+
+export function ChatDemo({ isLoggedIn }: ChatDemoProps) {
   return (
     <section className="grid gap-6 rounded-[2rem] border border-rose-200/50 bg-gradient-to-br from-white/80 via-[#fef6ee]/60 to-white/75 p-6 shadow-[0_16px_48px_rgba(196,96,90,0.06)] lg:grid-cols-[0.9fr_1.1fr] lg:p-8">
       <div className="space-y-4">
@@ -18,12 +24,13 @@ export function ChatDemo() {
               "No se como decir lo que necesito",
               "Quiero reconectar con mi pareja",
             ].map((prompt) => (
-              <span
+              <Link
                 key={prompt}
+                href={isLoggedIn ? "/chat" : "/login"}
                 className="rounded-full border border-rose-200/60 bg-[#fef6ee]/80 px-3 py-1.5 text-xs text-stone-700 transition duration-200 ease-out hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_10px_24px_rgba(196,96,90,0.10)]"
               >
                 {prompt}
-              </span>
+              </Link>
             ))}
           </div>
         </div>

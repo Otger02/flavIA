@@ -18,6 +18,9 @@ export const billingFeatureKeySchema = z.enum([
   BILLING_FEATURE_KEYS.chatPriority,
   BILLING_FEATURE_KEYS.extendedLibrary,
   BILLING_FEATURE_KEYS.premiumRecommendations,
+  BILLING_FEATURE_KEYS.communityCreateThread,
+  BILLING_FEATURE_KEYS.communityUnlimitedPosts,
+  BILLING_FEATURE_KEYS.communityInviteFlavia,
 ]);
 
 export const userPlanSchema = z.object({

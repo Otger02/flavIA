@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import { requireUser } from "@/features/auth/server/require-user";
 import { StoryForm } from "@/components/stories/story-form";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { isCommunityEnabled } from "@/lib/feature-flags";
 
 export const metadata: Metadata = {
   title: "Historias Reales",
@@ -12,10 +13,13 @@ export const metadata: Metadata = {
 };
 
 export default async function StoriesPage() {
+  if (isCommunityEnabled()) {
+    redirect("/comunidad?tab=historias");
+  }
+
   const user = await requireUser();
   const supabase = await createServerSupabaseClient();
 
-  // Get approved public stories
   const { data: stories } = await supabase
     .from("user_stories")
     .select("id, content, is_anonymous, created_at")
@@ -27,7 +31,6 @@ export default async function StoriesPage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-10">
-      {/* Header */}
       <div>
         <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">
           Historias
@@ -36,15 +39,13 @@ export default async function StoriesPage() {
           Historias reales
         </h1>
         <p className="mt-3 max-w-xl text-base leading-7 text-stone-600">
-          Compartir tu experiencia puede ayudar a alguien más. Aquí tienes un espacio
-          seguro para hacerlo — de forma anónima si lo prefieres.
+          Compartir tu experiencia puede ayudar a alguien mas. Aqui tienes un espacio
+          seguro para hacerlo — de forma anonima si lo prefieres.
         </p>
       </div>
 
-      {/* Submit form */}
       <StoryForm userId={user.id} />
 
-      {/* Approved stories */}
       {approvedStories.length > 0 ? (
         <div className="space-y-6">
           <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">
@@ -61,7 +62,7 @@ export default async function StoriesPage() {
                 </p>
                 <div className="mt-4 flex items-center gap-2">
                   <span className="text-xs text-stone-400">
-                    {story.is_anonymous ? "Anónimo" : "Usuaria"}
+                    {story.is_anonymous ? "Anonimo" : "Usuaria"}
                   </span>
                   <span className="text-xs text-stone-300">&middot;</span>
                   <span className="text-xs text-stone-400">
@@ -78,7 +79,7 @@ export default async function StoriesPage() {
       ) : (
         <div className="rounded-[1.5rem] border border-dashed border-stone-200/60 bg-white/40 p-8 text-center">
           <p className="text-sm text-stone-500">
-            Todavía no hay historias publicadas. Sé la primera en compartir.
+            Todavia no hay historias publicadas. Se la primera en compartir.
           </p>
         </div>
       )}
