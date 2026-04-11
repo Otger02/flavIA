@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { getUser } from "@/features/auth/server/get-user";
 import { getThreads } from "@/features/community/server/get-threads";
@@ -15,10 +16,13 @@ import { formatDate, getLocale } from "@/lib/locale";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Comunidad — FlavIA",
-  description: "Un espacio para compartir experiencias, hacer preguntas y conectar con otras personas.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const tc = await getTranslations("community");
+  return {
+    title: tc("meta.community_title"),
+    description: tc("meta.community_description"),
+  };
+}
 
 type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -29,6 +33,7 @@ export default async function ComunidadPage({ searchParams }: Props) {
 
   const params = await searchParams;
   const locale = await getLocale();
+  const tc = await getTranslations("community");
   const tab = params.tab === "historias" ? "historias" : "conversaciones";
   const topicFilter = typeof params.topic === "string" ? params.topic : undefined;
 
@@ -41,13 +46,13 @@ export default async function ComunidadPage({ searchParams }: Props) {
       {/* Header */}
       <div>
         <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">
-          Comunidad
+          {tc("page.eyebrow")}
         </p>
         <h1 className="mt-3 font-[family-name:var(--font-display)] text-4xl text-stone-900">
-          Espacio compartido
+          {tc("page.title")}
         </h1>
         <p className="mt-3 max-w-xl text-base leading-7 text-stone-600">
-          Un lugar para compartir experiencias, abrir conversaciones y aprender de otras personas.
+          {tc("page.description")}
         </p>
       </div>
 
@@ -59,7 +64,7 @@ export default async function ComunidadPage({ searchParams }: Props) {
             href="/comunidad/nueva"
             className="rounded-xl bg-gradient-to-r from-rose-400 to-rose-500 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(220,100,100,0.18)] transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(220,100,100,0.25)]"
           >
-            Nueva conversacion
+            {tc("page.new_conversation")}
           </Link>
         )}
       </div>
@@ -83,17 +88,20 @@ async function ConversacionesTab({
   isPlus: boolean;
   user: { id: string } | null;
 }) {
+  const tc = await getTranslations("community");
   const { threads } = await getThreads({ topic: topicFilter });
 
   return (
     <div className="space-y-6">
       {!isPlus && user && (
         <div className="rounded-2xl border border-rose-200/40 bg-rose-50/40 p-4 text-center text-sm text-stone-600">
-          Actualiza a{" "}
-          <Link href="/plans" className="font-medium text-rose-500 hover:text-rose-600">
-            Flavia Plus
-          </Link>{" "}
-          para crear conversaciones e invitar a Flavia a opinar.
+          {tc.rich("page.upgrade_prompt", {
+            link: (chunks) => (
+              <Link href="/plans" className="font-medium text-rose-500 hover:text-rose-600">
+                {chunks}
+              </Link>
+            ),
+          })}
         </div>
       )}
       <ThreadList threads={threads} />
@@ -102,6 +110,8 @@ async function ConversacionesTab({
 }
 
 async function HistoriasTab({ locale, userId }: { locale: string; userId: string | null }) {
+  const t = await getTranslations("shared");
+  const tc = await getTranslations("community");
   const supabase = await createServerSupabaseClient();
 
   const { data: stories } = await supabase
@@ -120,10 +130,13 @@ async function HistoriasTab({ locale, userId }: { locale: string; userId: string
       {!userId && (
         <div className="rounded-2xl border border-stone-200/40 bg-stone-50/60 p-6 text-center">
           <p className="text-sm text-stone-500">
-            <a href="/login" className="font-medium text-rose-500 hover:text-rose-600">
-              Inicia sesion
-            </a>{" "}
-            para compartir tu historia.
+            {tc.rich("page.login_share_story", {
+              link: (chunks) => (
+                <a href="/login" className="font-medium text-rose-500 hover:text-rose-600">
+                  {chunks}
+                </a>
+              ),
+            })}
           </p>
         </div>
       )}
@@ -131,7 +144,7 @@ async function HistoriasTab({ locale, userId }: { locale: string; userId: string
       {approvedStories.length > 0 ? (
         <div className="space-y-4">
           <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">
-            Lo que otras personas comparten
+            {tc("page.shared_stories_eyebrow")}
           </p>
           {approvedStories.map((story) => (
             <article
@@ -142,7 +155,7 @@ async function HistoriasTab({ locale, userId }: { locale: string; userId: string
                 {story.content}
               </p>
               <div className="mt-4 flex items-center gap-2 text-xs text-stone-400">
-                <span>{story.is_anonymous ? "Anonimo" : "Usuaria"}</span>
+                <span>{story.is_anonymous ? t("global.anonymous") : t("global.user_label")}</span>
                 <span>&middot;</span>
                 <span>
                   {formatDate(story.created_at, locale, {
@@ -157,7 +170,7 @@ async function HistoriasTab({ locale, userId }: { locale: string; userId: string
       ) : (
         <div className="rounded-2xl border border-dashed border-stone-200/60 bg-white/40 p-8 text-center">
           <p className="text-sm text-stone-500">
-            Todavia no hay historias publicadas. Se la primera en compartir.
+            {tc("page.empty_stories")}
           </p>
         </div>
       )}

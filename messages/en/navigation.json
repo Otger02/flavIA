@@ -2,6 +2,11 @@
 	"brand": {
 		"tagline": "Intimate support"
 	},
+	"site": {
+		"title_default": "Flavia — Your intimate support",
+		"title_template": "%s — Flavia",
+		"description": "Intimate support with Flavia Dos Santos. Conversations that transform your sexual and emotional life."
+	},
 	"menu": {
 		"open": "Open menu",
 		"close": "Close menu"

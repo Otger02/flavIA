@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 type Tab = "conversaciones" | "historias";
 
@@ -12,6 +13,7 @@ type CommunityTabsProps = {
 };
 
 export function CommunityTabs({ activeTab, onTabChange, threadCount, storyCount }: CommunityTabsProps) {
+  const tc = useTranslations("community");
   return (
     <div className="flex gap-1 rounded-2xl border border-stone-200/60 bg-white/60 p-1">
       <button
@@ -22,7 +24,7 @@ export function CommunityTabs({ activeTab, onTabChange, threadCount, storyCount 
             : "text-stone-500 hover:text-stone-700"
         }`}
       >
-        Conversaciones{threadCount !== undefined ? ` (${threadCount})` : ""}
+        {tc("tabs.conversations")}{threadCount !== undefined ? ` (${threadCount})` : ""}
       </button>
       <button
         onClick={() => onTabChange("historias")}
@@ -32,13 +34,14 @@ export function CommunityTabs({ activeTab, onTabChange, threadCount, storyCount 
             : "text-stone-500 hover:text-stone-700"
         }`}
       >
-        Historias{storyCount !== undefined ? ` (${storyCount})` : ""}
+        {tc("tabs.stories")}{storyCount !== undefined ? ` (${storyCount})` : ""}
       </button>
     </div>
   );
 }
 
 export function CommunityTabsServer({ activeTab }: { activeTab: Tab }) {
+  const tc = useTranslations("community");
   return (
     <div className="flex gap-1 rounded-2xl border border-stone-200/60 bg-white/60 p-1">
       <a
@@ -49,7 +52,7 @@ export function CommunityTabsServer({ activeTab }: { activeTab: Tab }) {
             : "text-stone-500 hover:text-stone-700"
         }`}
       >
-        Conversaciones
+        {tc("tabs.conversations")}
       </a>
       <a
         href="/comunidad?tab=historias"
@@ -59,7 +62,7 @@ export function CommunityTabsServer({ activeTab }: { activeTab: Tab }) {
             : "text-stone-500 hover:text-stone-700"
         }`}
       >
-        Historias
+        {tc("tabs.stories")}
       </a>
     </div>
   );

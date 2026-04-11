@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
   }
 
   if (typeof content !== "string" || content.trim().length < COMMENT_MIN || content.trim().length > COMMENT_MAX) {
-    return NextResponse.json({ error: `El comentario debe tener entre ${COMMENT_MIN} y ${COMMENT_MAX} caracteres.` }, { status: 400 });
+    return NextResponse.json({ error: `Comment must be between ${COMMENT_MIN} and ${COMMENT_MAX} characters.` }, { status: 400 });
   }
 
   const result = await createComment({

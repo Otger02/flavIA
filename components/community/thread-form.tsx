@@ -14,6 +14,7 @@ type ThreadFormState = "idle" | "submitting" | "success" | "error";
 
 export function ThreadForm() {
   const t = useTranslations("shared");
+  const tc = useTranslations("community");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [topic, setTopic] = useState<string>("");
@@ -45,13 +46,13 @@ export function ThreadForm() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || "Error al crear la conversacion");
+        throw new Error(data.error || tc("thread_form.error_create"));
       }
 
       setModerated(data.moderated === true);
       setFormState("success");
     } catch (err) {
-      setErrorMessage(err instanceof Error ? err.message : "Error desconocido");
+      setErrorMessage(err instanceof Error ? err.message : tc("thread_form.error_unknown"));
       setFormState("error");
     }
   }
@@ -60,18 +61,18 @@ export function ThreadForm() {
     return (
       <div className="rounded-2xl border border-emerald-200/50 bg-emerald-50/60 p-8 text-center">
         <h3 className="font-[family-name:var(--font-display)] text-xl text-emerald-800">
-          {moderated ? "Tu conversacion esta siendo revisada" : "Conversacion creada"}
+          {moderated ? tc("thread_form.success_moderated_title") : tc("thread_form.success_title")}
         </h3>
         <p className="mt-2 text-sm text-emerald-700">
           {moderated
-            ? "Sera visible una vez aprobada por el equipo."
-            : "Ya esta visible en la comunidad."}
+            ? tc("thread_form.success_moderated_description")
+            : tc("thread_form.success_description")}
         </p>
         <a
           href="/comunidad"
           className="mt-4 inline-block rounded-full bg-gradient-to-r from-rose-400 to-rose-500 px-6 py-2.5 text-sm font-medium text-white shadow-sm transition hover:-translate-y-0.5"
         >
-          Volver a la comunidad
+          {tc("thread_form.success_back")}
         </a>
       </div>
     );
@@ -81,7 +82,7 @@ export function ThreadForm() {
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
         <label htmlFor="thread-title" className="mb-1.5 block text-sm font-medium text-stone-700">
-          Titulo
+          {tc("thread_form.title_label")}
         </label>
         <input
           id="thread-title"
@@ -89,7 +90,7 @@ export function ThreadForm() {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           maxLength={THREAD_TITLE_MAX}
-          placeholder="¿De que te gustaria hablar?"
+          placeholder={tc("thread_form.title_placeholder")}
           className="w-full rounded-xl border border-stone-200/60 bg-white/80 px-4 py-3 text-stone-900 placeholder:text-stone-400 focus:border-rose-300 focus:outline-none focus:ring-2 focus:ring-rose-200/50"
         />
         <p className="mt-1 text-xs text-stone-400">
@@ -99,7 +100,7 @@ export function ThreadForm() {
 
       <div>
         <label htmlFor="thread-topic" className="mb-1.5 block text-sm font-medium text-stone-700">
-          Tema (opcional)
+          {tc("thread_form.topic_label")}
         </label>
         <select
           id="thread-topic"
@@ -107,7 +108,7 @@ export function ThreadForm() {
           onChange={(e) => setTopic(e.target.value)}
           className="w-full rounded-xl border border-stone-200/60 bg-white/80 px-4 py-3 text-stone-900 focus:border-rose-300 focus:outline-none focus:ring-2 focus:ring-rose-200/50"
         >
-          <option value="">Sin tema especifico</option>
+          <option value="">{tc("thread_form.topic_none")}</option>
           {COMMUNITY_TOPICS.map((topic) => (
             <option key={topic} value={topic}>
               {t(`topics.${topic}`)}
@@ -118,7 +119,7 @@ export function ThreadForm() {
 
       <div>
         <label htmlFor="thread-body" className="mb-1.5 block text-sm font-medium text-stone-700">
-          Contenido
+          {tc("thread_form.body_label")}
         </label>
         <textarea
           id="thread-body"
@@ -126,11 +127,11 @@ export function ThreadForm() {
           onChange={(e) => setBody(e.target.value)}
           maxLength={THREAD_BODY_MAX}
           rows={8}
-          placeholder="Comparte tu experiencia, pregunta, o reflexion..."
+          placeholder={tc("thread_form.body_placeholder")}
           className="w-full rounded-xl border border-stone-200/60 bg-white/80 px-4 py-3 text-stone-900 placeholder:text-stone-400 focus:border-rose-300 focus:outline-none focus:ring-2 focus:ring-rose-200/50"
         />
         <div className="mt-1 flex justify-between text-xs text-stone-400">
-          <span>Minimo {THREAD_BODY_MIN} caracteres</span>
+          <span>{tc("thread_form.body_min", { min: THREAD_BODY_MIN })}</span>
           <span>{body.length}/{THREAD_BODY_MAX}</span>
         </div>
       </div>
@@ -152,7 +153,7 @@ export function ThreadForm() {
           />
         </button>
         <span className="text-sm text-stone-600">
-          {isAnonymous ? "Publicar de forma anonima" : "Publicar con tu nombre"}
+          {isAnonymous ? tc("thread_form.anonymous_on") : tc("thread_form.anonymous_off")}
         </span>
       </div>
 
@@ -165,7 +166,7 @@ export function ThreadForm() {
         disabled={!isValid || formState === "submitting"}
         className="w-full rounded-xl bg-gradient-to-r from-rose-400 to-rose-500 py-3.5 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(220,100,100,0.18)] transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(220,100,100,0.25)] disabled:opacity-50 disabled:hover:translate-y-0"
       >
-        {formState === "submitting" ? "Publicando..." : "Publicar conversacion"}
+        {formState === "submitting" ? tc("thread_form.submitting") : tc("thread_form.submit")}
       </button>
     </form>
   );

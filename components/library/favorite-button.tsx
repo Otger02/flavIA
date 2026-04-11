@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 
 type FavoriteButtonProps = {
   itemId: string;
@@ -15,6 +16,7 @@ export function FavoriteButton({
 }: FavoriteButtonProps) {
   const [favorited, setFavorited] = useState(initialFavorited);
   const [isPending, startTransition] = useTransition();
+  const tLib = useTranslations("library");
 
   const toggle = useCallback(() => {
     startTransition(async () => {
@@ -49,7 +51,7 @@ export function FavoriteButton({
       type="button"
       onClick={toggle}
       disabled={isPending}
-      aria-label={favorited ? "Quitar de favoritos" : "Guardar en favoritos"}
+      aria-label={favorited ? tLib("favorite.remove") : tLib("favorite.add")}
       className={`group inline-flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200 ${
         favorited
           ? "bg-rose-100 text-rose-500 hover:bg-rose-200"

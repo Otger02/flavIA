@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
 
   if (!summary) {
     return NextResponse.json(
-      { error: "La conversación es demasiado corta para resumir" },
+      { error: "Conversation too short to summarize" },
       { status: 400 },
     );
   }

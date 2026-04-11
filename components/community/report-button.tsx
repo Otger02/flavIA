@@ -1,22 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 type ReportButtonProps = {
   targetType: "thread" | "comment" | "story";
   targetId: string;
 };
 
-const REASONS = [
-  { value: "spam", label: "Spam" },
-  { value: "harassment", label: "Acoso" },
-  { value: "inappropriate", label: "Contenido inapropiado" },
-  { value: "misinformation", label: "Desinformacion" },
-  { value: "off_topic", label: "Fuera de tema" },
-  { value: "other", label: "Otro" },
-] as const;
+const REASON_KEYS = ["spam", "harassment", "inappropriate", "misinformation", "off_topic", "other"] as const;
 
 export function ReportButton({ targetType, targetId }: ReportButtonProps) {
+  const tc = useTranslations("community");
   const [open, setOpen] = useState(false);
   const [state, setState] = useState<"idle" | "submitting" | "done" | "error">("idle");
 
@@ -43,7 +38,7 @@ export function ReportButton({ targetType, targetId }: ReportButtonProps) {
   }
 
   if (state === "done") {
-    return <span className="text-[10px] text-stone-400">Reportado</span>;
+    return <span className="text-[10px] text-stone-400">{tc("report.done")}</span>;
   }
 
   return (
@@ -51,22 +46,22 @@ export function ReportButton({ targetType, targetId }: ReportButtonProps) {
       <button
         onClick={() => setOpen(!open)}
         className="text-[10px] text-stone-400 hover:text-stone-600 transition-colors"
-        title="Reportar"
+        title={tc("report.button")}
       >
-        Reportar
+        {tc("report.button")}
       </button>
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           <div className="absolute right-0 top-full z-50 mt-1 w-48 rounded-xl border border-stone-200/60 bg-white p-2 shadow-lg">
-            {REASONS.map((r) => (
+            {REASON_KEYS.map((key) => (
               <button
-                key={r.value}
-                onClick={() => { handleReport(r.value); setOpen(false); }}
+                key={key}
+                onClick={() => { handleReport(key); setOpen(false); }}
                 disabled={state === "submitting"}
                 className="w-full rounded-lg px-3 py-2 text-left text-xs text-stone-600 hover:bg-rose-50 hover:text-rose-600 transition-colors"
               >
-                {r.label}
+                {tc(`report.reason_${key}`)}
               </button>
             ))}
           </div>

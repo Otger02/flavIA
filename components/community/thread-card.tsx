@@ -12,6 +12,7 @@ type ThreadCardProps = {
 
 export async function ThreadCard({ locale, thread }: ThreadCardProps) {
   const t = await getTranslations("shared");
+  const tc = await getTranslations("community");
   const topicLabel = thread.topic ? t(`topics.${thread.topic}`) : null;
   const topicColor = thread.topic ? COMMUNITY_TOPIC_COLORS[thread.topic as CommunityTopic] : null;
 
@@ -21,8 +22,8 @@ export async function ThreadCard({ locale, thread }: ThreadCardProps) {
     ? formatRelativeTime(thread.last_activity_at, locale)
     : formatDate(thread.last_activity_at, locale, { day: "numeric", month: "short" });
   const authorLabel = thread.is_anonymous
-    ? "Anonimo"
-    : thread.display_name || "Usuaria";
+    ? t("global.anonymous")
+    : thread.display_name || t("global.user_label");
 
   return (
     <Link
@@ -34,7 +35,7 @@ export async function ThreadCard({ locale, thread }: ThreadCardProps) {
           <div className="mb-2 flex flex-wrap items-center gap-2">
             {thread.is_pinned && (
               <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-700 border border-amber-200">
-                Fijado
+                {tc("thread.pinned")}
               </span>
             )}
             {topicLabel && topicColor && (
@@ -54,7 +55,7 @@ export async function ThreadCard({ locale, thread }: ThreadCardProps) {
       <div className="mt-4 flex items-center gap-4 text-xs text-stone-400">
         <span>{authorLabel}</span>
         <span>&middot;</span>
-        <span>{thread.reply_count} {thread.reply_count === 1 ? "respuesta" : "respuestas"}</span>
+        <span>{tc("thread.reply_count", { count: thread.reply_count })}</span>
         <span>&middot;</span>
         <span>{timeAgo}</span>
       </div>

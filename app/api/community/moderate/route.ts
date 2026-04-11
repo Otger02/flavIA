@@ -57,7 +57,7 @@ export async function PATCH(request: NextRequest) {
 
   if (updateError) {
     console.error("[community] moderate failed:", updateError);
-    return NextResponse.json({ error: "No se pudo moderar el contenido." }, { status: 500 });
+    return NextResponse.json({ error: "Failed to moderate content." }, { status: 500 });
   }
 
   // Update any pending reports to "actioned"

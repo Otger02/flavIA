@@ -1,1 +1,12 @@
-{}
+{
+	"session_summary": {
+		"subject_with_topic": "Tu conversación con Flavia — {topic}",
+		"subject_default": "Tu conversación con Flavia",
+		"intimate_label": "Acompañamiento íntimo",
+		"brand": "Flavia",
+		"summary_eyebrow": "Resumen de tu sesión",
+		"continue_cta": "Continuar la conversación",
+		"footer_reason": "Recibes este email porque usaste Flavia.",
+		"footer_manage": "Gestionar preferencias"
+	}
+}

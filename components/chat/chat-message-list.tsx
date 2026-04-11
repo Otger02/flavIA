@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
 
 import { ChatMessageItem } from "@/components/chat/chat-message-item";
 import type { ChatMessage } from "@/features/chat/types";
@@ -14,6 +15,7 @@ type ChatMessageListProps = {
 };
 
 export function ChatMessageList({ hasPersistedSession, loading, messages }: ChatMessageListProps) {
+  const t = useTranslations("shared");
   const endRef = useRef<HTMLDivElement | null>(null);
   const previousLengthRef = useRef(messages.length);
 
@@ -38,13 +40,13 @@ export function ChatMessageList({ hasPersistedSession, loading, messages }: Chat
           </div>
           <p className="font-[family-name:var(--font-display)] text-lg text-stone-900">
             {hasPersistedSession
-              ? "Esta conversación está lista para ti"
-              : "Empieza cuando quieras"}
+              ? t("chat.empty_persisted_title")
+              : t("chat.empty_new_title")}
           </p>
           <p className="mt-2 max-w-sm text-sm leading-6 text-stone-500">
             {hasPersistedSession
-              ? "Escribe lo que necesites. Flavia recuerda esta sesión."
-              : "Cuéntame lo que te ronda. Sin filtro, sin juicio."}
+              ? t("chat.empty_persisted_description")
+              : t("chat.empty_new_description")}
           </p>
         </div>
       ) : (
@@ -60,7 +62,7 @@ export function ChatMessageList({ hasPersistedSession, loading, messages }: Chat
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-rose-400/60" style={{ animationDelay: "150ms" }} />
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-rose-400/60" style={{ animationDelay: "300ms" }} />
             </div>
-            <span className="text-xs text-stone-500">Flavia está escribiendo...</span>
+            <span className="text-xs text-stone-500">{t("chat.typing_indicator")}</span>
           </div>
         </div>
       ) : null}

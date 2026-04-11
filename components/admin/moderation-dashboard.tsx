@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { ModerationItem, type ModerationItemData, type ModerationContentType } from "./moderation-item";
 
 type Tab = "pending" | "reported" | "actioned";
@@ -11,13 +12,10 @@ type ModerationDashboardProps = {
   actionedItems: ModerationItemData[];
 };
 
-const tabs: { key: Tab; label: string }[] = [
-  { key: "pending", label: "Pendiente" },
-  { key: "reported", label: "Reportado" },
-  { key: "actioned", label: "Resuelto" },
-];
+const TAB_KEYS: Tab[] = ["pending", "reported", "actioned"];
 
 export function ModerationDashboard({ pendingItems, reportedItems, actionedItems }: ModerationDashboardProps) {
+  const tAdmin = useTranslations("admin");
   const [activeTab, setActiveTab] = useState<Tab>("pending");
   const [items, setItems] = useState({
     pending: pendingItems,
@@ -69,21 +67,26 @@ export function ModerationDashboard({ pendingItems, reportedItems, actionedItems
     <div className="space-y-6">
       {/* Tabs */}
       <div className="flex gap-2">
-        {tabs.map((tab) => {
-          const count = items[tab.key].length;
-          const isActive = activeTab === tab.key;
+        {TAB_KEYS.map((key) => {
+          const count = items[key].length;
+          const isActive = activeTab === key;
+          const labelMap: Record<Tab, string> = {
+            pending: tAdmin("moderation.tab_pending"),
+            reported: tAdmin("moderation.tab_reported"),
+            actioned: tAdmin("moderation.tab_actioned"),
+          };
           return (
             <button
-              key={tab.key}
+              key={key}
               type="button"
-              onClick={() => setActiveTab(tab.key)}
+              onClick={() => setActiveTab(key)}
               className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
                 isActive
                   ? "bg-stone-900 text-white"
                   : "bg-stone-100 text-stone-600 hover:bg-stone-200"
               }`}
             >
-              {tab.label}
+              {labelMap[key]}
               {count > 0 && (
                 <span className={`ml-1.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[10px] font-semibold ${
                   isActive ? "bg-white/20 text-white" : "bg-stone-200 text-stone-600"
@@ -110,9 +113,9 @@ export function ModerationDashboard({ pendingItems, reportedItems, actionedItems
       ) : (
         <div className="rounded-[1.5rem] border border-dashed border-stone-200/60 bg-white/40 p-8 text-center">
           <p className="text-sm text-stone-500">
-            {activeTab === "pending" && "No hay contenido pendiente de revision."}
-            {activeTab === "reported" && "No hay contenido reportado."}
-            {activeTab === "actioned" && "No hay acciones recientes."}
+            {activeTab === "pending" && tAdmin("moderation.empty_pending")}
+            {activeTab === "reported" && tAdmin("moderation.empty_reported")}
+            {activeTab === "actioned" && tAdmin("moderation.empty_actioned")}
           </p>
         </div>
       )}

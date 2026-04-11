@@ -28,27 +28,28 @@ type ModerationItemProps = {
   onAction: (id: string, contentType: ModerationContentType, action: "approve" | "hide" | "remove") => Promise<void>;
 };
 
-const contentTypeLabels: Record<ModerationContentType, string> = {
-  thread: "Conversacion",
-  comment: "Comentario",
-  story: "Historia",
+const contentTypeKeys: Record<ModerationContentType, string> = {
+  thread: "thread",
+  comment: "comment",
+  story: "story",
 };
 
-const statusConfig: Record<string, { label: string; bg: string; text: string; border: string }> = {
-  hidden: { label: "Oculto", bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200/60" },
-  flagged: { label: "Reportado", bg: "bg-orange-50", text: "text-orange-700", border: "border-orange-200/60" },
-  pending: { label: "Pendiente", bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200/60" },
-  published: { label: "Publicado", bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200/60" },
-  approved: { label: "Aprobada", bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200/60" },
-  removed: { label: "Eliminado", bg: "bg-rose-50", text: "text-rose-700", border: "border-rose-200/60" },
-  rejected: { label: "Rechazada", bg: "bg-rose-50", text: "text-rose-700", border: "border-rose-200/60" },
+const statusStyleConfig: Record<string, { bg: string; text: string; border: string }> = {
+  hidden: { bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200/60" },
+  flagged: { bg: "bg-orange-50", text: "text-orange-700", border: "border-orange-200/60" },
+  pending: { bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200/60" },
+  published: { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200/60" },
+  approved: { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200/60" },
+  removed: { bg: "bg-rose-50", text: "text-rose-700", border: "border-rose-200/60" },
+  rejected: { bg: "bg-rose-50", text: "text-rose-700", border: "border-rose-200/60" },
 };
 
 export function ModerationItem({ item, onAction }: ModerationItemProps) {
   const locale = useLocale();
   const t = useTranslations("shared");
+  const tAdmin = useTranslations("admin");
   const [loading, setLoading] = useState<string | null>(null);
-  const cfg = statusConfig[item.status] ?? statusConfig.pending;
+  const cfg = statusStyleConfig[item.status] ?? statusStyleConfig.pending;
 
   const needsAction = ["hidden", "flagged", "pending"].includes(item.status);
 
@@ -70,19 +71,19 @@ export function ModerationItem({ item, onAction }: ModerationItemProps) {
       {/* Header */}
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <span className="rounded-full bg-stone-100 px-2.5 py-0.5 text-[11px] font-medium text-stone-600">
-          {contentTypeLabels[item.contentType]}
+          {tAdmin(`content_types.${contentTypeKeys[item.contentType]}`)}
         </span>
         <span className={`inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-medium ${cfg.bg} ${cfg.text} ${cfg.border}`}>
-          {cfg.label}
+          {tAdmin(`status.${item.status}`)}
         </span>
         {item.isFlaviaAi && (
           <span className="rounded-full bg-rose-100 px-2.5 py-0.5 text-[11px] font-medium text-rose-600">
-            IA Flavia
+            {tAdmin("moderation.ai_flavia")}
           </span>
         )}
         {item.reportCount && item.reportCount > 0 ? (
           <span className="rounded-full bg-orange-100 px-2.5 py-0.5 text-[11px] font-medium text-orange-700">
-            {item.reportCount} reporte{item.reportCount !== 1 ? "s" : ""}
+            {tAdmin("moderation.report_count", { count: item.reportCount })}
           </span>
         ) : null}
         {item.topic && (
@@ -91,7 +92,7 @@ export function ModerationItem({ item, onAction }: ModerationItemProps) {
           </span>
         )}
         <span className="text-xs text-stone-400">
-          {item.isAnonymous ? "Anonimo" : "Con nombre"}
+          {item.isAnonymous ? tAdmin("moderation.anonymous") : tAdmin("moderation.with_name")}
         </span>
         <span className="text-xs text-stone-300">&middot;</span>
         <span className="text-xs text-stone-400">
@@ -121,7 +122,7 @@ export function ModerationItem({ item, onAction }: ModerationItemProps) {
             onClick={() => handleAction("approve")}
             className="rounded-xl bg-gradient-to-b from-emerald-400 to-emerald-500 px-4 py-2 text-xs font-medium text-white shadow-sm transition-all hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {loading === "approve" ? "..." : "Aprobar"}
+            {loading === "approve" ? "..." : tAdmin("moderation.approve")}
           </button>
           <button
             type="button"
@@ -129,7 +130,7 @@ export function ModerationItem({ item, onAction }: ModerationItemProps) {
             onClick={() => handleAction("hide")}
             className="rounded-xl border border-stone-200/60 bg-white px-4 py-2 text-xs font-medium text-stone-600 shadow-sm transition-all hover:border-amber-200 hover:text-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {loading === "hide" ? "..." : "Ocultar"}
+            {loading === "hide" ? "..." : tAdmin("moderation.hide")}
           </button>
           <button
             type="button"
@@ -137,7 +138,7 @@ export function ModerationItem({ item, onAction }: ModerationItemProps) {
             onClick={() => handleAction("remove")}
             className="rounded-xl border border-stone-200/60 bg-white px-4 py-2 text-xs font-medium text-stone-600 shadow-sm transition-all hover:border-rose-200 hover:text-rose-600 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {loading === "remove" ? "..." : "Eliminar"}
+            {loading === "remove" ? "..." : tAdmin("moderation.remove")}
           </button>
         </div>
       )}

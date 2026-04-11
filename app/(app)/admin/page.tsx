@@ -9,10 +9,13 @@ import { ADMIN_EMAILS } from "@/lib/constants";
 import { TOPIC_BADGE_COLORS, getTopicBadgeColor, getTopicTranslationKey } from "@/lib/topic-config";
 import { formatDate, formatRelativeTime, getLocale } from "@/lib/locale";
 
-export const metadata: Metadata = {
-  title: "Admin — Panel",
-  description: "Panel de administración de Flavia",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const tAdmin = await getTranslations("admin");
+  return {
+    title: tAdmin("meta.panel_title"),
+    description: tAdmin("meta.panel_description"),
+  };
+}
 
 export const dynamic = "force-dynamic";
 
@@ -42,6 +45,7 @@ export default async function AdminPage() {
   const user = await requireUser();
   const locale = await getLocale();
   const tShared = await getTranslations("shared");
+  const tAdmin = await getTranslations("admin");
 
   const topicLabel = (topic: string) => {
     const key = getTopicTranslationKey(topic);
@@ -161,27 +165,27 @@ export default async function AdminPage() {
   // ── Stats arrays ─────────────────────────────────────────────────
 
   const businessStats = [
-    { label: "Usuarios Plus", value: plusUsersNum.toString(), accent: "text-amber-600" },
-    { label: "Conversión", value: `${conversionRate}%`, accent: "text-emerald-600" },
-    { label: "Cancelaciones (mes)", value: (canceledThisMonth ?? 0).toString(), accent: (canceledThisMonth ?? 0) > 0 ? "text-rose-600" : "text-stone-900" },
-    { label: "Ingresos", value: "—", accent: "text-stone-400", note: true },
+    { label: tAdmin("stats.plus_users"), value: plusUsersNum.toString(), accent: "text-amber-600" },
+    { label: tAdmin("stats.conversion"), value: `${conversionRate}%`, accent: "text-emerald-600" },
+    { label: tAdmin("stats.cancellations_month"), value: (canceledThisMonth ?? 0).toString(), accent: (canceledThisMonth ?? 0) > 0 ? "text-rose-600" : "text-stone-900" },
+    { label: tAdmin("stats.revenue"), value: "—", accent: "text-stone-400", note: true },
   ];
 
   const usageStats = [
-    { label: "Usuarios", value: totalUsersNum, accent: "text-stone-900" },
-    { label: "Sesiones totales", value: totalSessions ?? 0, accent: "text-stone-900" },
-    { label: "Mensajes totales", value: totalMessages ?? 0, accent: "text-stone-900" },
-    { label: "Sesiones hoy", value: sessionsToday ?? 0, accent: "text-emerald-600" },
-    { label: "Sesiones semana", value: sessionsWeek ?? 0, accent: "text-emerald-600" },
-    { label: "Mensajes hoy", value: messagesToday ?? 0, accent: "text-emerald-600" },
+    { label: tAdmin("stats.users"), value: totalUsersNum, accent: "text-stone-900" },
+    { label: tAdmin("stats.total_sessions"), value: totalSessions ?? 0, accent: "text-stone-900" },
+    { label: tAdmin("stats.total_messages"), value: totalMessages ?? 0, accent: "text-stone-900" },
+    { label: tAdmin("stats.sessions_today"), value: sessionsToday ?? 0, accent: "text-emerald-600" },
+    { label: tAdmin("stats.sessions_week"), value: sessionsWeek ?? 0, accent: "text-emerald-600" },
+    { label: tAdmin("stats.messages_today"), value: messagesToday ?? 0, accent: "text-emerald-600" },
   ];
 
   const communityStats = [
-    { label: "Hilos", value: totalThreads ?? 0 },
-    { label: "Comentarios", value: totalComments ?? 0 },
-    { label: "Historias", value: totalStories ?? 0 },
-    { label: "Favoritos", value: totalFavorites ?? 0 },
-    { label: "Feedback", value: totalFeedback ?? 0 },
+    { label: tAdmin("stats.threads"), value: totalThreads ?? 0 },
+    { label: tAdmin("stats.comments"), value: totalComments ?? 0 },
+    { label: tAdmin("content_types.story"), value: totalStories ?? 0 },
+    { label: tAdmin("stats.favorites"), value: totalFavorites ?? 0 },
+    { label: tAdmin("stats.feedback"), value: totalFeedback ?? 0 },
   ];
 
   const stripeUrl = process.env.STRIPE_DASHBOARD_URL ?? "https://dashboard.stripe.com";
@@ -192,10 +196,10 @@ export default async function AdminPage() {
       <div className="flex items-end justify-between gap-4">
         <div>
           <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">
-            Admin
+            {tAdmin("page.eyebrow")}
           </p>
           <h1 className="mt-3 font-[family-name:var(--font-display)] text-4xl text-stone-900">
-            Panel
+            {tAdmin("page.title")}
           </h1>
         </div>
       </div>
@@ -206,19 +210,19 @@ export default async function AdminPage() {
           href="/admin/moderacion"
           className="rounded-full border border-stone-200/60 bg-white/80 px-4 py-2 text-xs font-medium text-stone-700 transition hover:bg-stone-50"
         >
-          Ir a moderacion
+          {tAdmin("page.go_moderation")}
         </Link>
         <Link
           href="/admin/stories"
           className="rounded-full border border-stone-200/60 bg-white/80 px-4 py-2 text-xs font-medium text-stone-700 transition hover:bg-stone-50"
         >
-          Historias
+          {tAdmin("page.stories")}
         </Link>
         <Link
           href="/library"
           className="rounded-full border border-stone-200/60 bg-white/80 px-4 py-2 text-xs font-medium text-stone-700 transition hover:bg-stone-50"
         >
-          Biblioteca
+          {tAdmin("page.library")}
         </Link>
         <a
           href={stripeUrl}
@@ -226,7 +230,7 @@ export default async function AdminPage() {
           rel="noopener noreferrer"
           className="rounded-full border border-stone-200/60 bg-white/80 px-4 py-2 text-xs font-medium text-stone-700 transition hover:bg-stone-50"
         >
-          Ver en Stripe ↗
+          {tAdmin("page.view_stripe")}
         </a>
       </div>
 
@@ -241,16 +245,16 @@ export default async function AdminPage() {
           </span>
           <span className="text-sm font-medium text-amber-800">
             {pendingModerationCount === 1
-              ? "1 elemento pendiente de moderacion"
-              : `${pendingModerationCount} elementos pendientes de moderacion`}
+              ? tAdmin("page.moderation_alert_one")
+              : tAdmin("page.moderation_alert_other", { count: pendingModerationCount })}
           </span>
-          <span className="ml-auto text-xs text-amber-600">Revisar →</span>
+          <span className="ml-auto text-xs text-amber-600">{tAdmin("page.review")}</span>
         </Link>
       )}
 
       {/* ── Business Metrics ──────────────────────────────────────── */}
       <div>
-        <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">Negocio</p>
+        <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">{tAdmin("stats.business")}</p>
         <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {businessStats.map((stat) => (
             <div key={stat.label} className="rounded-[1.25rem] border border-stone-200/50 bg-white/80 p-4 shadow-[0_4px_16px_rgba(180,120,100,0.04)]">
@@ -260,7 +264,7 @@ export default async function AdminPage() {
               </p>
               {stat.note && (
                 <a href={stripeUrl} target="_blank" rel="noopener noreferrer" className="mt-1 block text-[10px] text-rose-400 hover:text-rose-600">
-                  Ver en Stripe ↗
+                  {tAdmin("page.view_stripe")}
                 </a>
               )}
             </div>
@@ -270,7 +274,7 @@ export default async function AdminPage() {
 
       {/* ── Usage Stats ───────────────────────────────────────────── */}
       <div>
-        <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">Uso</p>
+        <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">{tAdmin("stats.usage")}</p>
         <div className="mt-3 grid gap-4 sm:grid-cols-3 lg:grid-cols-6">
           {usageStats.map((stat) => (
             <div key={stat.label} className="rounded-[1.25rem] border border-stone-200/50 bg-white/80 p-4 shadow-[0_4px_16px_rgba(180,120,100,0.04)]">
@@ -286,9 +290,9 @@ export default async function AdminPage() {
       {/* ── Activity Trend (sparkline) ────────────────────────────── */}
       <div className="rounded-[1.5rem] border border-stone-200/50 bg-white/80 p-6 shadow-[0_8px_24px_rgba(180,120,100,0.04)]">
         <div className="flex items-baseline justify-between">
-          <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">Mensajes últimos 30 días</p>
+          <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">{tAdmin("stats.messages_30d")}</p>
           <p className="text-xs text-stone-500">
-            {new Intl.NumberFormat(locale === "en" ? "en-US" : "es-ES").format(totalMessagesLast30)} total · {avgPerDay}/día media
+            {new Intl.NumberFormat(locale === "en" ? "en-US" : "es-ES").format(totalMessagesLast30)} total · {avgPerDay}/{tAdmin("stats.avg_per_day")}
           </p>
         </div>
         {sparkline.path ? (
@@ -322,14 +326,14 @@ export default async function AdminPage() {
             </div>
           </div>
         ) : (
-          <p className="mt-4 text-sm text-stone-400">Sin datos todavia</p>
+          <p className="mt-4 text-sm text-stone-400">{tAdmin("stats.no_chart_data")}</p>
         )}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
         {/* Community & engagement */}
         <div className="rounded-[1.5rem] border border-stone-200/50 bg-white/80 p-6 shadow-[0_8px_24px_rgba(180,120,100,0.04)]">
-          <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">Comunidad y engagement</p>
+          <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">{tAdmin("stats.community_engagement")}</p>
           <div className="mt-4 grid grid-cols-3 gap-3">
             {communityStats.map((s) => (
               <div key={s.label} className="text-center">
@@ -342,7 +346,7 @@ export default async function AdminPage() {
 
         {/* Top topics */}
         <div className="rounded-[1.5rem] border border-stone-200/50 bg-white/80 p-6 shadow-[0_8px_24px_rgba(180,120,100,0.04)]">
-          <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">Temas mas hablados</p>
+          <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">{tAdmin("stats.top_topics")}</p>
           {sortedTopics.length > 0 ? (
             <div className="mt-4 space-y-2.5">
               {sortedTopics.map(([topic, count]) => {
@@ -367,23 +371,23 @@ export default async function AdminPage() {
               })}
             </div>
           ) : (
-            <p className="mt-4 text-sm text-stone-400">Sin datos de temas todavia</p>
+            <p className="mt-4 text-sm text-stone-400">{tAdmin("stats.no_topic_data")}</p>
           )}
         </div>
       </div>
 
       {/* ── Recent Users ──────────────────────────────────────────── */}
       <div className="rounded-[1.5rem] border border-stone-200/50 bg-white/80 p-6 shadow-[0_8px_24px_rgba(180,120,100,0.04)]">
-        <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">Usuarios recientes</p>
+        <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">{tAdmin("stats.recent_users")}</p>
         {(recentUsers ?? []).length > 0 ? (
           <div className="mt-4 overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-stone-100 text-[10px] uppercase tracking-[0.1em] text-stone-400">
-                  <th className="pb-2 pr-4 font-medium">Email</th>
-                  <th className="pb-2 pr-4 font-medium">Plan</th>
-                  <th className="pb-2 pr-4 font-medium">Registro</th>
-                  <th className="pb-2 font-medium">Ultima actividad</th>
+                  <th className="pb-2 pr-4 font-medium">{tAdmin("stats.email")}</th>
+                  <th className="pb-2 pr-4 font-medium">{tAdmin("stats.plan")}</th>
+                  <th className="pb-2 pr-4 font-medium">{tAdmin("stats.registered")}</th>
+                  <th className="pb-2 font-medium">{tAdmin("stats.last_activity")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-stone-50">
@@ -411,13 +415,13 @@ export default async function AdminPage() {
             </table>
           </div>
         ) : (
-          <p className="mt-4 text-sm text-stone-400">No hay usuarios todavia</p>
+          <p className="mt-4 text-sm text-stone-400">{tAdmin("stats.no_users")}</p>
         )}
       </div>
 
       {/* ── Recent Sessions ───────────────────────────────────────── */}
       <div className="rounded-[1.5rem] border border-stone-200/50 bg-white/80 p-6 shadow-[0_8px_24px_rgba(180,120,100,0.04)]">
-        <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">Sesiones recientes</p>
+        <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">{tAdmin("stats.recent_sessions")}</p>
         {(recentSessions ?? []).length > 0 ? (
           <div className="mt-4 divide-y divide-stone-100">
             {(recentSessions ?? []).map((s) => (
@@ -430,7 +434,7 @@ export default async function AdminPage() {
                     </span>
                   ) : (
                     <span className="rounded-full bg-stone-50 px-2.5 py-0.5 text-[11px] text-stone-400">
-                      Sin tema
+                      {tAdmin("stats.no_topic")}
                     </span>
                   )}
                 </div>
@@ -442,7 +446,7 @@ export default async function AdminPage() {
             ))}
           </div>
         ) : (
-          <p className="mt-4 text-sm text-stone-400">No hay sesiones todavia</p>
+          <p className="mt-4 text-sm text-stone-400">{tAdmin("stats.no_sessions")}</p>
         )}
       </div>
     </div>

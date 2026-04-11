@@ -46,7 +46,7 @@ export async function PATCH(request: NextRequest) {
   if (error) {
     console.error("[stories] update failed:", error);
     return NextResponse.json(
-      { error: "No se pudo actualizar la historia" },
+      { error: "Failed to update story" },
       { status: 500 },
     );
   }
@@ -73,14 +73,14 @@ export async function POST(request: NextRequest) {
 
   if (typeof content !== "string" || content.trim().length < 20) {
     return NextResponse.json(
-      { error: "La historia debe tener al menos 20 caracteres" },
+      { error: "Story must be at least 20 characters" },
       { status: 400 },
     );
   }
 
   if (content.length > 5000) {
     return NextResponse.json(
-      { error: "La historia no puede superar los 5000 caracteres" },
+      { error: "Story cannot exceed 5000 characters" },
       { status: 400 },
     );
   }
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
   if (error) {
     console.error("[stories] insert failed:", error);
     return NextResponse.json(
-      { error: "No se pudo guardar la historia" },
+      { error: "Failed to save story" },
       { status: 500 },
     );
   }

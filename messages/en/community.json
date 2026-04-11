@@ -1,1 +1,107 @@
-{}
+{
+	"meta": {
+		"community_title": "Community \u2014 FlavIA",
+		"community_description": "A space to share experiences, ask questions and connect with other people.",
+		"new_thread_title": "New conversation \u2014 FlavIA Community",
+		"new_thread_description": "Start a conversation with the community.",
+		"stories_title": "Real Stories",
+		"stories_description": "A safe space to share real experiences anonymously. Read other people\u2019s stories and share yours."
+	},
+	"tabs": {
+		"conversations": "Conversations",
+		"stories": "Stories"
+	},
+	"page": {
+		"eyebrow": "Community",
+		"title": "Shared space",
+		"description": "A place to share experiences, open conversations and learn from other people.",
+		"new_conversation": "New conversation",
+		"upgrade_prompt": "Upgrade to <link>Flavia Plus</link> to create conversations and invite Flavia to share her perspective.",
+		"upgrade_link_text": "Flavia Plus",
+		"login_share_story": "<link>Log in</link> to share your story.",
+		"shared_stories_eyebrow": "What others are sharing",
+		"empty_stories": "No stories published yet. Be the first to share.",
+		"empty_threads": "No conversations yet. Be the first to start one."
+	},
+	"thread": {
+		"pinned": "Pinned",
+		"reply_count": "{count, plural, one {# reply} other {# replies}}",
+		"back_to_community": "← Back to community",
+		"not_found": "Conversation not found"
+	},
+	"new_thread": {
+		"eyebrow": "New conversation",
+		"title": "Start a topic",
+		"description": "Share a question, thought or experience. The community is here to listen.",
+		"back": "← Back to community"
+	},
+	"thread_form": {
+		"title_label": "Title",
+		"title_placeholder": "What would you like to talk about?",
+		"topic_label": "Topic (optional)",
+		"topic_none": "No specific topic",
+		"body_label": "Content",
+		"body_placeholder": "Share your experience, question, or thought...",
+		"body_min": "Minimum {min} characters",
+		"anonymous_on": "Post anonymously",
+		"anonymous_off": "Post with your name",
+		"submit": "Publish conversation",
+		"submitting": "Publishing...",
+		"success_moderated_title": "Your conversation is being reviewed",
+		"success_moderated_description": "It will be visible once approved by the team.",
+		"success_title": "Conversation created",
+		"success_description": "It's now visible in the community.",
+		"success_back": "Back to community",
+		"error_create": "Error creating conversation",
+		"error_unknown": "Unknown error"
+	},
+	"comment_form": {
+		"placeholder": "Write your reply...",
+		"anonymous_on": "Anonymous",
+		"anonymous_off": "With name",
+		"submit": "Reply",
+		"submitting": "Sending...",
+		"error_publish": "Error publishing comment",
+		"error_unknown": "Unknown error"
+	},
+	"comment_section": {
+		"reply_count": "{count, plural, one {# reply} other {# replies}}"
+	},
+	"report": {
+		"button": "Report",
+		"done": "Reported",
+		"reason_spam": "Spam",
+		"reason_harassment": "Harassment",
+		"reason_inappropriate": "Inappropriate content",
+		"reason_misinformation": "Misinformation",
+		"reason_off_topic": "Off topic",
+		"reason_other": "Other"
+	},
+	"invite_flavia": {
+		"done": "Flavia already participated in this conversation",
+		"loading": "Inviting...",
+		"error": "Retry",
+		"idle": "Invite Flavia to share her opinion"
+	},
+	"stories": {
+		"page_eyebrow": "Stories",
+		"page_title": "Real stories",
+		"page_description": "Sharing your experience can help someone else. Here's a safe space to do it — anonymously if you prefer.",
+		"shared_eyebrow": "What others are sharing",
+		"empty": "No stories published yet. Be the first to share.",
+		"form_label": "Your story",
+		"form_placeholder": "Share whatever you want. No rules, just your experience.",
+		"form_min_chars": "Minimum 20 characters",
+		"form_anonymous_on": "Post anonymously",
+		"form_anonymous_off": "Post with your name",
+		"form_anonymous_hint_on": "Your story will be shown without any identifying information.",
+		"form_anonymous_hint_off": "Your name or account email will be displayed.",
+		"form_submit": "Share my story",
+		"form_submitting": "Sending...",
+		"form_success_title": "Thank you for sharing",
+		"form_success_description": "Your story can help others feel less alone.",
+		"form_success_reset": "Share another",
+		"form_error_generic": "Could not submit your story.",
+		"form_error_unknown": "Something went wrong. Try again."
+	}
+}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { CHAT_MAX_INPUT_LENGTH } from "@/features/chat/constants";
 
@@ -11,6 +12,7 @@ type ChatInputProps = {
 };
 
 export function ChatInput({ disabled = false, loading = false, onSendMessage }: ChatInputProps) {
+  const t = useTranslations("shared");
   const [draft, setDraft] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -54,7 +56,7 @@ export function ChatInput({ disabled = false, loading = false, onSendMessage }: 
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
           rows={2}
-          placeholder="Escribe lo que sientes..."
+          placeholder={t("chat.input_placeholder")}
           maxLength={CHAT_MAX_INPUT_LENGTH}
           disabled={isBlocked}
           className="flex-1 resize-none bg-transparent px-3 py-2 text-sm text-stone-900 outline-none placeholder:text-stone-400 disabled:opacity-60"
@@ -64,12 +66,12 @@ export function ChatInput({ disabled = false, loading = false, onSendMessage }: 
           disabled={isBlocked || draft.trim().length === 0}
           className="flex-shrink-0 rounded-xl bg-gradient-to-r from-rose-400 to-rose-500 px-5 py-2.5 text-sm font-medium text-white shadow-[0_6px_16px_rgba(220,100,100,0.20)] transition duration-200 ease-out hover:-translate-y-0.5 disabled:opacity-40 disabled:hover:translate-y-0"
         >
-          {loading || submitting ? "..." : "Enviar"}
+          {loading || submitting ? "..." : t("chat.send")}
         </button>
       </div>
       <div className="mt-1.5 flex items-center justify-between px-1">
         <p className="text-[11px] text-stone-400">
-          {disabled ? "Chat pausado" : loading || submitting ? "Procesando..." : ""}
+          {disabled ? t("chat.paused") : loading || submitting ? t("chat.processing") : ""}
         </p>
         <p className="text-[11px] text-stone-400">{draft.length}/{CHAT_MAX_INPUT_LENGTH}</p>
       </div>

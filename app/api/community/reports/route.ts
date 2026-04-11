@@ -49,10 +49,10 @@ export async function POST(request: NextRequest) {
 
   if (error) {
     if (error.code === "23505") {
-      return NextResponse.json({ error: "Ya has reportado este contenido." }, { status: 409 });
+      return NextResponse.json({ error: "You have already reported this content." }, { status: 409 });
     }
     console.error("[community] report failed:", error);
-    return NextResponse.json({ error: "No se pudo enviar el reporte." }, { status: 500 });
+    return NextResponse.json({ error: "Failed to submit report." }, { status: 500 });
   }
 
   return NextResponse.json({ ok: true });

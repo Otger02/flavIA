@@ -1,25 +1,27 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 type FeedbackFormProps = {
   userId: string;
 };
 
-const CATEGORIES = [
-  "Contenido nuevo",
-  "Temas para el chat",
-  "Productos",
-  "Mejoras",
-  "Otro",
+const CATEGORY_KEYS = [
+  "new_content",
+  "chat_topics",
+  "products",
+  "improvements",
+  "other",
 ] as const;
 
-type Category = (typeof CATEGORIES)[number];
+type CategoryKey = (typeof CATEGORY_KEYS)[number];
 
 type FormState = "idle" | "submitting" | "success" | "error";
 
 export function FeedbackForm({ userId }: FeedbackFormProps) {
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const t = useTranslations("shared");
+  const [selectedCategory, setSelectedCategory] = useState<CategoryKey | null>(null);
   const [message, setMessage] = useState("");
   const [formState, setFormState] = useState<FormState>("idle");
   const [errorMessage, setErrorMessage] = useState("");
@@ -47,14 +49,14 @@ export function FeedbackForm({ userId }: FeedbackFormProps) {
 
       if (!response.ok) {
         const data = await response.json().catch(() => null);
-        throw new Error(data?.error ?? "No se pudo enviar el feedback.");
+        throw new Error(data?.error ?? t("feedback.error_generic"));
       }
 
       setFormState("success");
     } catch (err) {
       setFormState("error");
       setErrorMessage(
-        err instanceof Error ? err.message : "Algo salió mal. Inténtalo de nuevo.",
+        err instanceof Error ? err.message : t("feedback.error_unknown"),
       );
     }
   }
@@ -81,15 +83,15 @@ export function FeedbackForm({ userId }: FeedbackFormProps) {
           </svg>
         </div>
         <h2 className="font-[family-name:var(--font-display)] text-2xl text-stone-900">
-          Gracias por tu feedback
+          {t("feedback.success_title")}
         </h2>
-        <p className="mt-2 text-sm leading-6 text-stone-500">Lo leemos todo.</p>
+        <p className="mt-2 text-sm leading-6 text-stone-500">{t("feedback.success_description")}</p>
         <button
           type="button"
           onClick={handleReset}
           className="mt-6 rounded-full border border-stone-200/60 bg-white/80 px-5 py-2.5 text-xs font-medium text-stone-700 transition duration-200 hover:-translate-y-0.5 hover:bg-stone-50"
         >
-          Enviar otro
+          {t("feedback.success_reset")}
         </button>
       </div>
     );
@@ -103,23 +105,23 @@ export function FeedbackForm({ userId }: FeedbackFormProps) {
       {/* Category chips */}
       <fieldset>
         <legend className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">
-          Categoría
+          {t("feedback.category_label")}
         </legend>
         <div className="mt-3 flex flex-wrap gap-2">
-          {CATEGORIES.map((category) => {
-            const isSelected = selectedCategory === category;
+          {CATEGORY_KEYS.map((key) => {
+            const isSelected = selectedCategory === key;
             return (
               <button
-                key={category}
+                key={key}
                 type="button"
-                onClick={() => setSelectedCategory(category)}
+                onClick={() => setSelectedCategory(key)}
                 className={`rounded-full border px-4 py-2 text-sm font-medium transition duration-200 ${
                   isSelected
                     ? "border-rose-300 bg-rose-50 text-rose-600 shadow-[0_2px_8px_rgba(220,100,100,0.12)]"
                     : "border-stone-200/60 bg-white/80 text-stone-600 hover:border-rose-200 hover:bg-rose-50/50"
                 }`}
               >
-                {category}
+                {t(`feedback.category_${key}`)}
               </button>
             );
           })}
@@ -132,13 +134,13 @@ export function FeedbackForm({ userId }: FeedbackFormProps) {
           htmlFor="feedback-message"
           className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400"
         >
-          Tu mensaje
+          {t("feedback.message_label")}
         </label>
         <textarea
           id="feedback-message"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="¿Qué te gustaría ver en Flavia?"
+          placeholder={t("feedback.message_placeholder")}
           maxLength={2000}
           rows={5}
           className="mt-2 w-full resize-none rounded-2xl border border-stone-200/60 bg-white/60 px-4 py-3 text-sm leading-6 text-stone-900 placeholder:text-stone-400 focus:border-rose-300 focus:outline-none focus:ring-2 focus:ring-rose-200/50"
@@ -162,7 +164,7 @@ export function FeedbackForm({ userId }: FeedbackFormProps) {
           disabled={!canSubmit}
           className="rounded-full bg-gradient-to-r from-rose-400 to-rose-500 px-6 py-3 text-sm font-medium text-white shadow-[0_8px_20px_rgba(220,100,100,0.20)] transition duration-200 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
         >
-          {formState === "submitting" ? "Enviando..." : "Enviar feedback"}
+          {formState === "submitting" ? t("feedback.submitting") : t("feedback.submit")}
         </button>
       </div>
     </form>

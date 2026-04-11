@@ -65,5 +65,9 @@
 		"meta": {
 			"default_description": "Explore this Flavia library content on intimate and emotional wellbeing."
 		}
+	},
+	"favorite": {
+		"remove": "Remove from favorites",
+		"add": "Save to favorites"
 	}
 }

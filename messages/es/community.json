@@ -1,1 +1,107 @@
-{}
+{
+	"meta": {
+		"community_title": "Comunidad \u2014 FlavIA",
+		"community_description": "Un espacio para compartir experiencias, hacer preguntas y conectar con otras personas.",
+		"new_thread_title": "Nueva conversaci\u00f3n \u2014 Comunidad FlavIA",
+		"new_thread_description": "Abre una conversaci\u00f3n con la comunidad.",
+		"stories_title": "Historias Reales",
+		"stories_description": "Un espacio seguro para compartir experiencias reales de forma an\u00f3nima. Lee historias de otras personas y comparte la tuya."
+	},
+	"tabs": {
+		"conversations": "Conversaciones",
+		"stories": "Historias"
+	},
+	"page": {
+		"eyebrow": "Comunidad",
+		"title": "Espacio compartido",
+		"description": "Un lugar para compartir experiencias, abrir conversaciones y aprender de otras personas.",
+		"new_conversation": "Nueva conversación",
+		"upgrade_prompt": "Actualiza a <link>Flavia Plus</link> para crear conversaciones e invitar a Flavia a opinar.",
+		"upgrade_link_text": "Flavia Plus",
+		"login_share_story": "<link>Inicia sesión</link> para compartir tu historia.",
+		"shared_stories_eyebrow": "Lo que otras personas comparten",
+		"empty_stories": "Todavía no hay historias publicadas. Sé la primera en compartir.",
+		"empty_threads": "Todavía no hay conversaciones. Sé la primera en abrir una."
+	},
+	"thread": {
+		"pinned": "Fijado",
+		"reply_count": "{count, plural, one {# respuesta} other {# respuestas}}",
+		"back_to_community": "← Volver a la comunidad",
+		"not_found": "Conversación no encontrada"
+	},
+	"new_thread": {
+		"eyebrow": "Nueva conversación",
+		"title": "Abre un tema",
+		"description": "Comparte una pregunta, reflexión o experiencia. La comunidad está para escucharte.",
+		"back": "← Volver a la comunidad"
+	},
+	"thread_form": {
+		"title_label": "Título",
+		"title_placeholder": "¿De qué te gustaría hablar?",
+		"topic_label": "Tema (opcional)",
+		"topic_none": "Sin tema específico",
+		"body_label": "Contenido",
+		"body_placeholder": "Comparte tu experiencia, pregunta, o reflexión...",
+		"body_min": "Mínimo {min} caracteres",
+		"anonymous_on": "Publicar de forma anónima",
+		"anonymous_off": "Publicar con tu nombre",
+		"submit": "Publicar conversación",
+		"submitting": "Publicando...",
+		"success_moderated_title": "Tu conversación está siendo revisada",
+		"success_moderated_description": "Será visible una vez aprobada por el equipo.",
+		"success_title": "Conversación creada",
+		"success_description": "Ya está visible en la comunidad.",
+		"success_back": "Volver a la comunidad",
+		"error_create": "Error al crear la conversación",
+		"error_unknown": "Error desconocido"
+	},
+	"comment_form": {
+		"placeholder": "Escribe tu respuesta...",
+		"anonymous_on": "Anónimo",
+		"anonymous_off": "Con nombre",
+		"submit": "Responder",
+		"submitting": "Enviando...",
+		"error_publish": "Error al publicar el comentario",
+		"error_unknown": "Error desconocido"
+	},
+	"comment_section": {
+		"reply_count": "{count, plural, one {# respuesta} other {# respuestas}}"
+	},
+	"report": {
+		"button": "Reportar",
+		"done": "Reportado",
+		"reason_spam": "Spam",
+		"reason_harassment": "Acoso",
+		"reason_inappropriate": "Contenido inapropiado",
+		"reason_misinformation": "Desinformación",
+		"reason_off_topic": "Fuera de tema",
+		"reason_other": "Otro"
+	},
+	"invite_flavia": {
+		"done": "Flavia ya participó en esta conversación",
+		"loading": "Invitando...",
+		"error": "Reintentar",
+		"idle": "Invitar a Flavia a opinar"
+	},
+	"stories": {
+		"page_eyebrow": "Historias",
+		"page_title": "Historias reales",
+		"page_description": "Compartir tu experiencia puede ayudar a alguien más. Aquí tienes un espacio seguro para hacerlo — de forma anónima si lo prefieres.",
+		"shared_eyebrow": "Lo que otras personas comparten",
+		"empty": "Todavía no hay historias publicadas. Sé la primera en compartir.",
+		"form_label": "Tu historia",
+		"form_placeholder": "Cuenta lo que quieras. No hay reglas, solo tu experiencia.",
+		"form_min_chars": "Mínimo 20 caracteres",
+		"form_anonymous_on": "Publicar de forma anónima",
+		"form_anonymous_off": "Publicar con tu nombre",
+		"form_anonymous_hint_on": "Tu historia se mostrará sin ningún dato identificativo.",
+		"form_anonymous_hint_off": "Se mostrará tu nombre o email asociado a tu cuenta.",
+		"form_submit": "Compartir mi historia",
+		"form_submitting": "Enviando...",
+		"form_success_title": "Gracias por compartir",
+		"form_success_description": "Tu historia puede ayudar a otras personas a sentirse menos solas.",
+		"form_success_reset": "Compartir otra",
+		"form_error_generic": "No se pudo enviar tu historia.",
+		"form_error_unknown": "Algo salió mal. Inténtalo de nuevo."
+	}
+}

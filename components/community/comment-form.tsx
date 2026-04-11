@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { COMMENT_MIN, COMMENT_MAX } from "@/features/community/constants";
 
 type CommentFormProps = {
@@ -10,6 +11,7 @@ type CommentFormProps = {
 };
 
 export function CommentForm({ targetType, targetId, onCommentAdded }: CommentFormProps) {
+  const tc = useTranslations("community");
   const [content, setContent] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(true);
   const [state, setState] = useState<"idle" | "submitting" | "success" | "error">("idle");
@@ -34,14 +36,14 @@ export function CommentForm({ targetType, targetId, onCommentAdded }: CommentFor
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || "Error al publicar el comentario");
+        throw new Error(data.error || tc("comment_form.error_publish"));
       }
 
       setContent("");
       setState("idle");
       onCommentAdded?.();
     } catch (err) {
-      setErrorMessage(err instanceof Error ? err.message : "Error desconocido");
+      setErrorMessage(err instanceof Error ? err.message : tc("comment_form.error_unknown"));
       setState("error");
     }
   }
@@ -53,7 +55,7 @@ export function CommentForm({ targetType, targetId, onCommentAdded }: CommentFor
         onChange={(e) => setContent(e.target.value)}
         maxLength={COMMENT_MAX}
         rows={3}
-        placeholder="Escribe tu respuesta..."
+        placeholder={tc("comment_form.placeholder")}
         className="w-full rounded-xl border border-stone-200/60 bg-white/80 px-4 py-3 text-sm text-stone-900 placeholder:text-stone-400 focus:border-rose-300 focus:outline-none focus:ring-2 focus:ring-rose-200/50"
       />
       <div className="flex items-center justify-between gap-3">
@@ -74,7 +76,7 @@ export function CommentForm({ targetType, targetId, onCommentAdded }: CommentFor
             />
           </button>
           <span className="text-xs text-stone-500">
-            {isAnonymous ? "Anonimo" : "Con nombre"}
+            {isAnonymous ? tc("comment_form.anonymous_on") : tc("comment_form.anonymous_off")}
           </span>
         </div>
         <button
@@ -82,7 +84,7 @@ export function CommentForm({ targetType, targetId, onCommentAdded }: CommentFor
           disabled={!isValid || state === "submitting"}
           className="rounded-xl bg-gradient-to-r from-rose-400 to-rose-500 px-5 py-2 text-xs font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0"
         >
-          {state === "submitting" ? "Enviando..." : "Responder"}
+          {state === "submitting" ? tc("comment_form.submitting") : tc("comment_form.submit")}
         </button>
       </div>
       {state === "error" && errorMessage && (

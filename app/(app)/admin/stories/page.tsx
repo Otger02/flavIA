@@ -1,18 +1,23 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { requireUser } from "@/features/auth/server/require-user";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { AdminStoryList } from "@/components/admin/admin-story-list";
 import { ADMIN_EMAILS } from "@/lib/constants";
 
-export const metadata: Metadata = {
-  title: "Admin — Historias",
-  description: "Panel de moderación de historias",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const tAdmin = await getTranslations("admin");
+  return {
+    title: tAdmin("meta.stories_title"),
+    description: tAdmin("meta.stories_description"),
+  };
+}
 
 export default async function AdminStoriesPage() {
   const user = await requireUser();
+  const tAdmin = await getTranslations("admin");
 
   if (!user.email || !ADMIN_EMAILS.includes(user.email)) {
     redirect("/dashboard");
@@ -37,15 +42,15 @@ export default async function AdminStoriesPage() {
     <div className="mx-auto max-w-4xl space-y-8">
       <div>
         <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">
-          Admin
+          {tAdmin("page.eyebrow")}
         </p>
         <h1 className="mt-3 font-[family-name:var(--font-display)] text-4xl text-stone-900">
-          Moderación de historias
+          {tAdmin("moderation.stories_title")}
         </h1>
         <p className="mt-3 text-sm text-stone-500">
-          {pending.length} pendiente{pending.length !== 1 ? "s" : ""} &middot;{" "}
-          {approved.length} aprobada{approved.length !== 1 ? "s" : ""} &middot;{" "}
-          {rejected.length} rechazada{rejected.length !== 1 ? "s" : ""}
+          {tAdmin("moderation.pending_count", { count: pending.length })} &middot;{" "}
+          {tAdmin("moderation.approved_count", { count: approved.length })} &middot;{" "}
+          {tAdmin("moderation.rejected_count", { count: rejected.length })}
         </p>
       </div>
 
@@ -54,7 +59,7 @@ export default async function AdminStoriesPage() {
       ) : (
         <div className="rounded-[1.5rem] border border-dashed border-stone-200/60 bg-white/40 p-8 text-center">
           <p className="text-sm text-stone-500">
-            No hay historias todavía.
+            {tAdmin("moderation.no_stories")}
           </p>
         </div>
       )}

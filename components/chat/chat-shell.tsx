@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 import { ChatInput } from "@/components/chat/chat-input";
 import { ChatMessageList } from "@/components/chat/chat-message-list";
@@ -11,21 +12,11 @@ import { RecommendationCard } from "@/components/chat/recommendation-card";
 import { useChat } from "@/features/chat/client/use-chat";
 import type { ChatMessage, ChatUsagePolicy } from "@/features/chat/types";
 
-const TOPIC_OPENERS: Record<string, string> = {
-  desire: "Quiero hablar sobre el deseo. Últimamente siento que algo ha cambiado.",
-  communication: "Necesito ayuda para comunicar algo que me cuesta decir.",
-  couple_connection: "Siento que mi pareja y yo nos estamos desconectando.",
-  pleasure: "Quiero explorar el placer sin vergüenza.",
-  boundaries: "Me cuesta poner límites en mis relaciones.",
-  routine: "Siento que hemos caído en una rutina y no sé cómo salir.",
-  self_connection: "Quiero reconectar conmigo misma. Siento que me he desconectado de lo que necesito.",
-  jealousy: "Los celos me están afectando y no sé cómo manejarlos.",
-  curiosity: "Tengo curiosidad por explorar cosas nuevas pero no sé por dónde empezar.",
-  body_confidence: "Me cuesta sentirme cómoda con mi cuerpo y eso afecta mi intimidad.",
-  menopause: "Estoy pasando por la menopausia y noto cambios que me preocupan.",
-  erectile_dysfunction: "He tenido problemas con la erección y no sé cómo manejarlo.",
-  education: "Quiero entender mejor la sexualidad. Siento que me falta educación sexual.",
-};
+const TOPIC_KEYS = [
+  "desire", "communication", "couple_connection", "pleasure",
+  "boundaries", "routine", "self_connection", "jealousy",
+  "curiosity", "body_confidence", "menopause", "erectile_dysfunction", "education",
+] as const;
 
 type ChatShellProps = {
   initialMessages: ChatMessage[];
@@ -35,6 +26,7 @@ type ChatShellProps = {
 };
 
 export function ChatShell({ initialMessages, initialSessionId, initialUsage, initialTopic }: ChatShellProps) {
+  const t = useTranslations("shared");
   const { error, hasHistory, loading, messages, recommendation, sendMessage, sessionId, usage } = useChat({
     initialMessages,
     initialSessionId: initialSessionId ?? undefined,
@@ -47,15 +39,15 @@ export function ChatShell({ initialMessages, initialSessionId, initialUsage, ini
   useEffect(() => {
     if (
       initialTopic &&
-      TOPIC_OPENERS[initialTopic] &&
+      TOPIC_KEYS.includes(initialTopic as typeof TOPIC_KEYS[number]) &&
       !topicSentRef.current &&
       !hasHistory &&
       !loading
     ) {
       topicSentRef.current = true;
-      void sendMessage(TOPIC_OPENERS[initialTopic]);
+      void sendMessage(t(`topic_starters.${initialTopic}`));
     }
-  }, [initialTopic, hasHistory, loading, sendMessage]);
+  }, [initialTopic, hasHistory, loading, sendMessage, t]);
 
   const isInputDisabled = loading || usage?.requiresUpgrade;
 
@@ -73,12 +65,12 @@ export function ChatShell({ initialMessages, initialSessionId, initialUsage, ini
           />
           <div>
             <h1 className="font-[family-name:var(--font-display)] text-3xl text-stone-900">Flavia</h1>
-            <p className="mt-0.5 text-sm text-stone-500">Tu espacio de conversación íntima</p>
+            <p className="mt-0.5 text-sm text-stone-500">{t("chat.subtitle")}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <span className={`h-2 w-2 rounded-full ${loading ? "animate-pulse bg-rose-400" : "bg-emerald-400/80"}`} />
-          <p className="text-xs text-stone-500">{loading ? "Escribiendo..." : "Disponible"}</p>
+          <p className="text-xs text-stone-500">{loading ? t("chat.status_typing") : t("chat.status_available")}</p>
         </div>
       </div>
 

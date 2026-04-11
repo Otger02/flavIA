@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
-import { getLocale as getRequestLocale, getMessages } from "next-intl/server";
+import { getLocale as getRequestLocale, getMessages, getTranslations } from "next-intl/server";
 import { Fraunces, Inter } from "next/font/google";
 
 import { PostHogProvider } from "@/components/analytics/posthog-provider";
@@ -17,37 +17,37 @@ const inter = Inter({
   variable: "--font-body",
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "Flavia — Tu acompañamiento íntimo",
-    template: "%s — Flavia",
-  },
-  description:
-    "Acompañamiento íntimo con Flavia Dos Santos. Conversaciones que transforman tu vida sexual y emocional.",
-  metadataBase: new URL("https://flavia.app"),
-  manifest: "/manifest.json",
-  icons: {
-    icon: "/favicon.svg",
-  },
-  other: {
-    "theme-color": "#c4605a",
-  },
-  openGraph: {
-    type: "website",
-    locale: "es_ES",
-    siteName: "Flavia",
-    title: "Flavia — Tu acompañamiento íntimo",
-    description:
-      "Acompañamiento íntimo con Flavia Dos Santos. Conversaciones que transforman tu vida sexual y emocional.",
-    url: "https://flavia.app",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Flavia — Tu acompañamiento íntimo",
-    description:
-      "Acompañamiento íntimo con Flavia Dos Santos. Conversaciones que transforman tu vida sexual y emocional.",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("navigation");
+  return {
+    title: {
+      default: t("site.title_default"),
+      template: t("site.title_template"),
+    },
+    description: t("site.description"),
+    metadataBase: new URL("https://flavia.app"),
+    manifest: "/manifest.json",
+    icons: {
+      icon: "/favicon.svg",
+    },
+    other: {
+      "theme-color": "#c4605a",
+    },
+    openGraph: {
+      type: "website",
+      locale: "es_ES",
+      siteName: "Flavia",
+      title: t("site.title_default"),
+      description: t("site.description"),
+      url: "https://flavia.app",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: t("site.title_default"),
+      description: t("site.description"),
+    },
+  };
+}
 
 export default async function RootLayout({
   children,

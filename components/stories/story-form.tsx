@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 type StoryFormProps = {
   userId: string;
@@ -9,6 +10,7 @@ type StoryFormProps = {
 type FormState = "idle" | "submitting" | "success" | "error";
 
 export function StoryForm({ userId }: StoryFormProps) {
+  const tc = useTranslations("community");
   const [content, setContent] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(true);
   const [formState, setFormState] = useState<FormState>("idle");
@@ -36,14 +38,14 @@ export function StoryForm({ userId }: StoryFormProps) {
 
       if (!response.ok) {
         const data = await response.json().catch(() => null);
-        throw new Error(data?.error ?? "No se pudo enviar tu historia.");
+        throw new Error(data?.error ?? tc("stories.form_error_generic"));
       }
 
       setFormState("success");
     } catch (err) {
       setFormState("error");
       setErrorMessage(
-        err instanceof Error ? err.message : "Algo salió mal. Inténtalo de nuevo.",
+        err instanceof Error ? err.message : tc("stories.form_error_unknown"),
       );
     }
   }
@@ -70,17 +72,17 @@ export function StoryForm({ userId }: StoryFormProps) {
           </svg>
         </div>
         <h2 className="font-[family-name:var(--font-display)] text-2xl text-stone-900">
-          Gracias por compartir
+          {tc("stories.form_success_title")}
         </h2>
         <p className="mt-2 text-sm leading-6 text-stone-500">
-          Tu historia puede ayudar a otras personas a sentirse menos solas.
+          {tc("stories.form_success_description")}
         </p>
         <button
           type="button"
           onClick={handleReset}
           className="mt-6 rounded-full border border-stone-200/60 bg-white/80 px-5 py-2.5 text-xs font-medium text-stone-700 transition duration-200 hover:-translate-y-0.5 hover:bg-stone-50"
         >
-          Compartir otra
+          {tc("stories.form_success_reset")}
         </button>
       </div>
     );
@@ -97,19 +99,19 @@ export function StoryForm({ userId }: StoryFormProps) {
           htmlFor="story-content"
           className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400"
         >
-          Tu historia
+          {tc("stories.form_label")}
         </label>
         <textarea
           id="story-content"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder="Cuenta lo que quieras. No hay reglas, solo tu experiencia."
+          placeholder={tc("stories.form_placeholder")}
           maxLength={5000}
           rows={8}
           className="mt-2 w-full resize-none rounded-2xl border border-stone-200/60 bg-white/60 px-4 py-3 text-sm leading-6 text-stone-900 placeholder:text-stone-400 focus:border-rose-300 focus:outline-none focus:ring-2 focus:ring-rose-200/50"
         />
         <div className="mt-1 flex items-center justify-between">
-          <p className="text-xs text-stone-400">Mínimo 20 caracteres</p>
+          <p className="text-xs text-stone-400">{tc("stories.form_min_chars")}</p>
           <p className="text-xs text-stone-400">{content.length}/5000</p>
         </div>
       </div>
@@ -133,13 +135,13 @@ export function StoryForm({ userId }: StoryFormProps) {
             />
           </button>
           <span className="text-sm text-stone-700">
-            {isAnonymous ? "Publicar de forma anónima" : "Publicar con tu nombre"}
+            {isAnonymous ? tc("stories.form_anonymous_on") : tc("stories.form_anonymous_off")}
           </span>
         </label>
         <p className="mt-1.5 ml-14 text-xs text-stone-400">
           {isAnonymous
-            ? "Tu historia se mostrará sin ningún dato identificativo."
-            : "Se mostrará tu nombre o email asociado a tu cuenta."}
+            ? tc("stories.form_anonymous_hint_on")
+            : tc("stories.form_anonymous_hint_off")}
         </p>
       </div>
 
@@ -157,7 +159,7 @@ export function StoryForm({ userId }: StoryFormProps) {
           disabled={!canSubmit}
           className="rounded-full bg-gradient-to-r from-rose-400 to-rose-500 px-6 py-3 text-sm font-medium text-white shadow-[0_8px_20px_rgba(220,100,100,0.20)] transition duration-200 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
         >
-          {formState === "submitting" ? "Enviando..." : "Compartir mi historia"}
+          {formState === "submitting" ? tc("stories.form_submitting") : tc("stories.form_submit")}
         </button>
       </div>
     </form>

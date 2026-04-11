@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import type { ChatMessage } from "@/features/chat/types";
 import { formatRelativeTime } from "@/lib/locale";
@@ -14,6 +14,7 @@ type ChatMessageItemProps = {
 
 export function ChatMessageItem({ message, streaming, createdAt }: ChatMessageItemProps) {
   const locale = useLocale();
+  const t = useTranslations("shared");
   const isUser = message.role === "user";
   const isShort = message.content.length < 40;
 
@@ -43,7 +44,7 @@ export function ChatMessageItem({ message, streaming, createdAt }: ChatMessageIt
           }
         >
           <p className={`mb-1.5 text-[10px] uppercase tracking-[0.2em] ${isUser ? "text-rose-200/70" : "text-rose-400/70"}`}>
-            {isUser ? "Tú" : "Flavia"}
+            {isUser ? t("chat.user_label") : "Flavia"}
           </p>
           <p className="whitespace-pre-wrap leading-relaxed">
             {message.content}
@@ -65,7 +66,7 @@ export function ChatMessageItem({ message, streaming, createdAt }: ChatMessageIt
       {isUser && (
         <div className="mb-5 shrink-0">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-rose-400 to-rose-500 shadow-sm">
-            <span className="text-[11px] font-semibold text-white">Tú</span>
+            <span className="text-[11px] font-semibold text-white">{t("chat.user_label")}</span>
           </div>
         </div>
       )}

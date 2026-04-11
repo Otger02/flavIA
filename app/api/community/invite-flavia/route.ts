@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
   // Check Plus access
   const policy = await enforceCommunityPolicy({ userId: user.id, action: "create_thread" });
   if (!policy.allowed) {
-    return NextResponse.json({ error: "Esta funcion es exclusiva de Flavia Plus." }, { status: 403 });
+    return NextResponse.json({ error: "This feature is exclusive to Flavia Plus." }, { status: 403 });
   }
 
   let body: unknown;
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     .eq("is_flavia_ai", true);
 
   if ((aiReplyCount ?? 0) > 0) {
-    return NextResponse.json({ error: "Flavia ya participo en esta conversacion." }, { status: 409 });
+    return NextResponse.json({ error: "Flavia already participated in this conversation." }, { status: 409 });
   }
 
   // Get thread + recent replies

@@ -65,5 +65,9 @@
 		"meta": {
 			"default_description": "Explora este contenido de la biblioteca de Flavia Dos Santos sobre bienestar íntimo y emocional."
 		}
+	},
+	"favorite": {
+		"remove": "Quitar de favoritos",
+		"add": "Guardar en favoritos"
 	}
 }

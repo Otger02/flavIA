@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import { formatDate } from "@/lib/locale";
 
@@ -18,21 +18,18 @@ type AdminStoryListProps = {
   stories: Story[];
 };
 
-const statusConfig = {
+const statusStyleConfig = {
   pending: {
-    label: "Pendiente",
     bg: "bg-amber-50",
     text: "text-amber-700",
     border: "border-amber-200/60",
   },
   approved: {
-    label: "Aprobada",
     bg: "bg-emerald-50",
     text: "text-emerald-700",
     border: "border-emerald-200/60",
   },
   rejected: {
-    label: "Rechazada",
     bg: "bg-rose-50",
     text: "text-rose-700",
     border: "border-rose-200/60",
@@ -41,6 +38,7 @@ const statusConfig = {
 
 export function AdminStoryList({ stories: initial }: AdminStoryListProps) {
   const locale = useLocale();
+  const tAdmin = useTranslations("admin");
   const [stories, setStories] = useState(initial);
   const [loading, setLoading] = useState<string | null>(null);
 
@@ -80,7 +78,7 @@ export function AdminStoryList({ stories: initial }: AdminStoryListProps) {
   return (
     <div className="space-y-4">
       {stories.map((story) => {
-        const cfg = statusConfig[story.status];
+        const cfg = statusStyleConfig[story.status];
         const isPending = story.status === "pending";
         const isUpdating = loading === story.id;
 
@@ -96,10 +94,10 @@ export function AdminStoryList({ stories: initial }: AdminStoryListProps) {
               <span
                 className={`inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-medium ${cfg.bg} ${cfg.text} ${cfg.border}`}
               >
-                {cfg.label}
+                {tAdmin(`status.${story.status}`)}
               </span>
               <span className="text-xs text-stone-400">
-                {story.is_anonymous ? "Anonimo" : "Con nombre"}
+                {story.is_anonymous ? tAdmin("moderation.anonymous") : tAdmin("moderation.with_name")}
               </span>
               <span className="text-xs text-stone-300">&middot;</span>
               <span className="text-xs text-stone-400">
@@ -125,7 +123,7 @@ export function AdminStoryList({ stories: initial }: AdminStoryListProps) {
                   onClick={() => updateStatus(story.id, "approved")}
                   className="rounded-xl bg-gradient-to-b from-emerald-400 to-emerald-500 px-4 py-2 text-xs font-medium text-white shadow-sm transition-all hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  Aprobar
+                  {tAdmin("moderation.approve")}
                 </button>
                 <button
                   type="button"
@@ -133,7 +131,7 @@ export function AdminStoryList({ stories: initial }: AdminStoryListProps) {
                   onClick={() => updateStatus(story.id, "rejected")}
                   className="rounded-xl border border-stone-200/60 bg-white px-4 py-2 text-xs font-medium text-stone-600 shadow-sm transition-all hover:border-rose-200 hover:text-rose-600 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  Rechazar
+                  {tAdmin("moderation.reject")}
                 </button>
               </div>
             )}

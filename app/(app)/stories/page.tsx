@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { requireUser } from "@/features/auth/server/require-user";
 import { StoryForm } from "@/components/stories/story-form";
@@ -7,11 +8,13 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { isCommunityEnabled } from "@/lib/feature-flags";
 import { formatDate, getLocale } from "@/lib/locale";
 
-export const metadata: Metadata = {
-  title: "Historias Reales",
-  description:
-    "Un espacio seguro para compartir experiencias reales de forma anónima. Lee historias de otras personas y comparte la tuya.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const tc = await getTranslations("community");
+  return {
+    title: tc("meta.stories_title"),
+    description: tc("meta.stories_description"),
+  };
+}
 
 export default async function StoriesPage() {
   if (isCommunityEnabled()) {
@@ -20,6 +23,8 @@ export default async function StoriesPage() {
 
   const user = await requireUser();
   const locale = await getLocale();
+  const t = await getTranslations("shared");
+  const tc = await getTranslations("community");
   const supabase = await createServerSupabaseClient();
 
   const { data: stories } = await supabase
@@ -35,14 +40,13 @@ export default async function StoriesPage() {
     <div className="mx-auto max-w-3xl space-y-10">
       <div>
         <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">
-          Historias
+          {tc("stories.page_eyebrow")}
         </p>
         <h1 className="mt-3 font-[family-name:var(--font-display)] text-4xl text-stone-900">
-          Historias reales
+          {tc("stories.page_title")}
         </h1>
         <p className="mt-3 max-w-xl text-base leading-7 text-stone-600">
-          Compartir tu experiencia puede ayudar a alguien mas. Aqui tienes un espacio
-          seguro para hacerlo — de forma anonima si lo prefieres.
+          {tc("stories.page_description")}
         </p>
       </div>
 
@@ -51,7 +55,7 @@ export default async function StoriesPage() {
       {approvedStories.length > 0 ? (
         <div className="space-y-6">
           <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">
-            Lo que otras personas comparten
+            {tc("stories.shared_eyebrow")}
           </p>
           <div className="space-y-4">
             {approvedStories.map((story) => (
@@ -64,7 +68,7 @@ export default async function StoriesPage() {
                 </p>
                 <div className="mt-4 flex items-center gap-2">
                   <span className="text-xs text-stone-400">
-                    {story.is_anonymous ? "Anonimo" : "Usuaria"}
+                    {story.is_anonymous ? t("global.anonymous") : t("global.user_label")}
                   </span>
                   <span className="text-xs text-stone-300">&middot;</span>
                   <span className="text-xs text-stone-400">
@@ -81,7 +85,7 @@ export default async function StoriesPage() {
       ) : (
         <div className="rounded-[1.5rem] border border-dashed border-stone-200/60 bg-white/40 p-8 text-center">
           <p className="text-sm text-stone-500">
-            Todavia no hay historias publicadas. Se la primera en compartir.
+            {tc("stories.empty")}
           </p>
         </div>
       )}

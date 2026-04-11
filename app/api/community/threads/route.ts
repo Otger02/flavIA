@@ -51,11 +51,11 @@ export async function POST(request: NextRequest) {
   const { title, body: threadBody, topic, isAnonymous } = body as Record<string, unknown>;
 
   if (typeof title !== "string" || title.trim().length < THREAD_TITLE_MIN || title.trim().length > THREAD_TITLE_MAX) {
-    return NextResponse.json({ error: `El titulo debe tener entre ${THREAD_TITLE_MIN} y ${THREAD_TITLE_MAX} caracteres.` }, { status: 400 });
+    return NextResponse.json({ error: `Title must be between ${THREAD_TITLE_MIN} and ${THREAD_TITLE_MAX} characters.` }, { status: 400 });
   }
 
   if (typeof threadBody !== "string" || threadBody.trim().length < THREAD_BODY_MIN || threadBody.trim().length > THREAD_BODY_MAX) {
-    return NextResponse.json({ error: `El contenido debe tener entre ${THREAD_BODY_MIN} y ${THREAD_BODY_MAX} caracteres.` }, { status: 400 });
+    return NextResponse.json({ error: `Body must be between ${THREAD_BODY_MIN} and ${THREAD_BODY_MAX} characters.` }, { status: 400 });
   }
 
   const validTopic = typeof topic === "string" && COMMUNITY_TOPICS.includes(topic as (typeof COMMUNITY_TOPICS)[number])

@@ -2,6 +2,11 @@
 	"brand": {
 		"tagline": "Acompañamiento íntimo"
 	},
+	"site": {
+		"title_default": "Flavia — Tu acompañamiento íntimo",
+		"title_template": "%s — Flavia",
+		"description": "Acompañamiento íntimo con Flavia Dos Santos. Conversaciones que transforman tu vida sexual y emocional."
+	},
 	"menu": {
 		"open": "Abrir menú",
 		"close": "Cerrar menú"

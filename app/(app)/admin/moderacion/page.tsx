@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { requireUser } from "@/features/auth/server/require-user";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -7,13 +8,17 @@ import { ADMIN_EMAILS } from "@/lib/constants";
 import { ModerationDashboard } from "@/components/admin/moderation-dashboard";
 import type { ModerationItemData } from "@/components/admin/moderation-item";
 
-export const metadata: Metadata = {
-  title: "Admin — Moderacion",
-  description: "Panel de moderacion unificado",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const tAdmin = await getTranslations("admin");
+  return {
+    title: tAdmin("meta.moderation_title"),
+    description: tAdmin("meta.moderation_description"),
+  };
+}
 
 export default async function ModeracionPage() {
   const user = await requireUser();
+  const tAdmin = await getTranslations("admin");
 
   if (!user.email || !ADMIN_EMAILS.includes(user.email)) {
     redirect("/dashboard");
@@ -127,15 +132,15 @@ export default async function ModeracionPage() {
     <div className="mx-auto max-w-4xl space-y-8">
       <div>
         <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">
-          Admin
+          {tAdmin("page.eyebrow")}
         </p>
         <h1 className="mt-3 font-[family-name:var(--font-display)] text-4xl text-stone-900">
-          Moderacion
+          {tAdmin("moderation.title")}
         </h1>
         <p className="mt-3 text-sm text-stone-500">
-          {pendingItems.length} pendiente{pendingItems.length !== 1 ? "s" : ""} &middot;{" "}
-          {reportedItems.length} reportado{reportedItems.length !== 1 ? "s" : ""} &middot;{" "}
-          {actionedItems.length} resuelto{actionedItems.length !== 1 ? "s" : ""}
+          {tAdmin("moderation.pending_count", { count: pendingItems.length })} &middot;{" "}
+          {tAdmin("moderation.tab_reported").toLowerCase()} {reportedItems.length} &middot;{" "}
+          {tAdmin("moderation.tab_actioned").toLowerCase()} {actionedItems.length}
         </p>
       </div>
 

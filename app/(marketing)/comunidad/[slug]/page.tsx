@@ -23,8 +23,9 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  const tc = await getTranslations("community");
   const thread = await getThreadBySlug(slug);
-  if (!thread) return { title: "Conversacion no encontrada" };
+  if (!thread) return { title: tc("thread.not_found") };
   return {
     title: `${thread.title} — Comunidad FlavIA`,
     description: thread.body.slice(0, 160),
@@ -37,6 +38,7 @@ export default async function ThreadDetailPage({ params }: Props) {
   const { slug } = await params;
   const locale = await getLocale();
   const t = await getTranslations("shared");
+  const tc = await getTranslations("community");
   const thread = await getThreadBySlug(slug);
   if (!thread) notFound();
 
@@ -55,8 +57,8 @@ export default async function ThreadDetailPage({ params }: Props) {
   const topicColor = thread.topic ? COMMUNITY_TOPIC_COLORS[thread.topic as CommunityTopic] : null;
 
   const authorLabel = thread.is_anonymous
-    ? "Anonimo"
-    : thread.display_name || "Usuaria";
+    ? t("global.anonymous")
+    : thread.display_name || t("global.user_label");
 
   const date = formatDate(thread.created_at, locale, {
     day: "numeric",
@@ -68,7 +70,7 @@ export default async function ThreadDetailPage({ params }: Props) {
     <div className="mx-auto max-w-3xl space-y-8">
       {/* Back link */}
       <a href="/comunidad" className="inline-flex items-center gap-1 text-sm text-stone-400 hover:text-stone-600 transition-colors">
-        &larr; Volver a la comunidad
+        {tc("thread.back_to_community")}
       </a>
 
       {/* Thread header */}
@@ -76,7 +78,7 @@ export default async function ThreadDetailPage({ params }: Props) {
         <div className="mb-3 flex flex-wrap items-center gap-2">
           {thread.is_pinned && (
             <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-700 border border-amber-200">
-              Fijado
+              {tc("thread.pinned")}
             </span>
           )}
           {topicLabel && topicColor && (

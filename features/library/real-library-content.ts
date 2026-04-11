@@ -457,7 +457,7 @@ export const realLibraryContent: RealLibraryItem[] = [
     title: "Sexo sin Misterio",
     slug: "libro-sexo-sin-misterio",
     excerpt: "Una guía abierta y fresca que desmitifica la sexualidad: masturbación, sexo oral, fantasías, anorgasmia, eyaculación precoz, swingers y mucho más.",
-    coverImageUrl: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=1200&q=80",
+    coverImageUrl: "https://images.cdn1.buscalibre.com/fit-in/360x360/b7/4c/b74c55bbf2682f2c869cfc7fe219898c.jpg",
     body: [
       "Sexo sin Misterio nació de la necesidad de hablar de sexualidad sin filtros ni culpas. Cada capítulo desmonta un mito diferente.",
       "Desde la masturbación hasta la homosexualidad, desde las fantasías hasta la sexualidad en la tercera edad — todo cabe cuando se habla con honestidad.",
@@ -479,7 +479,7 @@ export const realLibraryContent: RealLibraryItem[] = [
     title: "¿Qué Hago con el Sexo?",
     slug: "libro-que-hago-con-el-sexo",
     excerpt: "Testimonios reales de consultas de TV. Casos de personas que sufren por visiones distorsionadas y falsas concepciones sobre el sexo.",
-    coverImageUrl: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=1200&q=80",
+    coverImageUrl: "https://villegaseditores.com/cdn/shop/products/sexo_800x800.jpg?v=1598895156",
     body: [
       "Este libro recopila las preguntas más humanas y más frecuentes que Flavia recibió como sexóloga en televisión.",
       "Son historias reales de personas que necesitaban escuchar que lo que sienten no es raro, no es malo y no están solos.",
@@ -501,7 +501,7 @@ export const realLibraryContent: RealLibraryItem[] = [
     title: "PoliAmor: Más allá de la Fidelidad",
     slug: "libro-poliamor-mas-alla-de-la-fidelidad",
     excerpt: "El amor es libertad y amar es concederla. Flavia desafía el paradigma tradicional de la fidelidad y explora los celos, el miedo a la pérdida y el amor abierto.",
-    coverImageUrl: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=1200&q=80",
+    coverImageUrl: "https://villegaseditores.com/cdn/shop/products/poliamor_800x800.jpg?v=1598895244",
     body: [
       "¿Estamos preparados para amar en libertad? Este libro no ofrece una respuesta única — ofrece las preguntas que nadie se atreve a hacer.",
       "Flavia explora los celos, la posesión, la codependencia y la posibilidad de construir vínculos desde la honestidad radical.",
@@ -523,7 +523,7 @@ export const realLibraryContent: RealLibraryItem[] = [
     title: "Sexo Mandamiento",
     slug: "libro-sexo-mandamiento",
     excerpt: "Educación sexual a calzón quitao. Flavia critica la educación sexual basada en el miedo y propone una centrada en el placer, los mitos y el humor.",
-    coverImageUrl: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=1200&q=80",
+    coverImageUrl: "https://pdlibroscol.cdnstatics2.com/usuaris/libros/thumbs/ece03fa1-dae2-4861-a292-cbee208e7825/d_360_620/portada_sexo-mandamiento_flavia-correa-lana-dos-santos_201603162315.webp",
     body: [
       "La educación sexual que recibimos se basó en anatomía y peligros. Faltó lo más importante: el placer, la diversidad y la humanidad.",
       "Este libro es para los que quieren desaprender lo mal enseñado y construir una relación sana con su sexualidad.",
@@ -545,7 +545,7 @@ export const realLibraryContent: RealLibraryItem[] = [
     title: "Deseo",
     slug: "libro-deseo",
     excerpt: "Un recorrido por la historia, la religión y la filosofía del deseo, con herramientas prácticas para reconocerlo y reavivar la llama en la vida cotidiana.",
-    coverImageUrl: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=1200&q=80",
+    coverImageUrl: "https://http2.mlstatic.com/D_NQ_NP_659009-MCO74698036040_022024-O.webp",
     body: [
       "El deseo no es solo sexual — es la energía que te saca de la cama cada mañana. Cuando se apaga en un dominio, se refleja en todos.",
       "Flavia traza el mapa del deseo a través de la historia y ofrece un camino práctico para reencontrarlo en lo cotidiano.",
@@ -567,7 +567,7 @@ export const realLibraryContent: RealLibraryItem[] = [
     title: "Eva Mordió la Manzana",
     slug: "libro-eva-mordio-la-manzana",
     excerpt: "Un manifiesto que defiende a las mujeres mayores de 50 contra el edadismo y la doble moral. El derecho al erotismo, la libertad y la autodetermianción.",
-    coverImageUrl: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=1200&q=80",
+    coverImageUrl: "https://http2.mlstatic.com/D_NQ_NP_2X_843624-MLU76569758918_062024-F.webp",
     body: [
       "¿Por qué una mujer de 50 debería renunciar al placer, al deseo o a la libertad? Este libro dice: no debería.",
       "Eva Mordió la Manzana es un grito contra el patriarcado del 'ya no te toca' y a favor de la mujer que decide vivir en sus propios términos.",

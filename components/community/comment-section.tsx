@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import type { CommentTargetType } from "@/features/community/types";
 import { CommentItem } from "./comment-item";
 import { CommentForm } from "./comment-form";
@@ -23,6 +24,8 @@ export function CommentSection({
 }: CommentSectionProps) {
   const [comments, setComments] = useState(initialComments);
   const [total, setTotal] = useState(initialTotal);
+  const t = useTranslations("shared");
+  const tc = useTranslations("community");
 
   async function refreshComments() {
     try {
@@ -40,7 +43,7 @@ export function CommentSection({
   return (
     <div className="space-y-4">
       <h3 className="font-[family-name:var(--font-display)] text-lg text-stone-900">
-        {total} {total === 1 ? "respuesta" : "respuestas"}
+        {tc("comment_section.reply_count", { count: total })}
       </h3>
 
       {comments.length > 0 && (
@@ -65,9 +68,9 @@ export function CommentSection({
         <div className="rounded-xl border border-stone-200/40 bg-stone-50/60 p-4 text-center">
           <p className="text-sm text-stone-500">
             <a href="/login" className="font-medium text-rose-500 hover:text-rose-600">
-              Inicia sesion
+              {t("global.login_prompt_prefix")}
             </a>{" "}
-            para dejar tu respuesta.
+            {t("global.login_prompt_suffix")}
           </p>
         </div>
       )}
