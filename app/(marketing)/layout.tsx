@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
+import { LocaleSwitcher } from "@/components/layout/locale-switcher";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { getUser } from "@/features/auth/server/get-user";
 import { isCommunityEnabled } from "@/lib/feature-flags";
@@ -49,6 +50,7 @@ export default async function MarketingLayout({ children }: MarketingLayoutProps
                 {t("nav.login")}
               </Link>
             )}
+            <LocaleSwitcher />
           </nav>
           <MobileNav
             links={
@@ -67,6 +69,7 @@ export default async function MarketingLayout({ children }: MarketingLayoutProps
                     { href: "/login", label: t("nav.login") },
                   ]
             }
+            action={<LocaleSwitcher />}
           />
         </header>
         <main className="flex-1">{children}</main>

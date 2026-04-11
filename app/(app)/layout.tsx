@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
 import { LogoutButton } from "@/components/auth/logout-button";
+import { LocaleSwitcher } from "@/components/layout/locale-switcher";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { UpgradeBanner } from "@/components/billing/upgrade-banner";
 import { requireUser } from "@/features/auth/server/require-user";
@@ -58,11 +59,17 @@ export default async function AppLayout({ children }: AppLayoutProps) {
             {isAdmin && (
               <Link href="/admin" className="text-rose-400 transition-colors hover:text-rose-600">{t("nav.admin")}</Link>
             )}
+            <LocaleSwitcher />
             <LogoutButton />
           </nav>
           <MobileNav
             links={navLinks}
-            action={<LogoutButton />}
+            action={
+              <div className="flex items-center justify-between">
+                <LogoutButton />
+                <LocaleSwitcher />
+              </div>
+            }
           />
         </header>
         {isFree ? (
