@@ -1,0 +1,115 @@
+{
+	"page": {
+		"title": "Flavia — Your intimate support",
+		"description": "Talk with Flavia about desire, communication, pleasure and emotional connection. A safe space to transform your intimate life."
+	},
+	"hero": {
+		"eyebrow": "Intimate support",
+		"headline_prefix": "You don't know how to start that conversation.",
+		"headline_highlight": "Flavia does.",
+		"subline": "Because it's not just what you say. It's how you say it.",
+		"cta_primary_logged_in": "Go to my space",
+		"cta_primary_logged_out": "Start now",
+		"cta_secondary": "See how it works",
+		"credential": "Sexologist, writer and therapist with more than 20 years of experience",
+		"image_alt": "Flavia Dos Santos smiling",
+		"preview_label": "Preview",
+		"preview_user": "I don't know how to tell them I don't feel the same anymore.",
+		"preview_assistant": "You don't have to say it perfectly. First let's understand what has changed for you."
+	},
+	"how_it_works": {
+		"eyebrow": "How it works",
+		"title": "A simple flow to move forward for real",
+		"steps": {
+			"speak": {
+				"title": "Speak without filtering yourself",
+				"description": "Start wherever you are: doubts, tension, blockage or the desire to reconnect. Flavia receives your context without judgment."
+			},
+			"guidance": {
+				"title": "Flavia guides you",
+				"description": "She gives you emotional clarity and structures the conversation with questions and frameworks that are easy to apply."
+			},
+			"progress": {
+				"title": "Explore and move forward",
+				"description": "With each chat, reflection turns into concrete steps to improve communication, desire and connection."
+			}
+		}
+	},
+	"value_props": {
+		"eyebrow": "Why Flavia",
+		"title": "Designed for useful intimate conversations",
+		"items": {
+			"context": {
+				"title": "You don't have to explain yourself perfectly",
+				"description": "Flavia understands the context."
+			},
+			"movement": {
+				"title": "You don't stay stuck in circles",
+				"description": "She helps you move forward."
+			},
+			"practical": {
+				"title": "It's not theory",
+				"description": "It's real phrases and real steps."
+			},
+			"personal": {
+				"title": "It's not generic",
+				"description": "It adapts to you."
+			}
+		}
+	},
+	"cta_section": {
+		"eyebrow": "Start today",
+		"title": "That conversation you've been avoiding... you can start it today.",
+		"description": "You don't need to have it all clear. You just need to start.",
+		"cta_logged_in": "Go to my space",
+		"cta_logged_out": "Try it free",
+		"image_alt": "Flavia Dos Santos"
+	},
+	"chat_demo": {
+		"eyebrow": "Demo",
+		"title": "This is what talking with Flavia feels like",
+		"description": "This isn't a typical chatbot: Flavia gives you context back, helps lower the emotional noise and offers clear actions so you can move forward conversation by conversation.",
+		"prompt_label": "Try something like:",
+		"prompt_1": "I feel jealous and shut down before I can talk",
+		"prompt_2": "I don't know how to say what I need",
+		"prompt_3": "I want to reconnect with my partner",
+		"message_user": "I don't know how to tell them I don't feel the same anymore.",
+		"message_assistant": "Are you afraid of hurting them or of everything changing?"
+	},
+	"topics": {
+		"eyebrow": "Starting points",
+		"title": "Start with what matters to you today",
+		"items": {
+			"jealousy": {
+				"label": "Jealousy"
+			},
+			"communication": {
+				"label": "Communication"
+			},
+			"desire": {
+				"label": "Desire"
+			},
+			"couple_connection": {
+				"label": "Relationship"
+			},
+			"boundaries": {
+				"label": "Boundaries"
+			},
+			"pleasure": {
+				"label": "Pleasure"
+			},
+			"menopause": {
+				"label": "Menopause"
+			},
+			"education": {
+				"label": "Sexual education"
+			}
+		},
+		"library_eyebrow": "Explore the library",
+		"library_title": "Content organized for you"
+	},
+	"quote": {
+		"text": "Intimacy doesn't begin when the lights go out. It begins in the way they look at you, in the way they ask how you are.",
+		"attribution": "Flavia Dos Santos"
+	}
+}

@@ -1,0 +1,44 @@
+{
+	"topics": {
+		"general": "General",
+		"desire": "Desire",
+		"couple_connection": "Relationship connection",
+		"self_connection": "Self connection",
+		"communication": "Communication",
+		"body_confidence": "Body",
+		"routine": "Routine",
+		"curiosity": "Curiosity",
+		"jealousy": "Jealousy",
+		"boundaries": "Boundaries",
+		"pleasure": "Pleasure",
+		"menopause": "Menopause",
+		"erectile_dysfunction": "Erection",
+		"education": "Sexual education"
+	},
+	"library_sections": {
+		"tips_educacion_sexual": {
+			"title": "Sexual education tips",
+			"description": "Articles, videos and guides by audience: men, women, couples, teens and mature adults."
+		},
+		"te_recomiendo": {
+			"title": "My recommendations",
+			"description": "Books, films and podcasts selected by Flavia."
+		},
+		"lo_mas_hablado": {
+			"title": "Most discussed",
+			"description": "Flavia's expert perspective on the topics people are talking about most right now."
+		},
+		"te_ha_pasado": {
+			"title": "Has this happened to you?",
+			"description": "Real-life scenarios with Flavia's guidance. Stories that resonate."
+		},
+		"quickly": {
+			"title": "QuicKly",
+			"description": "Quick questions, direct answers. What you've always wanted to know."
+		},
+		"emocionalmente": {
+			"title": "Emotionally speaking",
+			"description": "Emotions, conflict and mental health in intimacy."
+		}
+	}
+}

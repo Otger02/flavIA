@@ -3,13 +3,28 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 
 type Step = "email" | "code";
 
+function getLocalizedPathname(pathname: string, locale: string) {
+  if (locale === "en") {
+    return pathname === "/" ? "/en" : `/en${pathname}`;
+  }
+
+  return pathname;
+}
+
+function isSafeRedirectPath(pathname: string | null): pathname is string {
+  return !!pathname && pathname.startsWith("/") && !pathname.startsWith("//");
+}
+
 export default function LoginForm() {
   const router = useRouter();
+  const locale = useLocale();
+  const t = useTranslations("auth");
   const searchParams = useSearchParams();
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
@@ -21,9 +36,9 @@ export default function LoginForm() {
   useEffect(() => {
     const urlError = searchParams.get("error");
     if (urlError) {
-      setError("El enlace ha caducado o no es válido. Solicita uno nuevo.");
+      setError(t("login.errors.expired_link"));
     }
-  }, [searchParams]);
+  }, [searchParams, t]);
 
   async function handleSendCode(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -39,8 +54,8 @@ export default function LoginForm() {
       const isRateLimit = authError.status === 429 || authError.message?.includes("rate");
       setError(
         isRateLimit
-          ? "Demasiados intentos. Espera un par de minutos antes de volver a intentarlo."
-          : "No hemos podido enviarte el código. Revisa tu email e intenta de nuevo.",
+          ? t("login.errors.rate_limit")
+          : t("login.errors.send_code_failed"),
       );
       setLoading(false);
       return;
@@ -63,14 +78,19 @@ export default function LoginForm() {
     });
 
     if (verifyError) {
-      setError("Código incorrecto o expirado. Revisa e intenta de nuevo.");
+      setError(t("login.errors.invalid_code"));
       setCode(["", "", "", "", "", "", "", ""]);
       setLoading(false);
       setTimeout(() => inputRefs.current[0]?.focus(), 50);
       return;
     }
 
-    router.push("/dashboard");
+    const redirectTo = searchParams.get("redirectTo");
+    const dashboardPath = getLocalizedPathname("/dashboard", locale);
+
+    router.push(
+      isSafeRedirectPath(redirectTo) ? redirectTo : dashboardPath,
+    );
   }
 
   function handleCodeChange(index: number, value: string) {
@@ -127,12 +147,12 @@ export default function LoginForm() {
             Flavia
           </Link>
           <h1 className="mt-6 font-[family-name:var(--font-display)] text-4xl leading-tight text-stone-900">
-            Tu espacio empieza aquí
+            {t("login.form.title")}
           </h1>
           <p className="mt-3 text-base leading-7 text-stone-600">
             {step === "email"
-              ? "Entra con tu email. Sin contraseñas, sin complicaciones."
-              : "Introduce el código que te hemos enviado."}
+              ? t("login.form.subtitle_email")
+              : t("login.form.subtitle_code")}
           </p>
         </div>
 
@@ -144,7 +164,9 @@ export default function LoginForm() {
               </svg>
             </div>
             <p className="text-sm text-stone-600">
-              Código enviado a <span className="font-medium text-stone-800">{email}</span>
+              {t.rich("login.form.code_sent", {
+                email: () => <span className="font-medium text-stone-800">{email}</span>,
+              })}
             </p>
 
             <div className="mt-6 flex justify-center gap-2">
@@ -153,6 +175,8 @@ export default function LoginForm() {
                   key={i}
                   ref={(el) => { inputRefs.current[i] = el; }}
                   type="text"
+                  title={t("login.form.digit_title", { index: i + 1 })}
+                  aria-label={t("login.form.digit_label", { index: i + 1 })}
                   inputMode="numeric"
                   autoComplete="one-time-code"
                   maxLength={1}
@@ -171,7 +195,7 @@ export default function LoginForm() {
             ) : null}
 
             {loading ? (
-              <p className="mt-4 text-sm text-stone-500">Verificando...</p>
+              <p className="mt-4 text-sm text-stone-500">{t("login.form.verifying")}</p>
             ) : null}
 
             <button
@@ -183,7 +207,7 @@ export default function LoginForm() {
               }}
               className="mt-6 text-xs text-stone-500 underline underline-offset-2 hover:text-stone-700"
             >
-              Cambiar email
+              {t("login.form.change_email")}
             </button>
           </div>
         ) : (
@@ -192,7 +216,7 @@ export default function LoginForm() {
             className="rounded-[1.5rem] border border-stone-200/60 bg-white/80 p-8 shadow-[0_20px_60px_rgba(180,120,100,0.10)] backdrop-blur"
           >
             <label htmlFor="email" className="block text-sm font-medium text-stone-700">
-              Email
+              {t("login.form.email_label")}
             </label>
             <input
               id="email"
@@ -200,7 +224,7 @@ export default function LoginForm() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="tu@email.com"
+              placeholder={t("login.form.email_placeholder")}
               disabled={loading}
               className="mt-2 w-full rounded-xl border border-stone-300/80 bg-white px-4 py-3 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-rose-300 focus:ring-2 focus:ring-rose-200/50 disabled:opacity-60"
             />
@@ -214,15 +238,15 @@ export default function LoginForm() {
               disabled={loading || !email.trim()}
               className="mt-5 w-full rounded-full bg-gradient-to-r from-rose-400 to-rose-500 px-6 py-3 text-sm font-medium text-white shadow-[0_12px_30px_rgba(220,100,100,0.20)] transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_16px_40px_rgba(220,100,100,0.30)] disabled:opacity-60 disabled:hover:translate-y-0"
             >
-              {loading ? "Enviando..." : "Enviar código"}
+              {loading ? t("login.form.sending") : t("login.form.send_code")}
             </button>
 
             <p className="mt-4 text-center text-xs leading-5 text-stone-400">
-              Si es tu primera vez, revisa también la bandeja de spam.
+              {t("login.form.spam_hint")}
             </p>
 
             <p className="mt-3 text-center text-xs leading-5 text-stone-500">
-              Al continuar aceptas que tus conversaciones se guardan de forma privada para mejorar tu experiencia.
+              {t("login.form.privacy_notice")}
             </p>
           </form>
         )}

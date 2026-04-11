@@ -5,16 +5,22 @@ import {
   COMMUNITY_TOPIC_COLORS,
 } from "@/features/community/constants";
 import type { CommunityTopic } from "@/features/community/constants";
+import { formatDate, formatRelativeTime } from "@/lib/locale";
 
 type ThreadCardProps = {
+  locale: string;
   thread: CommunityThread;
 };
 
-export function ThreadCard({ thread }: ThreadCardProps) {
+export function ThreadCard({ locale, thread }: ThreadCardProps) {
   const topicLabel = thread.topic ? COMMUNITY_TOPIC_LABELS[thread.topic as CommunityTopic] : null;
   const topicColor = thread.topic ? COMMUNITY_TOPIC_COLORS[thread.topic as CommunityTopic] : null;
 
-  const timeAgo = getTimeAgo(thread.last_activity_at);
+  const lastActivity = new Date(thread.last_activity_at);
+  const daysSinceLastActivity = Math.floor((Date.now() - lastActivity.getTime()) / 86400000);
+  const timeAgo = daysSinceLastActivity < 7
+    ? formatRelativeTime(thread.last_activity_at, locale)
+    : formatDate(thread.last_activity_at, locale, { day: "numeric", month: "short" });
   const authorLabel = thread.is_anonymous
     ? "Anonimo"
     : thread.display_name || "Usuaria";
@@ -55,16 +61,4 @@ export function ThreadCard({ thread }: ThreadCardProps) {
       </div>
     </Link>
   );
-}
-
-function getTimeAgo(dateString: string): string {
-  const diff = Date.now() - new Date(dateString).getTime();
-  const minutes = Math.floor(diff / 60000);
-  if (minutes < 1) return "ahora";
-  if (minutes < 60) return `hace ${minutes}m`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `hace ${hours}h`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `hace ${days}d`;
-  return new Date(dateString).toLocaleDateString("es", { day: "numeric", month: "short" });
 }

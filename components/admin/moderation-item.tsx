@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale } from "next-intl";
+
 import { COMMUNITY_TOPIC_LABELS, COMMUNITY_TOPIC_COLORS } from "@/features/community/constants";
 import type { CommunityTopic } from "@/features/community/constants";
+import { formatDate } from "@/lib/locale";
 
 export type ModerationContentType = "thread" | "comment" | "story";
 
@@ -42,6 +45,7 @@ const statusConfig: Record<string, { label: string; bg: string; text: string; bo
 };
 
 export function ModerationItem({ item, onAction }: ModerationItemProps) {
+  const locale = useLocale();
   const [loading, setLoading] = useState<string | null>(null);
   const cfg = statusConfig[item.status] ?? statusConfig.pending;
 
@@ -90,11 +94,7 @@ export function ModerationItem({ item, onAction }: ModerationItemProps) {
         </span>
         <span className="text-xs text-stone-300">&middot;</span>
         <span className="text-xs text-stone-400">
-          {new Date(item.createdAt).toLocaleDateString("es-ES", {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-          })}
+          {formatDate(item.createdAt, locale)}
         </span>
         <span className="font-mono text-[10px] text-stone-300">
           {item.userId.slice(0, 8)}...

@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
+import { NextIntlClientProvider, hasLocale } from "next-intl";
+import { getLocale as getRequestLocale, getMessages } from "next-intl/server";
 import { Fraunces, Inter } from "next/font/google";
 
 import { PostHogProvider } from "@/components/analytics/posthog-provider";
+import { routing } from "@/i18n/routing";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -46,16 +49,31 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
+  params,
 }: Readonly<{
   children: React.ReactNode;
+  params?: Promise<{ locale?: string }>;
 }>) {
+  const [resolvedParams, requestLocale, messages] = await Promise.all([
+    params,
+    getRequestLocale(),
+    getMessages(),
+  ]);
+  const locale = hasLocale(routing.locales, resolvedParams?.locale)
+    ? resolvedParams.locale
+    : hasLocale(routing.locales, requestLocale)
+      ? requestLocale
+      : routing.defaultLocale;
+
   return (
-    <html lang="es" className={`${fraunces.variable} ${inter.variable}`}>
+    <html lang={locale} className={`${fraunces.variable} ${inter.variable}`}>
       <body className="min-h-screen font-[family-name:var(--font-body)] text-stone-950 antialiased">
-        <PostHogProvider />
-        {children}
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <PostHogProvider />
+          {children}
+        </NextIntlClientProvider>
       </body>
     </html>
   );

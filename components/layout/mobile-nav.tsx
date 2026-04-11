@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 type MobileNavLink = {
   href: string;
@@ -15,6 +16,7 @@ type MobileNavProps = {
 };
 
 export function MobileNav({ links, action }: MobileNavProps) {
+  const t = useTranslations("navigation");
   const [open, setOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -63,8 +65,8 @@ export function MobileNav({ links, action }: MobileNavProps) {
         ref={buttonRef}
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        aria-label={open ? "Cerrar menú" : "Abrir menú"}
-        aria-expanded={open}
+        aria-label={open ? t("menu.close") : t("menu.open")}
+        aria-expanded={open ? "true" : "false"}
         className="relative z-50 flex h-10 w-10 items-center justify-center rounded-lg text-stone-600 transition-colors hover:bg-rose-50 hover:text-stone-900"
       >
         <svg
@@ -111,7 +113,7 @@ export function MobileNav({ links, action }: MobileNavProps) {
         {/* Brand header */}
         <div className="border-b border-rose-200/40 px-6 pb-4 pt-8">
           <p className="text-[10px] uppercase tracking-[0.3em] text-stone-400">
-            Acompañamiento íntimo
+            {t("brand.tagline")}
           </p>
           <p className="mt-1 font-[family-name:var(--font-display)] text-xl text-stone-900">
             Flavia

@@ -1,4 +1,9 @@
+"use client";
+
+import { useLocale } from "next-intl";
+
 import type { CommunityComment } from "@/features/community/types";
+import { formatDate } from "@/lib/locale";
 import { ReportButton } from "./report-button";
 
 type CommentItemProps = {
@@ -7,13 +12,14 @@ type CommentItemProps = {
 };
 
 export function CommentItem({ comment, currentUserId }: CommentItemProps) {
+  const locale = useLocale();
   const authorLabel = comment.is_flavia_ai
     ? "Flavia"
     : comment.is_anonymous
       ? "Anonimo"
       : comment.display_name || "Usuaria";
 
-  const date = new Date(comment.created_at).toLocaleDateString("es", {
+  const date = formatDate(comment.created_at, locale, {
     day: "numeric",
     month: "short",
   });

@@ -11,6 +11,7 @@ import { BILLING_FREE_PLAN } from "@/features/billing/constants";
 import { CommunityTabsServer } from "@/components/community/community-tabs";
 import { ThreadList } from "@/components/community/thread-list";
 import { StoryForm } from "@/components/stories/story-form";
+import { formatDate, getLocale } from "@/lib/locale";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,7 @@ export default async function ComunidadPage({ searchParams }: Props) {
   if (!isCommunityEnabled()) notFound();
 
   const params = await searchParams;
+  const locale = await getLocale();
   const tab = params.tab === "historias" ? "historias" : "conversaciones";
   const topicFilter = typeof params.topic === "string" ? params.topic : undefined;
 
@@ -66,7 +68,7 @@ export default async function ComunidadPage({ searchParams }: Props) {
       {tab === "conversaciones" ? (
         <ConversacionesTab topicFilter={topicFilter} isPlus={!!isPlus} user={user} />
       ) : (
-        <HistoriasTab userId={user?.id ?? null} />
+        <HistoriasTab locale={locale} userId={user?.id ?? null} />
       )}
     </div>
   );
@@ -99,7 +101,7 @@ async function ConversacionesTab({
   );
 }
 
-async function HistoriasTab({ userId }: { userId: string | null }) {
+async function HistoriasTab({ locale, userId }: { locale: string; userId: string | null }) {
   const supabase = await createServerSupabaseClient();
 
   const { data: stories } = await supabase
@@ -143,7 +145,7 @@ async function HistoriasTab({ userId }: { userId: string | null }) {
                 <span>{story.is_anonymous ? "Anonimo" : "Usuaria"}</span>
                 <span>&middot;</span>
                 <span>
-                  {new Date(story.created_at).toLocaleDateString("es", {
+                  {formatDate(story.created_at, locale, {
                     day: "numeric",
                     month: "short",
                   })}

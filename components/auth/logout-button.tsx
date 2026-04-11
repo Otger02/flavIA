@@ -1,11 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 
 export function LogoutButton() {
   const router = useRouter();
+  const t = useTranslations("navigation");
 
   async function handleLogout() {
     const supabase = createBrowserSupabaseClient();
@@ -20,7 +22,7 @@ export function LogoutButton() {
       onClick={handleLogout}
       className="text-sm text-stone-400 transition-colors hover:text-stone-700"
     >
-      Salir
+      {t("nav.logout")}
     </button>
   );
 }

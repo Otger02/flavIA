@@ -1,9 +1,11 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 export function RefreshPlanStatusButton() {
+  const t = useTranslations("dashboard");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [justRefreshed, setJustRefreshed] = useState(false);
@@ -24,9 +26,9 @@ export function RefreshPlanStatusButton() {
         disabled={isPending}
         className="rounded-full border border-stone-200/60 bg-white/80 px-4 py-2 text-xs font-medium text-stone-700 transition hover:-translate-y-0.5 hover:bg-stone-50 disabled:opacity-60"
       >
-        {isPending ? "Actualizando..." : "Refrescar estado del plan"}
+        {isPending ? t("account.refresh_plan.loading") : t("account.refresh_plan.idle")}
       </button>
-      {justRefreshed ? <p className="text-xs text-stone-500">Estado refrescado.</p> : null}
+      {justRefreshed ? <p className="text-xs text-stone-500">{t("account.refresh_plan.done")}</p> : null}
     </div>
   );
 }

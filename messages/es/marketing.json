@@ -1,0 +1,115 @@
+{
+	"page": {
+		"title": "Flavia — Tu acompañamiento íntimo",
+		"description": "Habla con Flavia sobre deseo, comunicación, placer y conexión emocional. Un espacio seguro para transformar tu vida íntima."
+	},
+	"hero": {
+		"eyebrow": "Acompañamiento íntimo",
+		"headline_prefix": "No sabes cómo empezar esa conversación.",
+		"headline_highlight": "Flavia sí.",
+		"subline": "Porque no es solo lo que dices. Es cómo lo dices.",
+		"cta_primary_logged_in": "Ir a mi espacio",
+		"cta_primary_logged_out": "Empieza ahora",
+		"cta_secondary": "Ver cómo funciona",
+		"credential": "Sexóloga, escritora y terapeuta con más de 20 años de experiencia",
+		"image_alt": "Flavia Dos Santos sonriendo",
+		"preview_label": "Vista previa",
+		"preview_user": "No sé cómo decirle que ya no me siento igual.",
+		"preview_assistant": "No hace falta que lo digas perfecto. Primero vamos a entender qué ha cambiado para ti."
+	},
+	"how_it_works": {
+		"eyebrow": "Cómo funciona",
+		"title": "Un flujo simple para avanzar de verdad",
+		"steps": {
+			"speak": {
+				"title": "Habla sin filtro",
+				"description": "Empieza desde donde estés: dudas, tensión, bloqueo o ganas de reconectar. Flavia recibe tu contexto sin juicio."
+			},
+			"guidance": {
+				"title": "Flavia te guía",
+				"description": "Te devuelve claridad emocional y estructura la conversación con preguntas y marcos fáciles de aplicar."
+			},
+			"progress": {
+				"title": "Explora y avanza",
+				"description": "Con cada chat conviertes reflexión en pasos concretos para mejorar comunicación, deseo y conexión."
+			}
+		}
+	},
+	"value_props": {
+		"eyebrow": "Por qué Flavia",
+		"title": "Diseñada para conversaciones íntimas útiles",
+		"items": {
+			"context": {
+				"title": "No tienes que explicarte perfecto",
+				"description": "Flavia entiende el contexto."
+			},
+			"movement": {
+				"title": "No te quedas dando vueltas",
+				"description": "Te ayuda a avanzar."
+			},
+			"practical": {
+				"title": "No es teoría",
+				"description": "Son frases y pasos reales."
+			},
+			"personal": {
+				"title": "No es genérico",
+				"description": "Se adapta a ti."
+			}
+		}
+	},
+	"cta_section": {
+		"eyebrow": "Empieza hoy",
+		"title": "Esa conversación que estás evitando... puedes empezarla hoy.",
+		"description": "No necesitas tenerlo claro. Solo empezar.",
+		"cta_logged_in": "Ir a mi espacio",
+		"cta_logged_out": "Probar gratis",
+		"image_alt": "Flavia Dos Santos"
+	},
+	"chat_demo": {
+		"eyebrow": "Demo",
+		"title": "Así es hablar con Flavia",
+		"description": "No es un chatbot típico: Flavia te devuelve contexto, te ayuda a bajar ruido emocional y te propone acciones claras para avanzar conversación a conversación.",
+		"prompt_label": "Prueba con algo como:",
+		"prompt_1": "Siento celos y me bloqueo antes de hablar",
+		"prompt_2": "No sé cómo decir lo que necesito",
+		"prompt_3": "Quiero reconectar con mi pareja",
+		"message_user": "No sé cómo decirle que ya no me siento igual.",
+		"message_assistant": "¿Te da miedo hacerle daño o que todo cambie?"
+	},
+	"topics": {
+		"eyebrow": "Puntos de entrada",
+		"title": "Empieza por lo que te importa hoy",
+		"items": {
+			"jealousy": {
+				"label": "Celos"
+			},
+			"communication": {
+				"label": "Comunicación"
+			},
+			"desire": {
+				"label": "Deseo"
+			},
+			"couple_connection": {
+				"label": "Pareja"
+			},
+			"boundaries": {
+				"label": "Límites"
+			},
+			"pleasure": {
+				"label": "Placer"
+			},
+			"menopause": {
+				"label": "Menopausia"
+			},
+			"education": {
+				"label": "Educación sexual"
+			}
+		},
+		"library_eyebrow": "Explora la biblioteca",
+		"library_title": "Contenido organizado para ti"
+	},
+	"quote": {
+		"text": "La intimidad no empieza cuando se apaga la luz. Empieza en cómo te miran, cómo te preguntan cómo estás.",
+		"attribution": "Flavia Dos Santos"
+	}
+}

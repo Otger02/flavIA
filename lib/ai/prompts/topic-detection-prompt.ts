@@ -1,4 +1,4 @@
-import { CHAT_TOPICS } from "@/features/chat/constants";
+import { ALL_TOPICS } from "@/lib/topic-config";
 import type { ChatMessage } from "@/features/chat/types";
 
 type TopicDetectionPromptParams = {
@@ -21,8 +21,14 @@ export function getTopicDetectionPrompt({ recentMessages }: TopicDetectionPrompt
     `- body_confidence: relación con el cuerpo, imagen corporal, vergüenza, aceptación`,
     `- routine: rutina sexual, monotonía, aburrimiento, novedad`,
     `- curiosity: curiosidad sexual, prácticas, orientación, exploración`,
+    `- jealousy: celos, inseguridad, desconfianza, miedo a perder a la pareja`,
+    `- boundaries: límites, decir que no, culpa por poner límites, espacio personal`,
+    `- pleasure: placer, orgasmo, autoplacer, masturbación, disfrutar del cuerpo`,
+    `- menopause: menopausia, cambios hormonales, resequedad, climaterio, envejecimiento`,
+    `- erectile_dysfunction: erección, disfunción eréctil, pérdida de erección, rendimiento masculino`,
+    `- education: educación sexual, tabúes, mitos, pornografía, hablar con hijos`,
     "",
-    `Solo puedes devolver uno de estos valores: ${CHAT_TOPICS.join(", ")}.`,
+    `Solo puedes devolver uno de estos valores: ${ALL_TOPICS.join(", ")}.`,
     'Devuelve exactamente un token: un tema permitido, o "null" si ninguno es claramente dominante.',
     "No expliques tu respuesta.",
     "",

@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { requireUser } from "@/features/auth/server/require-user";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { ADMIN_EMAILS } from "@/lib/constants";
+import { TOPIC_BADGE_COLORS, getTopicBadgeColor, getTopicTranslationKey } from "@/lib/topic-config";
+import { formatDate, formatRelativeTime, getLocale } from "@/lib/locale";
 
 export const metadata: Metadata = {
   title: "Admin — Panel",
@@ -12,25 +15,6 @@ export const metadata: Metadata = {
 };
 
 export const dynamic = "force-dynamic";
-
-function timeAgo(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const minutes = Math.floor(diff / 60000);
-  if (minutes < 2) return "ahora mismo";
-  if (minutes < 60) return `hace ${minutes} min`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `hace ${hours}h`;
-  const days = Math.floor(hours / 24);
-  return `hace ${days} día${days > 1 ? "s" : ""}`;
-}
-
-function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString("es-ES", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
 
 /** Build an inline SVG sparkline from daily counts */
 function buildSparklinePath(dailyCounts: number[]): { path: string; max: number; points: string } {
@@ -52,23 +36,17 @@ function buildSparklinePath(dailyCounts: number[]): { path: string; max: number;
   return { path, max, points };
 }
 
-const TOPIC_LABELS: Record<string, string> = {
-  desire: "Deseo", communication: "Comunicación", couple_connection: "Pareja",
-  jealousy: "Celos", boundaries: "Límites", pleasure: "Placer",
-  self_connection: "Conexión propia", routine: "Rutina",
-  body_confidence: "Cuerpo", curiosity: "Curiosidad",
-};
-
-const TOPIC_COLORS: Record<string, string> = {
-  desire: "bg-rose-100 text-rose-700", communication: "bg-violet-100 text-violet-700",
-  couple_connection: "bg-pink-100 text-pink-700", jealousy: "bg-amber-100 text-amber-700",
-  boundaries: "bg-sky-100 text-sky-700", pleasure: "bg-fuchsia-100 text-fuchsia-700",
-  self_connection: "bg-teal-100 text-teal-700", routine: "bg-stone-100 text-stone-700",
-  body_confidence: "bg-orange-100 text-orange-700", curiosity: "bg-indigo-100 text-indigo-700",
-};
+const TOPIC_COLORS = TOPIC_BADGE_COLORS;
 
 export default async function AdminPage() {
   const user = await requireUser();
+  const locale = await getLocale();
+  const tShared = await getTranslations("shared");
+
+  const topicLabel = (topic: string) => {
+    const key = getTopicTranslationKey(topic);
+    return key ? tShared(key) : topic;
+  };
 
   if (!user.email || !ADMIN_EMAILS.includes(user.email)) {
     redirect("/dashboard");
@@ -166,7 +144,7 @@ export default async function AdminPage() {
       const d = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
       const key = d.toISOString().slice(0, 10);
       buckets.set(key, 0);
-      dayLabels.push(d.toLocaleDateString("es-ES", { day: "numeric", month: "short" }));
+      dayLabels.push(formatDate(d, locale, { day: "numeric", month: "short" }) ?? "");
     }
     for (const msg of messagesLast30d ?? []) {
       const key = (msg.created_at as string).slice(0, 10);
@@ -298,7 +276,7 @@ export default async function AdminPage() {
             <div key={stat.label} className="rounded-[1.25rem] border border-stone-200/50 bg-white/80 p-4 shadow-[0_4px_16px_rgba(180,120,100,0.04)]">
               <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-stone-400">{stat.label}</p>
               <p className={`mt-1.5 font-[family-name:var(--font-display)] text-2xl ${stat.accent}`}>
-                {stat.value.toLocaleString("es-ES")}
+                {new Intl.NumberFormat(locale === "en" ? "en-US" : "es-ES").format(stat.value)}
               </p>
             </div>
           ))}
@@ -310,7 +288,7 @@ export default async function AdminPage() {
         <div className="flex items-baseline justify-between">
           <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">Mensajes últimos 30 días</p>
           <p className="text-xs text-stone-500">
-            {totalMessagesLast30.toLocaleString("es-ES")} total · {avgPerDay}/día media
+            {new Intl.NumberFormat(locale === "en" ? "en-US" : "es-ES").format(totalMessagesLast30)} total · {avgPerDay}/día media
           </p>
         </div>
         {sparkline.path ? (
@@ -372,8 +350,8 @@ export default async function AdminPage() {
                 const pct = max > 0 ? (count / max) * 100 : 0;
                 return (
                   <div key={topic} className="flex items-center gap-3">
-                    <span className={`w-24 shrink-0 rounded-full px-2.5 py-0.5 text-center text-[11px] font-medium ${TOPIC_COLORS[topic] ?? "bg-stone-100 text-stone-600"}`}>
-                      {TOPIC_LABELS[topic] ?? topic}
+                    <span className={`w-24 shrink-0 rounded-full px-2.5 py-0.5 text-center text-[11px] font-medium ${getTopicBadgeColor(topic)}`}>
+                      {topicLabel(topic)}
                     </span>
                     <div className="flex-1">
                       <div className="h-2 overflow-hidden rounded-full bg-stone-100">
@@ -424,8 +402,8 @@ export default async function AdminPage() {
                           {planLabel}
                         </span>
                       </td>
-                      <td className="py-2.5 pr-4 text-xs text-stone-400">{formatDate(u.created_at as string)}</td>
-                      <td className="py-2.5 text-xs text-stone-400">{timeAgo(u.updated_at as string)}</td>
+                      <td className="py-2.5 pr-4 text-xs text-stone-400">{formatDate(u.created_at as string, locale)}</td>
+                      <td className="py-2.5 text-xs text-stone-400">{formatRelativeTime(u.updated_at as string, locale)}</td>
                     </tr>
                   );
                 })}
@@ -447,8 +425,8 @@ export default async function AdminPage() {
                 <div className="flex items-center gap-3">
                   <span className="font-mono text-[10px] text-stone-300">{(s.user_id as string).slice(0, 8)}</span>
                   {s.active_topic ? (
-                    <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-medium ${TOPIC_COLORS[s.active_topic as string] ?? "bg-stone-100 text-stone-600"}`}>
-                      {TOPIC_LABELS[s.active_topic as string] ?? s.active_topic}
+                    <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-medium ${getTopicBadgeColor(s.active_topic as string)}`}>
+                      {topicLabel(s.active_topic as string)}
                     </span>
                   ) : (
                     <span className="rounded-full bg-stone-50 px-2.5 py-0.5 text-[11px] text-stone-400">
@@ -458,7 +436,7 @@ export default async function AdminPage() {
                 </div>
                 <div className="flex items-center gap-4">
                   <span className="text-xs text-stone-400">{s.message_count} msgs</span>
-                  <span className="text-xs text-stone-400">{timeAgo(s.created_at as string)}</span>
+                  <span className="text-xs text-stone-400">{formatRelativeTime(s.created_at as string, locale)}</span>
                 </div>
               </div>
             ))}

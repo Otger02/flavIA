@@ -1,11 +1,14 @@
 import type { CommunityThread } from "@/features/community/types";
+import { getLocale } from "@/lib/locale";
 import { ThreadCard } from "./thread-card";
 
 type ThreadListProps = {
   threads: CommunityThread[];
 };
 
-export function ThreadList({ threads }: ThreadListProps) {
+export async function ThreadList({ threads }: ThreadListProps) {
+  const locale = await getLocale();
+
   if (threads.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-stone-200/60 bg-white/40 p-10 text-center">
@@ -19,7 +22,7 @@ export function ThreadList({ threads }: ThreadListProps) {
   return (
     <div className="space-y-3">
       {threads.map((thread) => (
-        <ThreadCard key={thread.id} thread={thread} />
+        <ThreadCard key={thread.id} locale={locale} thread={thread} />
       ))}
     </div>
   );

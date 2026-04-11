@@ -1,6 +1,10 @@
+"use client";
+
 import Image from "next/image";
+import { useLocale } from "next-intl";
 
 import type { ChatMessage } from "@/features/chat/types";
+import { formatRelativeTime } from "@/lib/locale";
 
 type ChatMessageItemProps = {
   message: ChatMessage;
@@ -8,21 +12,8 @@ type ChatMessageItemProps = {
   createdAt?: string;
 };
 
-function formatRelativeTime(iso: string): string {
-  const now = Date.now();
-  const then = new Date(iso).getTime();
-  const diffSec = Math.floor((now - then) / 1000);
-
-  if (diffSec < 60) return "ahora";
-  const diffMin = Math.floor(diffSec / 60);
-  if (diffMin < 60) return `hace ${diffMin} min`;
-  const diffH = Math.floor(diffMin / 60);
-  if (diffH < 24) return `hace ${diffH}h`;
-  const diffD = Math.floor(diffH / 24);
-  return `hace ${diffD}d`;
-}
-
 export function ChatMessageItem({ message, streaming, createdAt }: ChatMessageItemProps) {
+  const locale = useLocale();
   const isUser = message.role === "user";
   const isShort = message.content.length < 40;
 
@@ -65,7 +56,7 @@ export function ChatMessageItem({ message, streaming, createdAt }: ChatMessageIt
         {/* Timestamp */}
         {createdAt && (
           <p className={`mt-1 text-[10px] text-stone-400 ${isUser ? "text-right pr-1" : "pl-1"}`}>
-            {formatRelativeTime(createdAt)}
+            {formatRelativeTime(createdAt, locale)}
           </p>
         )}
       </div>

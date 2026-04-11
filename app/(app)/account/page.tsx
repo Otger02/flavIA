@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
 import { BillingReturnNotice } from "@/components/billing/billing-return-notice";
 import { BillingActionButton } from "@/components/billing/billing-action-button";
@@ -8,12 +9,17 @@ import { BILLING_FREE_PLAN, BILLING_PLUS_PRODUCT_NAME } from "@/features/billing
 import { getUserPlan } from "@/features/billing/server/get-user-plan";
 import { getRecentChatSessions } from "@/features/chat/server/get-recent-chat-sessions";
 import { getClickedRecommendations } from "@/features/recommendations/server/get-clicked-recommendations";
+import { getTopicTranslationKey } from "@/lib/topic-config";
+import { formatDate, getLocale } from "@/lib/locale";
 
-export const metadata: Metadata = {
-  title: "Mi Cuenta",
-  description:
-    "Gestiona tu suscripción, revisa tus conversaciones recientes y controla tu cuenta en Flavia.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("dashboard");
+
+  return {
+    title: t("meta.account_title"),
+    description: t("meta.account_description"),
+  };
+}
 
 type AccountPageProps = {
   searchParams: Promise<{
@@ -21,37 +27,26 @@ type AccountPageProps = {
   }>;
 };
 
-function formatDate(value: string | null) {
-  if (!value) {
-    return null;
-  }
-
-  return new Intl.DateTimeFormat("es-ES", {
-    dateStyle: "medium",
-    timeStyle: undefined,
-  }).format(new Date(value));
-}
-
-function formatTopic(topic: string | null) {
+function formatTopic(topic: string | null, noTopicLabel: string, resolveTopicLabel: (topic: string) => string) {
   if (!topic) {
-    return "Sin tema detectado";
+    return noTopicLabel;
   }
 
-  return topic.replaceAll("_", " ");
+  return resolveTopicLabel(topic);
 }
 
-function formatStatus(status: string) {
+function formatStatus(status: string, t: Awaited<ReturnType<typeof getTranslations>>) {
   switch (status) {
     case "active":
-      return "Activa";
+      return t("account.billing.status_labels.active");
     case "trialing":
-      return "En prueba";
+      return t("account.billing.status_labels.trialing");
     case "past_due":
-      return "Pago pendiente";
+      return t("account.billing.status_labels.past_due");
     case "canceled":
-      return "Cancelada";
+      return t("account.billing.status_labels.canceled");
     default:
-      return "Inactiva";
+      return t("account.billing.status_labels.inactive");
   }
 }
 
@@ -67,13 +62,35 @@ function EmptyState({ description, title }: { description: string; title: string
 export default async function AccountPage({ searchParams }: AccountPageProps) {
   const params = await searchParams;
   const user = await requireUser();
+  const locale = await getLocale();
+  const [t, tShared] = await Promise.all([
+    getTranslations("dashboard"),
+    getTranslations("shared"),
+  ]);
+
+  const resolveTopicLabel = (topic: string) => {
+    const key = getTopicTranslationKey(topic);
+    return key ? tShared(key) : topic;
+  };
+
+  const formatPlanCode = (planCode: string) => {
+    switch (planCode) {
+      case BILLING_FREE_PLAN:
+        return t("account.billing.free_code");
+      case "plus":
+        return t("account.billing.plus_code");
+      default:
+        return planCode;
+    }
+  };
+
   const [plan, recentSessions, clickedRecommendations] = await Promise.all([
     getUserPlan({ userId: user.id }),
     getRecentChatSessions({ userId: user.id }),
     getClickedRecommendations({ userId: user.id }),
   ]);
 
-  const renewalDate = formatDate(plan.currentPeriodEnd);
+  const renewalDate = formatDate(plan.currentPeriodEnd, locale, { dateStyle: "medium" });
   const hasBillingAccess = Boolean(plan.stripeCustomerId);
   const checkoutStatus =
     params.checkout === "success" || params.checkout === "cancelled" ? params.checkout : null;
@@ -84,10 +101,10 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
       <BillingReturnNotice status={checkoutStatus} awaitingSync={awaitingSync} />
 
       <div className="space-y-4">
-        <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">Cuenta</p>
-        <h1 className="font-[family-name:var(--font-display)] text-4xl text-stone-900">Tu cuenta en Flavia</h1>
+        <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">{t("account.eyebrow")}</p>
+        <h1 className="font-[family-name:var(--font-display)] text-4xl text-stone-900">{t("account.title")}</h1>
         <p className="max-w-2xl text-base leading-7 text-stone-600">
-          Estado actual, continuidad de conversaciones y señales de actividad reciente en un solo sitio.
+          {t("account.subtitle")}
         </p>
       </div>
 
@@ -95,14 +112,14 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
         <section className="rounded-[2rem] border border-stone-200/50 bg-white/80 p-6 shadow-[0_20px_60px_rgba(180,120,100,0.08)] backdrop-blur">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="space-y-3">
-              <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">Billing</p>
-              <h2 className="font-[family-name:var(--font-display)] text-3xl text-stone-900">{plan.plan === "free" ? "Plan Free" : BILLING_PLUS_PRODUCT_NAME}</h2>
+              <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">{t("account.billing.eyebrow")}</p>
+              <h2 className="font-[family-name:var(--font-display)] text-3xl text-stone-900">{plan.plan === BILLING_FREE_PLAN ? t("account.billing.free_plan") : BILLING_PLUS_PRODUCT_NAME}</h2>
               <div className="flex flex-wrap gap-2">
                 <span className="rounded-full bg-rose-50 px-3 py-1 text-xs font-medium uppercase tracking-[0.15em] text-rose-600">
-                  {formatStatus(plan.status)}
+                  {formatStatus(plan.status, t)}
                 </span>
                 <span className="rounded-full bg-stone-100 px-3 py-1 text-xs uppercase tracking-[0.15em] text-stone-500">
-                  {plan.plan}
+                  {formatPlanCode(plan.plan)}
                 </span>
               </div>
             </div>
@@ -110,8 +127,8 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
               {hasBillingAccess ? (
                 <BillingActionButton
                   mode="manage"
-                  label="Gestionar"
-                  pendingLabel="Abriendo portal..."
+                  label={t("account.billing.manage")}
+                  pendingLabel={t("account.billing.manage_pending")}
                   returnPath="/account"
                   className="rounded-full bg-gradient-to-r from-rose-400 to-rose-500 px-5 py-2.5 text-xs font-medium text-white shadow-[0_8px_20px_rgba(220,100,100,0.20)] transition duration-200 hover:-translate-y-0.5 disabled:opacity-60"
                 />
@@ -122,21 +139,21 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
             <div className="rounded-[1.5rem] border border-rose-200/40 bg-rose-50/50 p-4">
-              <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">Estado de suscripción</p>
-              <p className="mt-3 text-lg font-medium text-stone-900">{formatStatus(plan.status)}</p>
+              <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">{t("account.billing.subscription_status")}</p>
+              <p className="mt-3 text-lg font-medium text-stone-900">{formatStatus(plan.status, t)}</p>
               <p className="mt-2 text-sm leading-6 text-stone-500">
                 {plan.plan === "free"
-                  ? "Estás usando la capa gratuita de Flavia."
-                  : "Tu suscripción está conectada a Stripe y disponible para gestión."}
+                  ? t("account.billing.summary_free")
+                  : t("account.billing.summary_paid")}
               </p>
             </div>
             <div className="rounded-[1.5rem] border border-rose-200/40 bg-rose-50/50 p-4">
-              <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">Próxima renovación</p>
-              <p className="mt-3 text-lg font-medium text-stone-900">{renewalDate ?? "No disponible"}</p>
+              <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">{t("account.billing.renewal")}</p>
+              <p className="mt-3 text-lg font-medium text-stone-900">{renewalDate ?? t("account.summary.not_available")}</p>
               <p className="mt-2 text-sm leading-6 text-stone-500">
                 {renewalDate
-                  ? "Fecha sincronizada desde la suscripción actual."
-                  : "Aparecerá aquí cuando exista un ciclo activo o en prueba."}
+                  ? t("account.billing.renewal_synced")
+                  : t("account.billing.renewal_missing")}
               </p>
             </div>
           </div>
@@ -144,31 +161,31 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
           {!hasBillingAccess ? (
             <div className="mt-6 rounded-[1.5rem] border border-stone-200/50 bg-stone-50/50 p-4 text-sm leading-6 text-stone-600">
               {awaitingSync
-                ? "Tu pago ya ha vuelto de Stripe. Estamos esperando la sincronización final de la suscripción para habilitar el portal de billing."
-                : "Todavía no hay un portal de billing asociado a esta cuenta. Cuando actives un plan de pago, podrás gestionarlo desde aquí."}
+                ? t("account.billing.portal_missing_sync")
+                : t("account.billing.portal_missing")}
             </div>
           ) : null}
 
           {awaitingSync ? (
             <p className="mt-4 text-sm text-stone-500">
-              Si no ves el cambio inmediatamente, usa Refrescar estado del plan mientras Stripe termina de propagar el webhook.
+              {t("account.billing.awaiting_sync")}
             </p>
           ) : null}
         </section>
 
         <section className="rounded-[2rem] border border-stone-200/50 bg-gradient-to-b from-white/90 to-rose-50/30 p-6 shadow-[0_16px_50px_rgba(180,120,100,0.06)]">
-          <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">Resumen</p>
+          <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">{t("account.summary.eyebrow")}</p>
           <div className="mt-6 space-y-4">
             <div>
-              <p className="text-sm text-stone-500">Email</p>
-              <p className="mt-1 text-base text-stone-900">{user.email ?? "No disponible"}</p>
+              <p className="text-sm text-stone-500">{t("account.summary.email")}</p>
+              <p className="mt-1 text-base text-stone-900">{user.email ?? t("account.summary.not_available")}</p>
             </div>
             <div>
-              <p className="text-sm text-stone-500">Conversaciones recientes</p>
+              <p className="text-sm text-stone-500">{t("account.summary.conversations")}</p>
               <p className="mt-1 font-[family-name:var(--font-display)] text-3xl text-stone-900">{recentSessions.length}</p>
             </div>
             <div>
-              <p className="text-sm text-stone-500">Recomendaciones clicadas</p>
+              <p className="text-sm text-stone-500">{t("account.summary.recommendations")}</p>
               <p className="mt-1 font-[family-name:var(--font-display)] text-3xl text-stone-900">{clickedRecommendations.length}</p>
             </div>
           </div>
@@ -178,14 +195,14 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
       <div className="grid gap-6 lg:grid-cols-2">
         <section className="rounded-[2rem] border border-stone-200/50 bg-white/80 p-6 shadow-[0_16px_50px_rgba(180,120,100,0.06)] backdrop-blur">
           <div className="mb-5">
-            <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">Últimas conversaciones</p>
-            <h2 className="mt-3 font-[family-name:var(--font-display)] text-2xl text-stone-900">Continuidad del chat</h2>
+            <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">{t("account.chat.eyebrow")}</p>
+            <h2 className="mt-3 font-[family-name:var(--font-display)] text-2xl text-stone-900">{t("account.chat.title")}</h2>
           </div>
 
           {recentSessions.length === 0 ? (
             <EmptyState
-              title="Aún no hay conversaciones"
-              description="Cuando empieces a usar el chat, aquí verás tus sesiones recientes con tema detectado y volumen de mensajes."
+              title={t("account.chat.empty_title")}
+              description={t("account.chat.empty_description")}
             />
           ) : (
             <div className="space-y-3">
@@ -193,11 +210,11 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                 <article key={session.id} className="rounded-[1.25rem] border border-stone-200/50 bg-white/60 p-4 transition-colors hover:bg-rose-50/40">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <p className="text-sm font-medium text-stone-900">{formatTopic(session.activeTopic)}</p>
-                      <p className="mt-1 text-xs text-stone-400">{formatDate(session.createdAt) ?? "Sin fecha"}</p>
+                      <p className="text-sm font-medium text-stone-900">{formatTopic(session.activeTopic, t("account.chat.no_topic"), resolveTopicLabel)}</p>
+                      <p className="mt-1 text-xs text-stone-400">{formatDate(session.createdAt, locale) ?? t("account.chat.no_date")}</p>
                     </div>
                     <span className="rounded-full bg-rose-50 px-3 py-1 text-[11px] font-medium text-rose-600">
-                      {session.messageCount} mensajes
+                      {t("account.chat.message_count", { count: session.messageCount })}
                     </span>
                   </div>
                 </article>
@@ -208,14 +225,14 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
 
         <section className="rounded-[2rem] border border-stone-200/50 bg-white/80 p-6 shadow-[0_16px_50px_rgba(180,120,100,0.06)] backdrop-blur">
           <div className="mb-5">
-            <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">Interacciones</p>
-            <h2 className="mt-3 font-[family-name:var(--font-display)] text-2xl text-stone-900">Recomendaciones abiertas</h2>
+            <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">{t("account.interactions.eyebrow")}</p>
+            <h2 className="mt-3 font-[family-name:var(--font-display)] text-2xl text-stone-900">{t("account.interactions.title")}</h2>
           </div>
 
           {clickedRecommendations.length === 0 ? (
             <EmptyState
-              title="Sin clics todavía"
-              description="Cuando abras recomendaciones desde el chat, este historial te ayudará a retomar contenido y productos que ya te interesaron."
+              title={t("account.interactions.empty_title")}
+              description={t("account.interactions.empty_description")}
             />
           ) : (
             <div className="space-y-3">
@@ -224,7 +241,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="text-sm font-medium text-stone-900">{recommendation.title}</p>
-                      <p className="mt-1 text-xs text-stone-400">{formatDate(recommendation.clickedAt) ?? "Sin fecha"}</p>
+                      <p className="mt-1 text-xs text-stone-400">{formatDate(recommendation.clickedAt, locale) ?? t("account.interactions.no_date")}</p>
                     </div>
                     <span className="rounded-full bg-rose-50 px-3 py-1 text-[11px] font-medium text-rose-600">
                       {recommendation.type}

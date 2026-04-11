@@ -22,6 +22,9 @@ const TOPIC_OPENERS: Record<string, string> = {
   jealousy: "Los celos me están afectando y no sé cómo manejarlos.",
   curiosity: "Tengo curiosidad por explorar cosas nuevas pero no sé por dónde empezar.",
   body_confidence: "Me cuesta sentirme cómoda con mi cuerpo y eso afecta mi intimidad.",
+  menopause: "Estoy pasando por la menopausia y noto cambios que me preocupan.",
+  erectile_dysfunction: "He tenido problemas con la erección y no sé cómo manejarlo.",
+  education: "Quiero entender mejor la sexualidad. Siento que me falta educación sexual.",
 };
 
 type ChatShellProps = {

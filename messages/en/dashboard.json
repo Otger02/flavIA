@@ -1,0 +1,142 @@
+{
+	"meta": {
+		"dashboard_title": "My Space",
+		"dashboard_description": "Your personal Flavia space. Pick conversations back up, follow your emotional progress and discover recommended content.",
+		"account_title": "My Account",
+		"account_description": "Manage your subscription, review recent conversations and keep track of your Flavia account."
+	},
+	"greeting": {
+		"morning": "Good morning",
+		"afternoon": "Good afternoon",
+		"evening": "Good evening",
+		"returning_subtitle": "What do you need today?",
+		"first_subtitle": "Welcome. This is your space.",
+		"cta": "Talk to Flavia"
+	},
+	"quotes": {
+		"attribution": "Flavia Dos Santos",
+		"items": [
+			"What isn't spoken about doesn't exist.",
+			"Desire is like a muscle: the more you exercise it, the stronger it gets.",
+			"Intimacy doesn't begin when the lights go out. It begins in the way someone looks at you.",
+			"There isn't one correct way to be a woman in bed. There are as many ways as there are women.",
+			"Setting a boundary doesn't make you cold. It makes you clear.",
+			"Sexuality is like LEGO: we never build it the same way twice.",
+			"Foreplay begins when the sexual encounter ends.",
+			"You have to deconstruct yourself in order to build yourself.",
+			"Happiness isn't euphoria. Happiness is another word for calm.",
+			"A woman who frees herself frees other women."
+		]
+	},
+	"sections": {
+		"resume_conversation": "Resume your conversation",
+		"continue": "Continue",
+		"new_session": "New session",
+		"plan": "Your plan",
+		"free_plan": "Free",
+		"free_plan_description": "You have limited messages per session.",
+		"upgrade": "Get Plus",
+		"plus": "Flavia Plus",
+		"active": "Active",
+		"manage": "Manage",
+		"for_you": "For you right now",
+		"for_you_topic": "Related to what you're working through: {topic}",
+		"for_you_default": "Library pieces to keep exploring",
+		"favorites": "Your favorites",
+		"conversations": "Your conversations",
+		"conversation_count": "{count, plural, one {# message} other {# messages}}",
+		"resume_action": "Resume",
+		"first_conversation": "Start your first conversation",
+		"first_conversation_description": "You can talk about anything. No judgment, no rush. Flavia is with you from the very first message.",
+		"choose_topic": "Or choose a topic",
+		"choose_topic_description": "If you don't know where to begin, choose what resonates most with you",
+		"for_starters": "To begin",
+		"for_starters_description": "Library pieces to get to know Flavia",
+		"upgrade_title": "Unlimited conversations",
+		"upgrade_description": "Get access to all premium content and chat with Flavia whenever you need.",
+		"view_plans": "View plans",
+		"summary": "Session summary",
+		"summary_ready": "Your session summary",
+		"summary_description": "Generate a summary of your latest conversation with Flavia.",
+		"summary_generate": "View summary",
+		"summary_generating": "Generating...",
+		"summary_email_send": "Send to my email",
+		"summary_email_sending": "Sending...",
+		"summary_email_sent": "Summary sent to your email.",
+		"summary_email_error": "We couldn't send the email."
+	},
+	"progress": {
+		"eyebrow": "Your process",
+		"first_step": "You've taken the first step. That's already brave.",
+		"habit": "You've had {count} conversations. You're building a self-care habit.",
+		"commitment": "You've had {count} conversations. That says a lot about your commitment to yourself.",
+		"dominant_topic": "Your most frequent topic is {topic}. Flavia notices it's important to you."
+	},
+	"starter_cards": {
+		"desire": "I feel like I've lost my desire and I don't know why",
+		"communication": "I don't know how to tell them what I need",
+		"couple_connection": "I feel like we've lost the spark",
+		"pleasure": "I want to explore what I truly enjoy",
+		"boundaries": "It's hard for me to say no without feeling guilty",
+		"routine": "Everything feels repetitive and I want to change it",
+		"menopause": "I'm going through hormonal changes and I notice they affect my intimacy",
+		"education": "I want to understand sexuality better without taboos"
+	},
+	"account": {
+		"eyebrow": "Account",
+		"title": "Your Flavia account",
+		"subtitle": "Your current status, conversation continuity and recent activity signals in one place.",
+		"billing": {
+			"eyebrow": "Billing",
+			"free_plan": "Free plan",
+			"manage": "Manage",
+			"manage_pending": "Opening portal...",
+			"subscription_status": "Subscription status",
+			"renewal": "Next renewal",
+			"status_labels": {
+				"active": "Active",
+				"trialing": "Trial",
+				"past_due": "Payment due",
+				"canceled": "Canceled",
+				"inactive": "Inactive"
+			},
+			"summary_free": "You're using Flavia's free tier.",
+			"summary_paid": "Your subscription is connected to Stripe and ready to manage.",
+			"renewal_synced": "This date is synced from your current subscription.",
+			"renewal_missing": "It will appear here once there is an active or trial cycle.",
+			"portal_missing_sync": "Your payment has already returned from Stripe. We're waiting for the final subscription sync before enabling the billing portal.",
+			"portal_missing": "There isn't a billing portal linked to this account yet. Once you activate a paid plan, you'll be able to manage it here.",
+			"awaiting_sync": "If you don't see the change right away, use Refresh plan status while Stripe finishes propagating the webhook.",
+			"free_code": "free",
+			"plus_code": "plus"
+		},
+		"refresh_plan": {
+			"idle": "Refresh plan status",
+			"loading": "Refreshing...",
+			"done": "Plan status refreshed."
+		},
+		"summary": {
+			"eyebrow": "Summary",
+			"email": "Email",
+			"conversations": "Recent conversations",
+			"recommendations": "Clicked recommendations",
+			"not_available": "Not available"
+		},
+		"chat": {
+			"eyebrow": "Latest conversations",
+			"title": "Chat continuity",
+			"empty_title": "No conversations yet",
+			"empty_description": "Once you start using chat, you'll see your recent sessions here with the detected topic and message volume.",
+			"no_topic": "No topic detected",
+			"no_date": "No date available",
+			"message_count": "{count, plural, one {# message} other {# messages}}"
+		},
+		"interactions": {
+			"eyebrow": "Interactions",
+			"title": "Opened recommendations",
+			"empty_title": "No clicks yet",
+			"empty_description": "When you open recommendations from chat, this history will help you return to content and products that already caught your attention.",
+			"no_date": "No date available"
+		}
+	}
+}

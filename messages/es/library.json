@@ -1,0 +1,69 @@
+{
+	"meta": {
+		"title": "Biblioteca",
+		"description": "Videos, artículos y guiones de Flavia Dos Santos sobre deseo, comunicación en pareja, placer y conexión emocional."
+	},
+	"listing": {
+		"eyebrow": "Biblioteca",
+		"title": "Biblioteca editorial para conversaciones reales",
+		"fallback_title": "Biblioteca",
+		"subtitle": "Recursos pensados para ayudarte a entender, nombrar y mover conversaciones difíciles.",
+		"filters": {
+			"back": "← Secciones",
+			"by_topic": "Explora por tema",
+			"all_topics": "Todos",
+			"by_format": "Explora por formato",
+			"all_formats": "Todo"
+		},
+		"empty_state": "No hay piezas para esta combinación todavía. Prueba otro tema o formato para explorar la biblioteca.",
+		"format_labels": {
+			"article": "Artículo",
+			"audio": "Audio",
+			"guide": "Guía",
+			"faq": "FAQ",
+			"script": "Guión",
+			"video": "Video",
+			"book_recommendation": "Recomendación de libro"
+		},
+		"section_labels": {},
+		"source_fallback": "Biblioteca Flavia",
+		"excerpt_fallback": "Todavía no hay extracto.",
+		"video_badge": "Video",
+		"view_item": "Ver pieza",
+		"read_item": "Leer pieza"
+	},
+	"item": {
+		"premium_badge": "Premium",
+		"back": "← Volver a la biblioteca",
+		"not_found": "Contenido no encontrado",
+		"body_empty": "Esta pieza todavía no tiene contenido.",
+		"chat_recommended_badge": "Recomendable en chat",
+		"paywall": {
+			"title": "Este contenido es exclusivo para suscriptoras",
+			"description": "Con Flavia Plus tienes acceso a toda la biblioteca, recomendaciones personalizadas y conversaciones ilimitadas.",
+			"subscribe": "Quiero Flavia Plus",
+			"login": "Entra para suscribirte",
+			"account_prompt": "¿Ya tienes cuenta?",
+			"login_link": "Inicia sesión"
+		},
+		"cta": {
+			"eyebrow": "¿Quieres hablar de esto?",
+			"description": "Si este tema te ha removido algo, Flavia puede ayudarte a profundizar.",
+			"logged_in": "Hablar con Flavia",
+			"logged_out": "Entra para hablar con Flavia"
+		},
+		"related": {
+			"eyebrow": "Relacionado",
+			"title": "Sigue explorando este tema",
+			"view_video": "Ver recurso",
+			"view_default": "Abrir recurso"
+		},
+		"next_step": {
+			"eyebrow": "Siguiente paso",
+			"title": "Si quieres ir más a fondo"
+		},
+		"meta": {
+			"default_description": "Explora este contenido de la biblioteca de Flavia Dos Santos sobre bienestar íntimo y emocional."
+		}
+	}
+}

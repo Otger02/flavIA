@@ -1,0 +1,21 @@
+{
+	"brand": {
+		"tagline": "Acompañamiento íntimo"
+	},
+	"menu": {
+		"open": "Abrir menú",
+		"close": "Cerrar menú"
+	},
+	"nav": {
+		"dashboard": "Mi espacio",
+		"chat": "Chat",
+		"library": "Biblioteca",
+		"plans": "Planes",
+		"community": "Comunidad",
+		"stories": "Historias",
+		"account": "Cuenta",
+		"login": "Entrar",
+		"logout": "Salir",
+		"admin": "Admin"
+	}
+}

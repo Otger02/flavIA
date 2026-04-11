@@ -1,0 +1,62 @@
+{
+	"plans": {
+		"page_title": "Plans",
+		"page_description": "Start free or unlock unlimited conversations with Flavia Plus. Choose the plan that feels right for you.",
+		"og_title": "Plans — Flavia",
+		"image_alt": "Flavia",
+		"eyebrow": "An investment in yourself",
+		"headline": "A space that supports the way you care for your relationships",
+		"subline": "Start free. When you feel you need more depth, Flavia Plus opens the door without limits.",
+		"free": {
+			"eyebrow": "Free",
+			"title": "To get started",
+			"price": "$0",
+			"description": "A few first messages so you can feel what it's like to talk with Flavia. No commitment, no card required.",
+			"feature_1": "Limited conversations per session",
+			"feature_2": "Access to the public library",
+			"feature_3": "Personalized recommendations",
+			"cta": "Start free"
+		},
+		"plus": {
+			"badge": "Recommended",
+			"eyebrow": "Unlimited",
+			"price_amount": "50.000",
+			"price_suffix": "COP/month",
+			"description": "Unlimited conversations. Premium content. All the support you need, without limits.",
+			"included_prefix": "Everything in Free, plus:",
+			"feature_1": "Unlimited chat with Flavia",
+			"feature_2": "Exclusive library content",
+			"feature_3": "Memory across sessions",
+			"feature_4": "Priority support",
+			"manage_label": "Manage subscription",
+			"manage_pending": "Opening portal...",
+			"checkout_label": "I want Flavia Plus",
+			"checkout_pending": "Preparing...",
+			"login_prefix": "Log in first",
+			"login_suffix": "to subscribe.",
+			"awaiting_sync": "Stripe has already confirmed your payment. Your access will update in a few seconds."
+		}
+	},
+	"upgrade_banner": {
+		"title": "Unlock Flavia Plus",
+		"description": "Unlimited conversations and premium content.",
+		"cta": "See plans",
+		"close": "Close"
+	},
+	"billing_return": {
+		"success_title": "Payment completed",
+		"success_syncing": "We're confirming your plan with Stripe and updating your account status. If it takes a few seconds, this screen will refresh on its own.",
+		"success_ready": "Your subscription is already active and your account status has been updated.",
+		"cancelled_title": "Checkout cancelled",
+		"cancelled_description": "No charge was made. You can try again whenever you want from this same screen."
+	},
+	"paywall_card": {
+		"default_message": "You've reached this session's free limit.",
+		"eyebrow": "Limit reached",
+		"title": "Keep talking with Flavia Plus",
+		"cta": "I want Flavia Plus"
+	},
+	"upgrade_notice": {
+		"default_message": "You've reached the free limit"
+	}
+}

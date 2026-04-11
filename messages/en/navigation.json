@@ -1,0 +1,21 @@
+{
+	"brand": {
+		"tagline": "Intimate support"
+	},
+	"menu": {
+		"open": "Open menu",
+		"close": "Close menu"
+	},
+	"nav": {
+		"dashboard": "My space",
+		"chat": "Chat",
+		"library": "Library",
+		"plans": "Plans",
+		"community": "Community",
+		"stories": "Stories",
+		"account": "Account",
+		"login": "Log in",
+		"logout": "Log out",
+		"admin": "Admin"
+	}
+}

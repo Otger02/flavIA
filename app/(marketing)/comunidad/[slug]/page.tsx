@@ -15,6 +15,7 @@ import {
   COMMUNITY_TOPIC_COLORS,
 } from "@/features/community/constants";
 import type { CommunityTopic } from "@/features/community/constants";
+import { formatDate, getLocale } from "@/lib/locale";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +37,7 @@ export default async function ThreadDetailPage({ params }: Props) {
   if (!isCommunityEnabled()) notFound();
 
   const { slug } = await params;
+  const locale = await getLocale();
   const thread = await getThreadBySlug(slug);
   if (!thread) notFound();
 
@@ -57,7 +59,7 @@ export default async function ThreadDetailPage({ params }: Props) {
     ? "Anonimo"
     : thread.display_name || "Usuaria";
 
-  const date = new Date(thread.created_at).toLocaleDateString("es", {
+  const date = formatDate(thread.created_at, locale, {
     day: "numeric",
     month: "long",
     year: "numeric",

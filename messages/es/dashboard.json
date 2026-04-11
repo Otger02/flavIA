@@ -1,0 +1,142 @@
+{
+	"meta": {
+		"dashboard_title": "Mi Espacio",
+		"dashboard_description": "Tu espacio personal en Flavia. Retoma conversaciones, revisa tu progreso emocional y descubre contenido recomendado.",
+		"account_title": "Mi Cuenta",
+		"account_description": "Gestiona tu suscripción, revisa tus conversaciones recientes y controla tu cuenta en Flavia."
+	},
+	"greeting": {
+		"morning": "Buenos días",
+		"afternoon": "Buenas tardes",
+		"evening": "Buenas noches",
+		"returning_subtitle": "¿Qué necesitas hoy?",
+		"first_subtitle": "Bienvenida. Este es tu lugar.",
+		"cta": "Hablar con Flavia"
+	},
+	"quotes": {
+		"attribution": "Flavia Dos Santos",
+		"items": [
+			"Lo que no se habla no existe.",
+			"El deseo es como un músculo: si lo ejercitas, se hace cada vez más fuerte.",
+			"La intimidad no empieza cuando se apaga la luz. Empieza en cómo te miran.",
+			"No hay una forma correcta de ser mujer en la cama. Hay tantas formas como mujeres.",
+			"Poner un límite no te vuelve fría. Te vuelve clara.",
+			"La sexualidad es como LEGO: nunca la armamos de la misma manera.",
+			"Los preliminares arrancan cuando termina la relación sexual.",
+			"Hay que deconstruirse para construir.",
+			"La felicidad no es euforia. La felicidad es sinónimo de tranquilidad.",
+			"Una mujer que se libera, libera a otras mujeres."
+		]
+	},
+	"sections": {
+		"resume_conversation": "Retoma tu conversación",
+		"continue": "Continuar",
+		"new_session": "Nueva sesión",
+		"plan": "Tu plan",
+		"free_plan": "Gratis",
+		"free_plan_description": "Tienes mensajes limitados por sesión.",
+		"upgrade": "Accede a Plus",
+		"plus": "Flavia Plus",
+		"active": "Activo",
+		"manage": "Gestionar",
+		"for_you": "Para ti ahora",
+		"for_you_topic": "Relacionado con lo que estás trabajando: {topic}",
+		"for_you_default": "Piezas de la biblioteca para seguir explorando",
+		"favorites": "Tus favoritos",
+		"conversations": "Tus conversaciones",
+		"conversation_count": "{count, plural, one {# mensaje} other {# mensajes}}",
+		"resume_action": "Retomar",
+		"first_conversation": "Empieza tu primera conversación",
+		"first_conversation_description": "Puedes hablar de cualquier cosa. Sin juicio, sin prisa. Flavia te acompaña desde el primer mensaje.",
+		"choose_topic": "O elige un tema",
+		"choose_topic_description": "Si no sabes por dónde empezar, elige lo que más te resuene",
+		"for_starters": "Para empezar",
+		"for_starters_description": "Piezas de la biblioteca para conocer a Flavia",
+		"upgrade_title": "Conversaciones sin límite",
+		"upgrade_description": "Accede a todo el contenido premium y chatea con Flavia cuanto necesites.",
+		"view_plans": "Ver planes",
+		"summary": "Resumen de sesión",
+		"summary_ready": "Resumen de tu sesión",
+		"summary_description": "Genera un resumen de tu última conversación con Flavia.",
+		"summary_generate": "Ver resumen",
+		"summary_generating": "Generando...",
+		"summary_email_send": "Enviar a mi email",
+		"summary_email_sending": "Enviando...",
+		"summary_email_sent": "Resumen enviado a tu email.",
+		"summary_email_error": "No se pudo enviar el email."
+	},
+	"progress": {
+		"eyebrow": "Tu proceso",
+		"first_step": "Has dado el primer paso. Eso ya es valiente.",
+		"habit": "Llevas {count} conversaciones. Estás construyendo un hábito de autocuidado.",
+		"commitment": "Llevas {count} conversaciones. Eso dice mucho de tu compromiso contigo.",
+		"dominant_topic": "Tu tema más frecuente es {topic}. Flavia nota que es importante para ti."
+	},
+	"starter_cards": {
+		"desire": "Siento que he perdido las ganas y no sé por qué",
+		"communication": "No sé cómo decirle lo que necesito",
+		"couple_connection": "Siento que hemos perdido la chispa",
+		"pleasure": "Quiero explorar qué me gusta de verdad",
+		"boundaries": "Me cuesta decir que no sin sentirme culpable",
+		"routine": "Todo se siente repetitivo y quiero cambiarlo",
+		"menopause": "Estoy pasando por cambios hormonales y noto que afectan mi intimidad",
+		"education": "Quiero entender mejor la sexualidad sin tabúes"
+	},
+	"account": {
+		"eyebrow": "Cuenta",
+		"title": "Tu cuenta en Flavia",
+		"subtitle": "Estado actual, continuidad de conversaciones y señales de actividad reciente en un solo sitio.",
+		"billing": {
+			"eyebrow": "Billing",
+			"free_plan": "Plan Gratis",
+			"manage": "Gestionar",
+			"manage_pending": "Abriendo portal...",
+			"subscription_status": "Estado de suscripción",
+			"renewal": "Próxima renovación",
+			"status_labels": {
+				"active": "Activa",
+				"trialing": "En prueba",
+				"past_due": "Pago pendiente",
+				"canceled": "Cancelada",
+				"inactive": "Inactiva"
+			},
+			"summary_free": "Estás usando la capa gratuita de Flavia.",
+			"summary_paid": "Tu suscripción está conectada a Stripe y disponible para gestión.",
+			"renewal_synced": "Fecha sincronizada desde la suscripción actual.",
+			"renewal_missing": "Aparecerá aquí cuando exista un ciclo activo o en prueba.",
+			"portal_missing_sync": "Tu pago ya ha vuelto de Stripe. Estamos esperando la sincronización final de la suscripción para habilitar el portal de billing.",
+			"portal_missing": "Todavía no hay un portal de billing asociado a esta cuenta. Cuando actives un plan de pago, podrás gestionarlo desde aquí.",
+			"awaiting_sync": "Si no ves el cambio inmediatamente, usa Refrescar estado del plan mientras Stripe termina de propagar el webhook.",
+			"free_code": "free",
+			"plus_code": "plus"
+		},
+		"refresh_plan": {
+			"idle": "Refrescar estado del plan",
+			"loading": "Actualizando...",
+			"done": "Estado refrescado."
+		},
+		"summary": {
+			"eyebrow": "Resumen",
+			"email": "Email",
+			"conversations": "Conversaciones recientes",
+			"recommendations": "Recomendaciones clicadas",
+			"not_available": "No disponible"
+		},
+		"chat": {
+			"eyebrow": "Últimas conversaciones",
+			"title": "Continuidad del chat",
+			"empty_title": "Aún no hay conversaciones",
+			"empty_description": "Cuando empieces a usar el chat, aquí verás tus sesiones recientes con tema detectado y volumen de mensajes.",
+			"no_topic": "Sin tema detectado",
+			"no_date": "Sin fecha",
+			"message_count": "{count, plural, one {# mensaje} other {# mensajes}}"
+		},
+		"interactions": {
+			"eyebrow": "Interacciones",
+			"title": "Recomendaciones abiertas",
+			"empty_title": "Sin clics todavía",
+			"empty_description": "Cuando abras recomendaciones desde el chat, este historial te ayudará a retomar contenido y productos que ya te interesaron.",
+			"no_date": "Sin fecha"
+		}
+	}
+}

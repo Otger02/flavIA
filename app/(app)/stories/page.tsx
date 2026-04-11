@@ -5,6 +5,7 @@ import { requireUser } from "@/features/auth/server/require-user";
 import { StoryForm } from "@/components/stories/story-form";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { isCommunityEnabled } from "@/lib/feature-flags";
+import { formatDate, getLocale } from "@/lib/locale";
 
 export const metadata: Metadata = {
   title: "Historias Reales",
@@ -18,6 +19,7 @@ export default async function StoriesPage() {
   }
 
   const user = await requireUser();
+  const locale = await getLocale();
   const supabase = await createServerSupabaseClient();
 
   const { data: stories } = await supabase
@@ -66,7 +68,7 @@ export default async function StoriesPage() {
                   </span>
                   <span className="text-xs text-stone-300">&middot;</span>
                   <span className="text-xs text-stone-400">
-                    {new Date(story.created_at).toLocaleDateString("es-ES", {
+                    {formatDate(story.created_at, locale, {
                       day: "numeric",
                       month: "short",
                     })}

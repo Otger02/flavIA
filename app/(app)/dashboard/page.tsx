@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import { getTranslations } from "next-intl/server";
 
 import { getUser } from "@/features/auth/server/get-user";
 import { getLatestChatSession } from "@/features/chat/server/get-latest-chat-session";
@@ -11,75 +12,54 @@ import { getLibraryItems } from "@/features/library";
 import { getUserFavorites } from "@/features/favorites/server/get-user-favorites";
 import { BILLING_FREE_PLAN } from "@/features/billing/constants";
 import { TopicStarterCards } from "@/components/chat/topic-starter-cards";
+import { TOPIC_BADGE_COLORS, getTopicTranslationKey } from "@/lib/topic-config";
 import { EmotionalProgress } from "@/components/dashboard/emotional-progress";
 import { SessionSummaryCard } from "@/components/dashboard/session-summary-card";
+import { formatRelativeTime, getLocale } from "@/lib/locale";
 
-export const metadata: Metadata = {
-  title: "Mi Espacio",
-  description:
-    "Tu espacio personal en Flavia. Retoma conversaciones, revisa tu progreso emocional y descubre contenido recomendado.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("dashboard");
+
+  return {
+    title: t("meta.dashboard_title"),
+    description: t("meta.dashboard_description"),
+  };
+}
 
 export const dynamic = "force-dynamic";
 
-const TOPIC_LABELS: Record<string, string> = {
-  desire: "Deseo",
-  communication: "Comunicación",
-  couple_connection: "Conexión en pareja",
-  jealousy: "Celos",
-  boundaries: "Límites",
-  pleasure: "Placer",
-  self_connection: "Conexión contigo",
-  routine: "Rutina",
-  body_confidence: "Cuerpo",
-  curiosity: "Curiosidad",
-};
-
-const TOPIC_COLORS: Record<string, string> = {
-  desire: "bg-rose-100 text-rose-700",
-  communication: "bg-violet-100 text-violet-700",
-  couple_connection: "bg-pink-100 text-pink-700",
-  jealousy: "bg-amber-100 text-amber-700",
-  boundaries: "bg-sky-100 text-sky-700",
-  pleasure: "bg-fuchsia-100 text-fuchsia-700",
-  self_connection: "bg-teal-100 text-teal-700",
-  routine: "bg-stone-100 text-stone-700",
-  body_confidence: "bg-orange-100 text-orange-700",
-  curiosity: "bg-indigo-100 text-indigo-700",
-};
-
 function topicColor(topic: string | null): string {
   if (!topic) return "bg-rose-50 text-rose-600";
-  return TOPIC_COLORS[topic] ?? "bg-rose-50 text-rose-600";
+  return TOPIC_BADGE_COLORS[topic as keyof typeof TOPIC_BADGE_COLORS] ?? "bg-rose-50 text-rose-600";
 }
 
-function topicLabel(topic: string | null): string {
-  if (!topic) return "General";
-  return TOPIC_LABELS[topic] ?? topic;
-}
-
-function getGreeting(): { greeting: string; emoji: string } {
+function getGreetingKey(): "morning" | "afternoon" | "evening" {
   const hour = new Date().getHours();
-  if (hour < 12) return { greeting: "Buenos días", emoji: "☀️" };
-  if (hour < 18) return { greeting: "Buenas tardes", emoji: "🌤️" };
-  return { greeting: "Buenas noches", emoji: "🌙" };
-}
-
-function timeAgo(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const minutes = Math.floor(diff / 60000);
-  if (minutes < 60) return `hace ${minutes} min`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `hace ${hours}h`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `hace ${days} día${days > 1 ? "s" : ""}`;
-  const weeks = Math.floor(days / 7);
-  return `hace ${weeks} sem`;
+  if (hour < 12) return "morning";
+  if (hour < 18) return "afternoon";
+  return "evening";
 }
 
 export default async function DashboardPage() {
   const user = await getUser();
   if (!user) return null;
+  const locale = await getLocale();
+  const [t, tShared, tLibrary] = await Promise.all([
+    getTranslations("dashboard"),
+    getTranslations("shared"),
+    getTranslations("library"),
+  ]);
+
+  const topicLabel = (topic: string | null) => {
+    if (!topic) {
+      return tShared("topics.general");
+    }
+
+    const key = getTopicTranslationKey(topic);
+    return key ? tShared(key) : topic;
+  };
+
+  const formatContentType = (contentType: string) => tLibrary(`listing.format_labels.${contentType}`);
 
   const [latestSession, recentSessions, viewer, libraryItems, userFavorites] = await Promise.all([
     getLatestChatSession({ userId: user.id }),
@@ -96,33 +76,49 @@ export default async function DashboardPage() {
   const activeTopic = latestSession?.activeTopic ?? null;
   const hasSessions = recentSessions.length > 0;
   const isFree = !viewer.plan || viewer.plan.plan === BILLING_FREE_PLAN;
-  const { greeting } = getGreeting();
+  const greeting = t(`greeting.${getGreetingKey()}`);
 
   // Cross-reference favorites with library items to get full item data
   const favoriteItemIds = new Set(userFavorites.map((f) => f.itemId));
   const favoriteItems = libraryItems.filter((item) => favoriteItemIds.has(item.id));
 
   // Filter library by active topic if available, fallback to all — exclude favorites to avoid dupes
+  const nonFavoriteItems = libraryItems.filter((item) => !favoriteItemIds.has(item.id));
   const topicItems = activeTopic
-    ? libraryItems.filter((item) => item.topicTags.includes(activeTopic) && !favoriteItemIds.has(item.id))
-    : libraryItems.filter((item) => !favoriteItemIds.has(item.id));
-  const displayItems = (topicItems.length >= 3 ? topicItems : libraryItems.filter((item) => !favoriteItemIds.has(item.id))).slice(0, 3);
+    ? nonFavoriteItems.filter((item) => item.topicTags.includes(activeTopic))
+    : nonFavoriteItems;
+
+  // Prioritize items from thematically relevant sections
+  const sectionPriority: Record<string, string[]> = {
+    desire: ["tips_educacion_sexual", "lo_mas_hablado"],
+    couple_connection: ["te_ha_pasado", "lo_mas_hablado"],
+    communication: ["te_ha_pasado", "emocionalmente"],
+    curiosity: ["quickly", "tips_educacion_sexual"],
+    self_connection: ["emocionalmente", "tips_educacion_sexual"],
+    routine: ["te_ha_pasado", "lo_mas_hablado"],
+    jealousy: ["emocionalmente", "te_ha_pasado"],
+    boundaries: ["emocionalmente", "tips_educacion_sexual"],
+    pleasure: ["tips_educacion_sexual", "lo_mas_hablado"],
+    menopause: ["tips_educacion_sexual", "lo_mas_hablado"],
+    erectile_dysfunction: ["tips_educacion_sexual", "quickly"],
+    education: ["tips_educacion_sexual", "te_recomiendo"],
+    body_image: ["emocionalmente", "tips_educacion_sexual"],
+  };
+  const prioritySections = new Set(activeTopic ? sectionPriority[activeTopic] ?? [] : []);
+  const sortedItems = [...(topicItems.length >= 3 ? topicItems : nonFavoriteItems)].sort((a, b) => {
+    const aInSection = a.sectionTag && prioritySections.has(a.sectionTag) ? 1 : 0;
+    const bInSection = b.sectionTag && prioritySections.has(b.sectionTag) ? 1 : 0;
+    return bInSection - aInSection;
+  });
+  const displayItems = sortedItems.slice(0, 3);
 
   // Pick a daily Flavia quote based on date
-  const FLAVIA_QUOTES = [
-    "Lo que no se habla no existe.",
-    "El deseo es como un músculo — si lo ejercitas, se hace cada vez más fuerte.",
-    "La intimidad no empieza cuando se apaga la luz. Empieza en cómo te miran.",
-    "No hay una forma correcta de ser mujer en la cama. Hay tantas formas como mujeres.",
-    "Poner un límite no te vuelve fría. Te vuelve clara.",
-    "La sexualidad es como LEGO — nunca la armamos de la misma manera.",
-    "Preliminares arrancan cuando uno termina la relación sexual.",
-    "Hay que desconstruirse para construir.",
-    "Felicidad no es euforia. Felicidad es sinónimo de tranquilidad.",
-    "Una mujer que se liberta, liberta a otras mujeres.",
-  ];
-  const dayIndex = Math.floor(Date.now() / 86400000) % FLAVIA_QUOTES.length;
-  const dailyQuote = FLAVIA_QUOTES[dayIndex];
+  const rawQuotes = t.raw("quotes.items");
+  const flaviaQuotes = Array.isArray(rawQuotes)
+    ? rawQuotes.filter((quote): quote is string => typeof quote === "string")
+    : [];
+  const dayIndex = flaviaQuotes.length > 0 ? Math.floor(Date.now() / 86400000) % flaviaQuotes.length : 0;
+  const dailyQuote = flaviaQuotes[dayIndex] ?? "";
 
   return (
     <div className="space-y-8">
@@ -134,15 +130,15 @@ export default async function DashboardPage() {
           </h1>
           <p className="mt-2 text-base leading-7 text-stone-600">
             {hasSessions
-              ? "¿Qué necesitas hoy?"
-              : "Bienvenida. Este es tu lugar."}
+              ? t("greeting.returning_subtitle")
+              : t("greeting.first_subtitle")}
           </p>
         </div>
         <Link
           href="/chat"
           className="hidden shrink-0 rounded-full bg-gradient-to-r from-rose-400 to-rose-500 px-6 py-3 text-sm font-medium text-white shadow-[0_12px_30px_rgba(220,100,100,0.22)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_16px_40px_rgba(220,100,100,0.30)] sm:inline-flex"
         >
-          Hablar con Flavia
+          {t("greeting.cta")}
         </Link>
       </div>
 
@@ -152,7 +148,7 @@ export default async function DashboardPage() {
           &ldquo;{dailyQuote}&rdquo;
         </p>
         <p className="mt-1 text-center text-[10px] font-medium uppercase tracking-[0.2em] text-rose-300">
-          — Flavia Dos Santos
+          — {t("quotes.attribution")}
         </p>
       </div>
 
@@ -166,13 +162,13 @@ export default async function DashboardPage() {
             {/* Resume conversation card */}
             <div className="rounded-[1.5rem] border border-rose-200/50 bg-white/80 p-6 shadow-[0_16px_50px_rgba(180,120,100,0.08)] backdrop-blur">
               <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">
-                Retoma tu conversación
+                {t("sections.resume_conversation")}
               </p>
               <div className="mt-3 flex items-center gap-2">
                 <span className={`rounded-full px-3 py-1 text-xs font-medium ${topicColor(activeTopic)}`}>
                   {topicLabel(activeTopic)}
                 </span>
-                <span className="text-xs text-stone-400">{timeAgo(latestSession!.createdAt)}</span>
+                <span className="text-xs text-stone-400">{formatRelativeTime(latestSession!.createdAt, locale)}</span>
               </div>
               {lastMessage ? (
                 <p className="mt-4 line-clamp-2 text-sm leading-6 text-stone-600 italic">
@@ -184,13 +180,13 @@ export default async function DashboardPage() {
                   href="/chat"
                   className="rounded-full bg-gradient-to-r from-rose-400 to-rose-500 px-5 py-2.5 text-xs font-medium text-white shadow-[0_8px_20px_rgba(220,100,100,0.20)] transition duration-200 hover:-translate-y-0.5"
                 >
-                  Continuar
+                  {t("sections.continue")}
                 </Link>
                 <Link
                   href="/chat"
                   className="rounded-full border border-stone-200/60 bg-white/80 px-5 py-2.5 text-xs font-medium text-stone-700 transition duration-200 hover:-translate-y-0.5 hover:bg-stone-50"
                 >
-                  Nueva sesión
+                  {t("sections.new_session")}
                 </Link>
               </div>
             </div>
@@ -198,41 +194,41 @@ export default async function DashboardPage() {
             {/* Plan card */}
             <div className={`rounded-[1.5rem] border p-6 shadow-[0_16px_50px_rgba(180,120,100,0.06)] backdrop-blur ${isFree ? "border-stone-200/50 bg-white/80" : "border-amber-200/50 bg-gradient-to-br from-amber-50/50 via-white/80 to-rose-50/50"}`}>
               <div className="flex items-center gap-2">
-                <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">Tu plan</p>
+                <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">{t("sections.plan")}</p>
                 {!isFree && (
                   <span className="rounded-full bg-gradient-to-r from-amber-100 to-rose-100 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-rose-600">
-                    Plus
+                    {t("sections.plus")}
                   </span>
                 )}
               </div>
               {isFree ? (
                 <>
-                  <p className="mt-3 font-[family-name:var(--font-display)] text-xl text-stone-900">Gratis</p>
+                  <p className="mt-3 font-[family-name:var(--font-display)] text-xl text-stone-900">{t("sections.free_plan")}</p>
                   <p className="mt-2 text-sm leading-6 text-stone-500">
-                    Tienes mensajes limitados por sesión.
+                    {t("sections.free_plan_description")}
                   </p>
                   <Link
                     href="/plans"
                     className="mt-5 inline-flex rounded-full bg-gradient-to-r from-rose-400 to-rose-500 px-5 py-2.5 text-xs font-medium text-white shadow-[0_8px_20px_rgba(220,100,100,0.20)] transition duration-200 hover:-translate-y-0.5"
                   >
-                    Accede a Plus
+                    {t("sections.upgrade")}
                   </Link>
                 </>
               ) : (
                 <>
                   <p className="mt-3 font-[family-name:var(--font-display)] text-xl text-stone-900">
-                    Flavia Plus
+                    {t("sections.plus")}
                   </p>
                   <p className="mt-1 text-sm font-medium">
                     <span className="bg-gradient-to-r from-amber-500 to-rose-500 bg-clip-text text-transparent">
-                      Activo
+                      {t("sections.active")}
                     </span>
                   </p>
                   <Link
                     href="/account"
                     className="mt-5 inline-flex rounded-full border border-stone-200/60 bg-white/80 px-5 py-2.5 text-xs font-medium text-stone-700 transition hover:bg-stone-50"
                   >
-                    Gestionar
+                    {t("sections.manage")}
                   </Link>
                 </>
               )}
@@ -246,11 +242,11 @@ export default async function DashboardPage() {
 
           {/* For you now */}
           <div className="rounded-[1.5rem] bg-gradient-to-br from-rose-50/30 to-transparent p-6 -mx-2">
-            <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">Para ti ahora</p>
+            <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">{t("sections.for_you")}</p>
             <p className="mt-2 text-sm text-stone-500">
               {activeTopic
-                ? `Relacionado con lo que estás trabajando: ${topicLabel(activeTopic).toLowerCase()}`
-                : "Piezas de la biblioteca para seguir explorando"}
+                ? t("sections.for_you_topic", { topic: topicLabel(activeTopic).toLowerCase() })
+                : t("sections.for_you_default")}
             </p>
             <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {displayItems.map((item) => (
@@ -272,20 +268,20 @@ export default async function DashboardPage() {
                   ) : (
                     <div className="flex aspect-video items-center justify-center bg-gradient-to-br from-rose-50 to-stone-50">
                       <span className="text-xs uppercase tracking-[0.2em] text-rose-300">
-                        {item.contentType}
+                        {formatContentType(item.contentType)}
                       </span>
                     </div>
                   )}
                   <div className="p-4">
                     <p className="text-[10px] uppercase tracking-[0.15em] text-stone-400">
-                      {item.contentType}
+                      {formatContentType(item.contentType)}
                     </p>
                     <h3 className="mt-1.5 font-[family-name:var(--font-display)] text-base text-stone-900">
                       {item.title}
                     </h3>
                     {item.isPremium ? (
                       <span className="mt-2 inline-block rounded-full bg-rose-50 px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.15em] text-rose-500">
-                        Plus
+                        {t("sections.plus")}
                       </span>
                     ) : null}
                   </div>
@@ -298,7 +294,7 @@ export default async function DashboardPage() {
           {favoriteItems.length > 0 ? (
             <div className="rounded-[1.5rem] bg-gradient-to-br from-amber-50/30 via-transparent to-rose-50/20 p-6 -mx-2">
               <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">
-                Tus favoritos
+                {t("sections.favorites")}
               </p>
               <div className="mt-4 flex gap-4 overflow-x-auto pb-2 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0">
                 {favoriteItems.map((item) => (
@@ -320,13 +316,13 @@ export default async function DashboardPage() {
                     ) : (
                       <div className="flex aspect-video items-center justify-center bg-gradient-to-br from-rose-50 to-stone-50">
                         <span className="text-xs uppercase tracking-[0.2em] text-rose-300">
-                          {item.contentType}
+                          {formatContentType(item.contentType)}
                         </span>
                       </div>
                     )}
                     <div className="p-4">
                       <p className="text-[10px] uppercase tracking-[0.15em] text-stone-400">
-                        {item.contentType}
+                        {formatContentType(item.contentType)}
                       </p>
                       <h3 className="mt-1.5 font-[family-name:var(--font-display)] text-base text-stone-900">
                         {item.title}
@@ -342,7 +338,7 @@ export default async function DashboardPage() {
           {recentSessions.length > 1 ? (
             <div>
               <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">
-                Tus conversaciones
+                {t("sections.conversations")}
               </p>
               <div className="mt-3 divide-y divide-stone-200/50 overflow-hidden rounded-[1.25rem] border border-stone-200/50 bg-white/80 shadow-[0_8px_24px_rgba(180,120,100,0.04)]">
                 {recentSessions.map((session) => (
@@ -355,11 +351,11 @@ export default async function DashboardPage() {
                       <span className={`rounded-full px-3 py-1 text-[11px] font-medium ${topicColor(session.activeTopic)}`}>
                         {topicLabel(session.activeTopic)}
                       </span>
-                      <span className="text-xs text-stone-400">{timeAgo(session.createdAt)}</span>
+                      <span className="text-xs text-stone-400">{formatRelativeTime(session.createdAt, locale)}</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-xs text-stone-400">{session.messageCount} mensajes</span>
-                      <span className="text-xs font-medium text-rose-500">Retomar</span>
+                      <span className="text-xs text-stone-400">{t("sections.conversation_count", { count: session.messageCount })}</span>
+                      <span className="text-xs font-medium text-rose-500">{t("sections.resume_action")}</span>
                     </div>
                   </Link>
                 ))}
@@ -372,24 +368,24 @@ export default async function DashboardPage() {
           {/* First-time empty state */}
           <div className="rounded-[2rem] border border-rose-200/40 bg-gradient-to-b from-white/90 to-rose-50/50 p-8 text-center shadow-[0_20px_60px_rgba(180,120,100,0.08)]">
             <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">
-              Empieza tu primera conversación
+              {t("sections.first_conversation")}
             </p>
             <p className="mx-auto mt-4 max-w-md text-base leading-7 text-stone-600">
-              Puedes hablar de cualquier cosa. Sin juicio, sin prisa. Flavia te acompaña desde el primer mensaje.
+              {t("sections.first_conversation_description")}
             </p>
             <Link
               href="/chat"
               className="mt-6 inline-flex rounded-full bg-gradient-to-r from-rose-400 to-rose-500 px-7 py-3 text-sm font-medium text-white shadow-[0_12px_30px_rgba(220,100,100,0.22)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_16px_40px_rgba(220,100,100,0.30)]"
             >
-              Hablar con Flavia
+              {t("greeting.cta")}
             </Link>
           </div>
 
           {/* Topic entry points */}
           <div>
-            <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">O elige un tema</p>
+            <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">{t("sections.choose_topic")}</p>
             <p className="mt-2 text-sm text-stone-500">
-              Si no sabes por dónde empezar, elige lo que más te resuene
+              {t("sections.choose_topic_description")}
             </p>
             <div className="mt-4">
               <TopicStarterCards />
@@ -398,9 +394,9 @@ export default async function DashboardPage() {
 
           {/* Library for newcomers */}
           <div>
-            <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">Para empezar</p>
+            <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">{t("sections.for_starters")}</p>
             <p className="mt-2 text-sm text-stone-500">
-              Piezas de la biblioteca para conocer a Flavia
+              {t("sections.for_starters_description")}
             </p>
             <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {displayItems.map((item) => (
@@ -422,13 +418,13 @@ export default async function DashboardPage() {
                   ) : (
                     <div className="flex aspect-video items-center justify-center bg-gradient-to-br from-rose-50 to-stone-50">
                       <span className="text-xs uppercase tracking-[0.2em] text-rose-300">
-                        {item.contentType}
+                        {formatContentType(item.contentType)}
                       </span>
                     </div>
                   )}
                   <div className="p-4">
                     <p className="text-[10px] uppercase tracking-[0.15em] text-stone-400">
-                      {item.contentType}
+                      {formatContentType(item.contentType)}
                     </p>
                     <h3 className="mt-1.5 font-[family-name:var(--font-display)] text-base text-stone-900">
                       {item.title}
@@ -442,18 +438,18 @@ export default async function DashboardPage() {
           {/* Upgrade card for free users */}
           {isFree ? (
             <div className="rounded-[1.5rem] border border-rose-200/40 bg-gradient-to-br from-white/90 to-rose-50/50 p-6 shadow-[0_16px_50px_rgba(180,120,100,0.06)]">
-              <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">Flavia Plus</p>
+              <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">{t("sections.plus")}</p>
               <p className="mt-3 font-[family-name:var(--font-display)] text-lg text-stone-900">
-                Conversaciones sin límite
+                {t("sections.upgrade_title")}
               </p>
               <p className="mt-2 text-sm leading-6 text-stone-500">
-                Accede a todo el contenido premium y chatea con Flavia cuanto necesites.
+                {t("sections.upgrade_description")}
               </p>
               <Link
                 href="/plans"
                 className="mt-5 inline-flex rounded-full bg-gradient-to-r from-rose-400 to-rose-500 px-5 py-2.5 text-xs font-medium text-white shadow-[0_8px_20px_rgba(220,100,100,0.20)] transition duration-200 hover:-translate-y-0.5"
               >
-                Ver planes
+                {t("sections.view_plans")}
               </Link>
             </div>
           ) : null}

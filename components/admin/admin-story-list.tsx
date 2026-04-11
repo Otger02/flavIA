@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useLocale } from "next-intl";
+
+import { formatDate } from "@/lib/locale";
 
 type Story = {
   id: string;
@@ -37,6 +40,7 @@ const statusConfig = {
 } as const;
 
 export function AdminStoryList({ stories: initial }: AdminStoryListProps) {
+  const locale = useLocale();
   const [stories, setStories] = useState(initial);
   const [loading, setLoading] = useState<string | null>(null);
 
@@ -99,11 +103,7 @@ export function AdminStoryList({ stories: initial }: AdminStoryListProps) {
               </span>
               <span className="text-xs text-stone-300">&middot;</span>
               <span className="text-xs text-stone-400">
-                {new Date(story.created_at).toLocaleDateString("es-ES", {
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
-                })}
+                {formatDate(story.created_at, locale)}
               </span>
               <span className="text-xs text-stone-300">&middot;</span>
               <span className="font-mono text-[10px] text-stone-300">

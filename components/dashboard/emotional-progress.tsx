@@ -1,3 +1,5 @@
+import { getTranslations } from "next-intl/server";
+
 type Session = {
   activeTopic: string | null;
   createdAt: string;
@@ -8,14 +10,16 @@ type EmotionalProgressProps = {
   topicLabel: (topic: string | null) => string;
 };
 
-function getEncouragementMessage(count: number): string {
+async function getEncouragementMessage(count: number): Promise<string> {
+  const t = await getTranslations("dashboard");
+
   if (count === 1) {
-    return "Has dado el primer paso. Eso ya es valiente.";
+    return t("progress.first_step");
   }
   if (count <= 3) {
-    return `Llevas ${count} conversaciones. Est\u00e1s construyendo un h\u00e1bito de autocuidado.`;
+    return t("progress.habit", { count });
   }
-  return `Llevas ${count} conversaciones. Eso dice mucho de tu compromiso contigo.`;
+  return t("progress.commitment", { count });
 }
 
 function getDominantTopic(sessions: Session[]): string | null {
@@ -41,27 +45,28 @@ function getDominantTopic(sessions: Session[]): string | null {
   return maxCount > 1 ? maxTopic : null;
 }
 
-export function EmotionalProgress({ recentSessions, topicLabel }: EmotionalProgressProps) {
+export async function EmotionalProgress({ recentSessions, topicLabel }: EmotionalProgressProps) {
   if (recentSessions.length === 0) {
     return null;
   }
 
-  const encouragement = getEncouragementMessage(recentSessions.length);
+  const t = await getTranslations("dashboard");
+  const encouragement = await getEncouragementMessage(recentSessions.length);
   const dominantTopic = getDominantTopic(recentSessions);
 
   return (
     <div className="rounded-[1.5rem] border border-rose-200/40 bg-gradient-to-b from-white/90 to-rose-50/40 p-6 shadow-[0_16px_50px_rgba(180,120,100,0.08)]">
       <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">
-        Tu proceso
+        {t("progress.eyebrow")}
       </p>
       <h2 className="mt-3 font-[family-name:var(--font-display)] text-xl text-stone-900">
         {encouragement}
       </h2>
       {dominantTopic ? (
         <p className="mt-3 text-sm leading-6 text-stone-600">
-          Tu tema m&aacute;s frecuente es{" "}
-          <span className="font-medium text-rose-600">{topicLabel(dominantTopic).toLowerCase()}</span>.
-          Flavia nota que es importante para ti.
+          {t("progress.dominant_topic", {
+            topic: topicLabel(dominantTopic).toLowerCase(),
+          })}
         </p>
       ) : null}
     </div>

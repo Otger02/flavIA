@@ -1,9 +1,39 @@
+import createMiddleware from "next-intl/middleware";
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+import { routing } from "@/i18n/routing";
+
+const handleI18nRouting = createMiddleware(routing);
+
+const publicRoutePatterns = [
+  /^\/$/,
+  /^\/en\/?$/,
+  /^\/(?:en\/)?login\/?$/,
+  /^\/(?:en\/)?plans\/?$/,
+  /^\/(?:en\/)?library(?:\/.*)?$/,
+  /^\/(?:en\/)?comunidad(?:\/.*)?$/,
+];
+
+function isPublicRoute(pathname: string) {
+  return publicRoutePatterns.some((pattern) => pattern.test(pathname));
+}
+
 export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request });
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set(
+    "x-pathname",
+    `${request.nextUrl.pathname}${request.nextUrl.search}`,
+  );
+
+  let response = isPublicRoute(request.nextUrl.pathname)
+    ? handleI18nRouting(request)
+    : NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      });
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -15,9 +45,8 @@ export async function middleware(request: NextRequest) {
       },
       setAll(cookiesToSet) {
         cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-        supabaseResponse = NextResponse.next({ request });
         cookiesToSet.forEach(({ name, value, options }) =>
-          supabaseResponse.cookies.set(name, value, options),
+          response.cookies.set(name, value, options),
         );
       },
     },
@@ -26,7 +55,7 @@ export async function middleware(request: NextRequest) {
   // Refresh the session — this is the whole point of this middleware.
   await supabase.auth.getUser();
 
-  return supabaseResponse;
+  return response;
 }
 
 export const config = {

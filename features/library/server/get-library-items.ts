@@ -4,9 +4,12 @@ import {
   LIBRARY_CONTENT_TYPES,
   LIBRARY_INTENT_TAGS,
   LIBRARY_TOPIC_TAGS,
+  LIBRARY_SECTIONS,
   type LibraryContentType,
   type LibraryIntentTag,
   type LibraryTopicTag,
+  type LibrarySection,
+  type LibraryAudience,
 } from "@/features/library/constants";
 import { realLibraryContent } from "@/features/library/real-library-content";
 import { sanityClient } from "@/lib/sanity/client";
@@ -14,6 +17,7 @@ import { libraryItemsQuery } from "@/lib/sanity/queries";
 import { urlForImage } from "@/lib/sanity/image";
 
 export type LibraryItem = {
+  audienceTags?: LibraryAudience[];
   chatRecommended: boolean;
   contentType: LibraryContentType;
   editorialSource: string | null;
@@ -27,12 +31,15 @@ export type LibraryItem = {
   intentTags: string[];
   isPremium: boolean;
   publishedAt: string | null;
+  sectionTag?: LibrarySection;
   youtubeUrl: string | null;
 };
 
 export type LibraryFilters = {
+  audience?: string | null;
   contentType?: string | null;
   intent?: string | null;
+  section?: string | null;
   topic?: string | null;
 };
 
@@ -58,7 +65,7 @@ function normalizeTopic(value: string | null | undefined): LibraryTopicTag | nul
     return null;
   }
 
-  return LIBRARY_TOPIC_TAGS.includes(value as LibraryTopicTag) ? (value as LibraryTopicTag) : null;
+  return (LIBRARY_TOPIC_TAGS as readonly string[]).includes(value) ? (value as LibraryTopicTag) : null;
 }
 
 function normalizeIntent(value: string | null | undefined): LibraryIntentTag | null {
@@ -75,6 +82,14 @@ function normalizeContentType(value: string | null | undefined): LibraryContentT
   }
 
   return LIBRARY_CONTENT_TYPES.includes(value as LibraryContentType) ? (value as LibraryContentType) : null;
+}
+
+function normalizeSection(value: string | null | undefined): LibrarySection | null {
+  if (!value) {
+    return null;
+  }
+
+  return LIBRARY_SECTIONS.includes(value as LibrarySection) ? (value as LibrarySection) : null;
 }
 
 function mapLibraryItem(item: SanityLibraryItem): LibraryItem {
@@ -100,12 +115,17 @@ function getFallbackLibraryItems(filters: LibraryFilters): LibraryItem[] {
   const topic = normalizeTopic(filters.topic);
   const intent = normalizeIntent(filters.intent);
   const contentType = normalizeContentType(filters.contentType);
+  const section = normalizeSection(filters.section);
+  const audience = filters.audience ?? null;
 
   return realLibraryContent
     .filter((item) => (topic ? item.topicTags.includes(topic) : true))
     .filter((item) => (intent ? item.intentTags.includes(intent) : true))
     .filter((item) => (contentType ? item.contentType === contentType : true))
+    .filter((item) => (section ? item.sectionTag === section : true))
+    .filter((item) => (audience ? item.audienceTags?.includes(audience as LibraryAudience) : true))
     .map((item) => ({
+      audienceTags: item.audienceTags,
       chatRecommended: item.chatRecommended,
       contentType: item.contentType,
       editorialSource: item.editorialSource,
@@ -119,6 +139,7 @@ function getFallbackLibraryItems(filters: LibraryFilters): LibraryItem[] {
       intentTags: item.intentTags,
       isPremium: item.isPremium,
       publishedAt: item.publishedAt,
+      sectionTag: item.sectionTag,
       youtubeUrl: item.youtubeUrl ?? null,
     }));
 }

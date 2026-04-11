@@ -64,7 +64,7 @@ export type Database = {
           ended_at: string | null;
           entry_source: string | null;
           entry_topic: string | null;
-          active_topic: "desire" | "couple_connection" | "self_connection" | "communication" | "body_confidence" | "routine" | "curiosity" | null;
+          active_topic: "desire" | "couple_connection" | "self_connection" | "communication" | "body_confidence" | "routine" | "curiosity" | "jealousy" | "boundaries" | "pleasure" | "menopause" | "erectile_dysfunction" | "education" | null;
           help_mode: string | null;
           message_count: number;
           free_messages_used: number;
@@ -79,7 +79,7 @@ export type Database = {
           ended_at?: string | null;
           entry_source?: string | null;
           entry_topic?: string | null;
-          active_topic?: "desire" | "couple_connection" | "self_connection" | "communication" | "body_confidence" | "routine" | "curiosity" | null;
+          active_topic?: "desire" | "couple_connection" | "self_connection" | "communication" | "body_confidence" | "routine" | "curiosity" | "jealousy" | "boundaries" | "pleasure" | "menopause" | "erectile_dysfunction" | "education" | null;
           help_mode?: string | null;
           message_count?: number;
           free_messages_used?: number;
@@ -94,7 +94,7 @@ export type Database = {
           ended_at?: string | null;
           entry_source?: string | null;
           entry_topic?: string | null;
-          active_topic?: "desire" | "couple_connection" | "self_connection" | "communication" | "body_confidence" | "routine" | "curiosity" | null;
+          active_topic?: "desire" | "couple_connection" | "self_connection" | "communication" | "body_confidence" | "routine" | "curiosity" | "jealousy" | "boundaries" | "pleasure" | "menopause" | "erectile_dysfunction" | "education" | null;
           help_mode?: string | null;
           message_count?: number;
           free_messages_used?: number;

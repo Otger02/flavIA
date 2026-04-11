@@ -1,0 +1,44 @@
+{
+	"topics": {
+		"general": "General",
+		"desire": "Deseo",
+		"couple_connection": "Conexión en pareja",
+		"self_connection": "Conexión contigo",
+		"communication": "Comunicación",
+		"body_confidence": "Cuerpo",
+		"routine": "Rutina",
+		"curiosity": "Curiosidad",
+		"jealousy": "Celos",
+		"boundaries": "Límites",
+		"pleasure": "Placer",
+		"menopause": "Menopausia",
+		"erectile_dysfunction": "Erección",
+		"education": "Educación sexual"
+	},
+	"library_sections": {
+		"tips_educacion_sexual": {
+			"title": "Tips educación sexual para todos",
+			"description": "Artículos, videos y guías por audiencia: hombres, mujeres, parejas, adolescentes, edad madura."
+		},
+		"te_recomiendo": {
+			"title": "Te recomiendo",
+			"description": "Libros, películas y podcasts seleccionados por Flavia."
+		},
+		"lo_mas_hablado": {
+			"title": "Lo más hablado",
+			"description": "Opinión experta de Flavia sobre los temas que más importan hoy."
+		},
+		"te_ha_pasado": {
+			"title": "¿Te ha pasado?",
+			"description": "Escenarios reales con consejo de Flavia. Historias que resuenan."
+		},
+		"quickly": {
+			"title": "QuicKly",
+			"description": "Preguntas rápidas, respuestas directas. Lo que siempre quisiste saber."
+		},
+		"emocionalmente": {
+			"title": "Emocional-mente",
+			"description": "Emociones, conflictos y salud mental en la intimidad."
+		}
+	}
+}

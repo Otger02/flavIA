@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
 import { TrackViewEvent } from "@/components/analytics/track-view-event";
 import { CTA } from "@/components/marketing/CTA";
@@ -12,17 +13,19 @@ import { WaveDivider } from "@/components/marketing/WaveDivider";
 import { getUser } from "@/features/auth/server/get-user";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/track";
 
-export const metadata: Metadata = {
-  title: "Flavia — Tu acompañamiento íntimo",
-  description:
-    "Habla con Flavia sobre deseo, comunicación, placer y conexión emocional. Un espacio seguro para transformar tu vida íntima.",
-  openGraph: {
-    title: "Flavia — Tu acompañamiento íntimo",
-    description:
-      "Habla con Flavia sobre deseo, comunicación, placer y conexión emocional. Un espacio seguro para transformar tu vida íntima.",
-    url: "https://flavia.app",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("marketing");
+
+  return {
+    title: t("page.title"),
+    description: t("page.description"),
+    openGraph: {
+      title: t("page.title"),
+      description: t("page.description"),
+      url: "https://flavia.app",
+    },
+  };
+}
 
 export default async function MarketingHomePage() {
   const user = await getUser();

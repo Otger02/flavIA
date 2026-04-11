@@ -1,0 +1,69 @@
+{
+	"meta": {
+		"title": "Library",
+		"description": "Videos, articles and scripts from Flavia Dos Santos on desire, relationship communication, pleasure and emotional connection."
+	},
+	"listing": {
+		"eyebrow": "Library",
+		"title": "An editorial library for real conversations",
+		"fallback_title": "Library",
+		"subtitle": "Resources designed to help you understand, name and move through difficult conversations.",
+		"filters": {
+			"back": "← Sections",
+			"by_topic": "Explore by topic",
+			"all_topics": "All",
+			"by_format": "Explore by format",
+			"all_formats": "All formats"
+		},
+		"empty_state": "There are no pieces for this combination yet. Try another topic or format to keep exploring the library.",
+		"format_labels": {
+			"article": "Article",
+			"audio": "Audio",
+			"guide": "Guide",
+			"faq": "FAQ",
+			"script": "Script",
+			"video": "Video",
+			"book_recommendation": "Book recommendation"
+		},
+		"section_labels": {},
+		"source_fallback": "Flavia Library",
+		"excerpt_fallback": "There isn't an excerpt yet.",
+		"video_badge": "Video",
+		"view_item": "Watch piece",
+		"read_item": "Read piece"
+	},
+	"item": {
+		"premium_badge": "Premium",
+		"back": "← Back to the library",
+		"not_found": "Content not found",
+		"body_empty": "This piece doesn't have body content yet.",
+		"chat_recommended_badge": "Recommended in chat",
+		"paywall": {
+			"title": "This content is exclusive to subscribers",
+			"description": "With Flavia Plus, you get access to the full library, personalized recommendations and unlimited conversations.",
+			"subscribe": "I want Flavia Plus",
+			"login": "Log in to subscribe",
+			"account_prompt": "Already have an account?",
+			"login_link": "Log in"
+		},
+		"cta": {
+			"eyebrow": "Want to talk about this?",
+			"description": "If this topic stirred something in you, Flavia can help you go deeper.",
+			"logged_in": "Talk to Flavia",
+			"logged_out": "Log in to talk to Flavia"
+		},
+		"related": {
+			"eyebrow": "Related",
+			"title": "Keep exploring this topic",
+			"view_video": "Watch resource",
+			"view_default": "Open resource"
+		},
+		"next_step": {
+			"eyebrow": "Next step",
+			"title": "If you want to go deeper"
+		},
+		"meta": {
+			"default_description": "Explore this Flavia library content on intimate and emotional wellbeing."
+		}
+	}
+}

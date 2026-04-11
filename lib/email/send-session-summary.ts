@@ -1,6 +1,8 @@
 import "server-only";
 
 import { Resend } from "resend";
+import { isTopicSlug } from "@/lib/topic-config";
+import sharedEs from "@/messages/es/shared.json";
 
 const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
@@ -10,19 +12,6 @@ type SendSessionSummaryEmailParams = {
   to: string;
   summary: string;
   sessionTopic: string | null;
-};
-
-const TOPIC_LABELS: Record<string, string> = {
-  desire: "Deseo",
-  communication: "Comunicación",
-  couple_connection: "Conexión en pareja",
-  jealousy: "Celos",
-  boundaries: "Límites",
-  pleasure: "Placer",
-  self_connection: "Conexión contigo",
-  routine: "Rutina",
-  body_confidence: "Cuerpo",
-  curiosity: "Curiosidad",
 };
 
 export async function sendSessionSummaryEmail({
@@ -35,7 +24,9 @@ export async function sendSessionSummaryEmail({
     return false;
   }
 
-  const topicLabel = sessionTopic ? TOPIC_LABELS[sessionTopic] ?? sessionTopic : null;
+  const topicLabel = sessionTopic && isTopicSlug(sessionTopic)
+    ? sharedEs.topics[sessionTopic]
+    : null;
   const subject = topicLabel
     ? `Tu conversación con Flavia — ${topicLabel}`
     : "Tu conversación con Flavia";

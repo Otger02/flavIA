@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { CHAT_TOPICS } from "@/features/chat/constants";
+import { ALL_TOPICS } from "@/lib/topic-config";
 import {
   RECOMMENDATION_CONTENT_LIMIT,
   RECOMMENDATION_PRODUCT_LIMIT,
@@ -56,7 +56,7 @@ export const recommendationLogInputSchema = z.object({
   surface: recommendationSurfaceSchema,
   itemId: z.string(),
   itemType: z.enum(["content", "product"]),
-  activeTopic: z.enum(CHAT_TOPICS).nullable(),
+  activeTopic: z.enum(ALL_TOPICS).nullable(),
   score: z.number(),
 });
 

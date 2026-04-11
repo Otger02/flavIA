@@ -3,7 +3,7 @@ import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 
-import { CHAT_TOPICS } from "@/features/chat/constants";
+import { ALL_TOPICS } from "@/lib/topic-config";
 import { getAiProviderKeys } from "@/lib/env";
 import { getTopicDetectionPrompt } from "@/lib/ai/prompts/topic-detection-prompt";
 import type { ChatMessage, ChatTopic } from "@/features/chat/types";
@@ -40,8 +40,6 @@ const topicKeywordMap: Record<ChatTopic, string[]> = {
     "far apart",
     "reconnect",
     "reconectar",
-    "jealous",
-    "celos",
   ],
   self_connection: ["self", "myself", "solo", "alone", "autoconocimiento", "inner", "identity", "who i am"],
   communication: [
@@ -49,7 +47,6 @@ const topicKeywordMap: Record<ChatTopic, string[]> = {
     "communication",
     "say",
     "conversation",
-    "boundary",
     "express",
     "comunicar",
     "decir",
@@ -60,14 +57,20 @@ const topicKeywordMap: Record<ChatTopic, string[]> = {
     "bloqueo",
   ],
   body_confidence: ["body", "cuerpo", "confidence", "insecure", "appearance", "mirror", "shame", "vergüenza", "verguenza"],
-  routine: ["routine", "habit", "ritual", "daily", "week", "practice", "consistency", "stuck", "same thing"],
+  routine: ["routine", "habit", "ritual", "daily", "week", "practice", "consistency", "stuck", "same thing", "piloto automatico", "monotonia"],
   curiosity: ["curious", "explore", "new", "learn", "question", "wonder", "discover", "try", "experiment"],
+  jealousy: ["jealous", "jealousy", "celos", "celosa", "celoso", "inseguridad", "desconfianza", "miedo a perder"],
+  boundaries: ["boundary", "boundaries", "limite", "límite", "limites", "límites", "decir que no", "culpa", "espacio"],
+  pleasure: ["pleasure", "placer", "orgasm", "orgasmo", "masturbacion", "masturbación", "disfrutar", "autoplacer", "clitoris", "clítoris"],
+  menopause: ["menopause", "menopausia", "hormonal", "resequedad", "climaterio", "sofocos", "lubricante", "envejecer"],
+  erectile_dysfunction: ["erection", "ereccion", "erección", "disfuncion erectil", "disfunción eréctil", "impotencia", "pene", "viagra"],
+  education: ["educacion sexual", "educación sexual", "tabú", "tabu", "mito", "pornografia", "pornografía", "hijos", "niños", "enseñar"],
 };
 
 const emotionTopicMap: Array<{ keywords: string[]; topic: ChatTopic }> = [
   {
-    keywords: ["celos", "jealous", "jealousy", "inseguridad con mi pareja", "fear of losing"],
-    topic: "couple_connection",
+    keywords: ["celos", "jealous", "jealousy", "celosa", "celoso", "inseguridad con mi pareja", "fear of losing"],
+    topic: "jealousy",
   },
   {
     keywords: ["bloqueo", "blocked", "freeze", "me callo", "no se como decir", "can't say it"],
@@ -85,6 +88,18 @@ const emotionTopicMap: Array<{ keywords: string[]; topic: ChatTopic }> = [
     keywords: ["deseo", "desire", "libido", "placer", "turn on", "arousal"],
     topic: "desire",
   },
+  {
+    keywords: ["limite", "límite", "decir que no", "culpable", "no puedo decir no"],
+    topic: "boundaries",
+  },
+  {
+    keywords: ["menopausia", "menopause", "hormonas", "resequedad", "sofocos"],
+    topic: "menopause",
+  },
+  {
+    keywords: ["ereccion", "erección", "no se me para", "se me baja", "disfuncion"],
+    topic: "erectile_dysfunction",
+  },
 ];
 
 function normalizeTopic(value: string | null | undefined): ChatTopic | null {
@@ -93,7 +108,7 @@ function normalizeTopic(value: string | null | undefined): ChatTopic | null {
   }
 
   const normalizedValue = value.trim().toLowerCase();
-  return CHAT_TOPICS.includes(normalizedValue as ChatTopic) ? (normalizedValue as ChatTopic) : null;
+  return ALL_TOPICS.includes(normalizedValue as ChatTopic) ? (normalizedValue as ChatTopic) : null;
 }
 
 function detectTopicHeuristically(recentMessages: ChatMessage[]): ChatTopic | null {
@@ -107,7 +122,7 @@ function detectTopicHeuristically(recentMessages: ChatMessage[]): ChatTopic | nu
   const latestText = latestMessage.content.toLowerCase();
   const weightedScores = new Map<ChatTopic, number>();
 
-  for (const topic of CHAT_TOPICS) {
+  for (const topic of ALL_TOPICS) {
     weightedScores.set(topic, 0);
   }
 
@@ -115,7 +130,7 @@ function detectTopicHeuristically(recentMessages: ChatMessage[]): ChatTopic | nu
     const weight = index === array.length - 1 ? 3 : 1;
     const content = message.content.toLowerCase();
 
-    for (const topic of CHAT_TOPICS) {
+    for (const topic of ALL_TOPICS) {
       const matches = topicKeywordMap[topic].filter((keyword) => content.includes(keyword)).length;
 
       if (matches > 0) {
@@ -127,7 +142,7 @@ function detectTopicHeuristically(recentMessages: ChatMessage[]): ChatTopic | nu
   let bestTopic: ChatTopic | null = null;
   let bestScore = 0;
 
-  for (const topic of CHAT_TOPICS) {
+  for (const topic of ALL_TOPICS) {
     const score = weightedScores.get(topic) ?? 0;
 
     if (score > bestScore) {
