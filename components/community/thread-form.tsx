@@ -1,19 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   COMMUNITY_TOPICS,
-  COMMUNITY_TOPIC_LABELS,
   THREAD_TITLE_MIN,
   THREAD_TITLE_MAX,
   THREAD_BODY_MIN,
   THREAD_BODY_MAX,
 } from "@/features/community/constants";
-import type { CommunityTopic } from "@/features/community/constants";
 
 type ThreadFormState = "idle" | "submitting" | "success" | "error";
 
 export function ThreadForm() {
+  const t = useTranslations("shared");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [topic, setTopic] = useState<string>("");
@@ -108,9 +108,9 @@ export function ThreadForm() {
           className="w-full rounded-xl border border-stone-200/60 bg-white/80 px-4 py-3 text-stone-900 focus:border-rose-300 focus:outline-none focus:ring-2 focus:ring-rose-200/50"
         >
           <option value="">Sin tema especifico</option>
-          {COMMUNITY_TOPICS.map((t) => (
-            <option key={t} value={t}>
-              {COMMUNITY_TOPIC_LABELS[t as CommunityTopic]}
+          {COMMUNITY_TOPICS.map((topic) => (
+            <option key={topic} value={topic}>
+              {t(`topics.${topic}`)}
             </option>
           ))}
         </select>

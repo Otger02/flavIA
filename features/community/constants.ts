@@ -3,15 +3,10 @@ import {
   type TopicSlug,
   TOPIC_COMMUNITY_COLORS,
 } from "@/lib/topic-config";
-import sharedEs from "@/messages/es/shared.json";
 
 export const COMMUNITY_TOPICS = ALL_TOPICS;
 
 export type CommunityTopic = TopicSlug;
-
-export const COMMUNITY_TOPIC_LABELS: Record<CommunityTopic, string> = Object.fromEntries(
-  COMMUNITY_TOPICS.map((topic) => [topic, sharedEs.topics[topic]]),
-) as Record<CommunityTopic, string>;
 
 export const COMMUNITY_TOPIC_COLORS: Record<CommunityTopic, string> = TOPIC_COMMUNITY_COLORS;
 

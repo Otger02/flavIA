@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
-import { COMMUNITY_TOPIC_LABELS, COMMUNITY_TOPIC_COLORS } from "@/features/community/constants";
+import { COMMUNITY_TOPIC_COLORS } from "@/features/community/constants";
 import type { CommunityTopic } from "@/features/community/constants";
 import { formatDate } from "@/lib/locale";
 
@@ -46,6 +46,7 @@ const statusConfig: Record<string, { label: string; bg: string; text: string; bo
 
 export function ModerationItem({ item, onAction }: ModerationItemProps) {
   const locale = useLocale();
+  const t = useTranslations("shared");
   const [loading, setLoading] = useState<string | null>(null);
   const cfg = statusConfig[item.status] ?? statusConfig.pending;
 
@@ -86,7 +87,7 @@ export function ModerationItem({ item, onAction }: ModerationItemProps) {
         ) : null}
         {item.topic && (
           <span className={`rounded-full border px-2.5 py-0.5 text-[11px] ${COMMUNITY_TOPIC_COLORS[item.topic as CommunityTopic] ?? "bg-stone-100 text-stone-600 border-stone-200"}`}>
-            {COMMUNITY_TOPIC_LABELS[item.topic as CommunityTopic] ?? item.topic}
+            {t(`topics.${item.topic}`)}
           </span>
         )}
         <span className="text-xs text-stone-400">

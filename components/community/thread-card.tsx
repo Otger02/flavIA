@@ -1,9 +1,7 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import type { CommunityThread } from "@/features/community/types";
-import {
-  COMMUNITY_TOPIC_LABELS,
-  COMMUNITY_TOPIC_COLORS,
-} from "@/features/community/constants";
+import { COMMUNITY_TOPIC_COLORS } from "@/features/community/constants";
 import type { CommunityTopic } from "@/features/community/constants";
 import { formatDate, formatRelativeTime } from "@/lib/locale";
 
@@ -12,8 +10,9 @@ type ThreadCardProps = {
   thread: CommunityThread;
 };
 
-export function ThreadCard({ locale, thread }: ThreadCardProps) {
-  const topicLabel = thread.topic ? COMMUNITY_TOPIC_LABELS[thread.topic as CommunityTopic] : null;
+export async function ThreadCard({ locale, thread }: ThreadCardProps) {
+  const t = await getTranslations("shared");
+  const topicLabel = thread.topic ? t(`topics.${thread.topic}`) : null;
   const topicColor = thread.topic ? COMMUNITY_TOPIC_COLORS[thread.topic as CommunityTopic] : null;
 
   const lastActivity = new Date(thread.last_activity_at);

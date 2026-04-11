@@ -7,13 +7,11 @@ import { getComments } from "@/features/community/server/get-comments";
 import { isCommunityEnabled } from "@/lib/feature-flags";
 import { getViewerPlan } from "@/features/billing/server/get-viewer-plan";
 import { BILLING_FREE_PLAN } from "@/features/billing/constants";
+import { getTranslations } from "next-intl/server";
 import { CommentSection } from "@/components/community/comment-section";
 import { InviteFlaviaButton } from "@/components/community/invite-flavia-button";
 import { ReportButton } from "@/components/community/report-button";
-import {
-  COMMUNITY_TOPIC_LABELS,
-  COMMUNITY_TOPIC_COLORS,
-} from "@/features/community/constants";
+import { COMMUNITY_TOPIC_COLORS } from "@/features/community/constants";
 import type { CommunityTopic } from "@/features/community/constants";
 import { formatDate, getLocale } from "@/lib/locale";
 
@@ -38,6 +36,7 @@ export default async function ThreadDetailPage({ params }: Props) {
 
   const { slug } = await params;
   const locale = await getLocale();
+  const t = await getTranslations("shared");
   const thread = await getThreadBySlug(slug);
   if (!thread) notFound();
 
@@ -52,7 +51,7 @@ export default async function ThreadDetailPage({ params }: Props) {
 
   const hasAiReply = comments.some((c) => c.is_flavia_ai);
 
-  const topicLabel = thread.topic ? COMMUNITY_TOPIC_LABELS[thread.topic as CommunityTopic] : null;
+  const topicLabel = thread.topic ? t(`topics.${thread.topic}`) : null;
   const topicColor = thread.topic ? COMMUNITY_TOPIC_COLORS[thread.topic as CommunityTopic] : null;
 
   const authorLabel = thread.is_anonymous
