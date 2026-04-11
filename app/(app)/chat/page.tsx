@@ -23,8 +23,9 @@ type ChatPageProps = {
 
 export default async function ChatPage({ searchParams }: ChatPageProps) {
   const params = await searchParams;
+  const hasTopic = Boolean(params.topic);
   const user = await getUser();
-  const session = user ? await getLatestChatSession({ userId: user.id }) : null;
+  const session = !hasTopic && user ? await getLatestChatSession({ userId: user.id }) : null;
   const messages = session ? await getChatHistory({ sessionId: session.id }) : [];
   const usage = user ? await enforceUsagePolicy({ userId: user.id, sessionId: session?.id }) : null;
 

@@ -41,13 +41,12 @@ export function ChatShell({ initialMessages, initialSessionId, initialUsage, ini
       initialTopic &&
       TOPIC_KEYS.includes(initialTopic as typeof TOPIC_KEYS[number]) &&
       !topicSentRef.current &&
-      !hasHistory &&
       !loading
     ) {
       topicSentRef.current = true;
       void sendMessage(t(`topic_starters.${initialTopic}`));
     }
-  }, [initialTopic, hasHistory, loading, sendMessage, t]);
+  }, [initialTopic, loading, sendMessage, t]);
 
   const isInputDisabled = loading || usage?.requiresUpgrade;
 
