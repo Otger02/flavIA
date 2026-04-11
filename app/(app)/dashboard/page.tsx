@@ -334,6 +334,17 @@ export default async function DashboardPage() {
             </div>
           ) : null}
 
+          {/* Topic entry points */}
+          <div>
+            <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">{t("sections.choose_topic")}</p>
+            <p className="mt-2 text-sm text-stone-500">
+              {t("sections.choose_topic_description")}
+            </p>
+            <div className="mt-4">
+              <TopicStarterCards />
+            </div>
+          </div>
+
           {/* Recent sessions */}
           {recentSessions.length > 1 ? (
             <div>
