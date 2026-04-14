@@ -1,225 +1,216 @@
-# Demo Flavia — Guion de presentación
+# FlavIA — Todo lo que hay construido
 
-> Guion paso a paso para mostrar todo lo construido.
-> Abre la app en local (`localhost:3000`) y sigue el orden.
-
----
-
-## 1. Landing page — Primera impresión
-
-**Abrir:** `localhost:3000`
-
-- [ ] Hero con nombre, tagline y CTA "Hablar con Flavia"
-- [ ] Sección **"Puntos de entrada"** — 8 temas con icono y color propio
-  - Los nuevos: Celos, Límites, Placer, Menopausia, Educación sexual
-  - Cada uno lleva directo al chat con ese tema
-- [ ] **NUEVO: "Explora la biblioteca"** — 6 secciones que pidió Flavia:
-  - Tips educación sexual para todos
-  - Te recomiendo
-  - Lo más hablado
-  - ¿Te ha pasado?
-  - QuicKly
-  - Emocional-mente
-  - Cada card enlaza a la biblioteca filtrada por esa sección
-- [ ] Sección de planes (Gratis / Plus)
-- [ ] SEO completo: título, descripción, Open Graph para compartir en redes
-
-**Lo que no se ve:**
-- PWA instalable (se puede "instalar" como app en el móvil)
-- Favicon personalizado (F en degradado rosa)
-- Meta tags para WhatsApp/Instagram (imagen y descripción al compartir link)
+> Lista completa para la reunión con Flavia. Organizado por bloques.
+> Lo marcado con 🔍 son cosas que no se ven a primera vista pero hay que mencionar.
+> Lo marcado con ❓ son puntos a revisar/decidir con ella.
 
 ---
 
-## 2. Biblioteca — El corazón editorial
+## A. El chat — Experiencia central
 
-**Abrir:** `localhost:3000/library`
+### Lo que se ve
+- Chat con streaming (respuesta aparece letra a letra, se siente natural)
+- 8 tarjetas de entrada por tema al empezar (Deseo, Pareja, Comunicación, Celos, Límites, Placer, Menopausia, Educación sexual)
+- Burbujas diferenciadas: usuario en degradado rosa, Flavia en blanco cálido
+- Indicador de mensajes restantes (plan gratis)
+- Paywall elegante cuando se acaban los mensajes → CTA a Plus
+- Recomendaciones inline: aparecen cards de contenido/productos dentro de la conversación
+- Resumen de sesión generado por IA con botón "Enviar por email"
 
-### 2a. Vista principal (sin filtros)
-- [ ] Grid de **6 secciones** con iconos, colores y descripciones
-- [ ] Hacer clic en **"Lo más hablado"**
+### Lo que no se ve (🔍)
+- 🔍 **13 temas detectados automáticamente** por IA (antes eran 7, ahora incluyen celos, límites, placer, menopausia, disfunción eréctil, educación sexual)
+- 🔍 Detección por 3 capas: keywords, emociones, contexto semántico (LLM)
+- 🔍 **Voice profile completo de Flavia** codificado: tono, frases signature, marcos terapéuticos (ideal/real/posible, deseo-como-músculo, seres-faltantes), vocabulario que usa y que evita, estructura de respuesta (validar → enfocar → microavance)
+- 🔍 **Frases reales de Flavia** extraídas de transcripts, columnas y audios de WhatsApp integradas en el prompt
+- 🔍 Guía específica por cada uno de los 13 temas (cómo Flavia aborda menopausia vs celos vs placer)
+- 🔍 Boundaries firmes: nunca diagnostica, nunca juzga, nunca usa emojis, sugiere profesional en casos serios
+- 🔍 Fallback automático: si OpenAI falla → cambia a Anthropic sin que el usuario note nada
+- 🔍 Recomendaciones inteligentes: mínimo 3 turnos, contenido antes que productos, máx 3/sesión, nunca dos seguidas
+- 🔍 Cada sesión + cada mensaje se guarda completo en base de datos
+- 🔍 Sistema de contexto: el chat sabe el tema activo y el estado emocional del usuario
 
-### 2b. Dentro de una sección
-- [ ] Barra de secciones arriba (tabs) con botón "← Secciones" para volver
-- [ ] **5 artículos reales** de las columnas de Coopidrogas:
-  - "Pereza sexual — ¿es normal no tener ganas?"
-  - "Cuando el sexo es malo pero el amor es bueno"
-  - "¿Miedo a no ser normal sexualmente?"
-  - "Lo que acaba con los matrimonios no es la infidelidad"
-  - "Crisis en la intimidad — cuando el cuerpo dice basta"
-- [ ] Cada artículo tiene tags de tema con colores propios
-- [ ] Filtros por **tema** (13 temas) y por **formato** (artículo, video, audio, guía, FAQ, script, recomendación de libro)
-
-### 2c. Sección "Te recomiendo"
-- [ ] Navegar a "Te recomiendo" desde los tabs
-- [ ] **6 libros de Flavia** con reseñas reales:
-  - Sexo sin Misterio, ¿Qué Hago con el Sexo?, PoliAmor, Sexo Mandamiento, Deseo, Eva Mordió la Manzana
-- [ ] Cada uno marcado como content type "book_recommendation"
-
-### 2d. Sección "Tips educación sexual"
-- [ ] Videos de YouTube de Flavia embebidos
-- [ ] Segmentación por audiencia preparada (hombres, mujeres, parejas, adolescentes, edad madura)
-
-### 2e. Detalle de una pieza
-- [ ] Hacer clic en cualquier item → página de detalle con imagen, tags, texto
-- [ ] Badge de Premium si aplica
-- [ ] Botón de favoritos (corazón) si estás logueado
-- [ ] Videos de YouTube embebidos directamente
-
-**Lo que no se ve:**
-- **25 piezas de contenido** en total (14 previas + 5 columnas + 6 libros)
-- 7 formatos de contenido soportados
-- 6 secciones editoriales
-- 6 segmentos de audiencia
-- Modelo preparado para Sanity CMS (cuando quieran migrar de código a gestor de contenido)
-- Fallback automático: si Sanity no tiene datos, sirve del contenido hardcoded sin que el usuario note nada
+### A revisar con Flavia (❓)
+- ❓ ¿El tono suena a ella? Hacer prueba en vivo con 3-4 conversaciones de temas diferentes
+- ❓ ¿Faltan temas? (los 13 actuales cubren bien su trabajo?)
+- ❓ ¿Las frases signature son correctas o hay que ajustar alguna?
+- ❓ ¿Hay marcos terapéuticos suyos que faltan en el voice profile?
+- ❓ ¿El límite de 5 mensajes gratis es correcto o demasiado poco/mucho?
 
 ---
 
-## 3. Chat con Flavia — La experiencia central
+## B. La biblioteca — Contenido editorial
 
-**Abrir:** `localhost:3000/chat`
+### Lo que se ve
+- Página principal con **6 secciones** (las que pidió Flavia):
+  - 💡 Tips educación sexual para todos
+  - 📖 Te recomiendo
+  - 🔥 Lo más hablado
+  - 🤔 ¿Te ha pasado?
+  - ⚡ QuicKly
+  - 💜 Emocional-mente
+- Navegación por secciones con tabs
+- Filtros por tema (13) y por formato (7 tipos)
+- **25 piezas de contenido** en total:
+  - 10 videos de YouTube de Flavia embebidos
+  - 5 artículos de sus columnas reales en Coopidrogas
+  - 6 recomendaciones de sus libros con reseñas
+  - 4 guías/FAQ
+- Página de detalle para cada pieza: imagen, texto, video embebido, tags de tema
+- Botón de favoritos (corazón) en cada pieza
+- Badge "Plus" en contenido premium
+- CTA "Hablar con Flavia sobre esto" → abre chat con el tema
 
-### 3a. Primera vez (sin historial)
-- [ ] 8 tarjetas de temas para elegir por dónde empezar
-- [ ] Hacer clic en una tarjeta → se abre el chat con un mensaje introductorio de ese tema
+### Lo que no se ve (🔍)
+- 🔍 7 formatos de contenido soportados: artículo, audio, guía, FAQ, script, video, recomendación de libro
+- 🔍 6 segmentos de audiencia preparados: hombres, mujeres, parejas, adolescentes, edad madura, todos
+- 🔍 Sistema de tags: cada pieza tiene tags de tema, de sección, y de audiencia
+- 🔍 Sanity CMS conectado como backend editorial (cuando quieran que alguien no-técnico gestione contenido)
+- 🔍 Fallback automático: si Sanity no tiene datos → sirve contenido hardcoded sin que nadie lo note
+- 🔍 SEO por pieza: cada item tiene su propia metadata + Open Graph (imagen y texto al compartir en redes)
+- 🔍 Productos de Lelo integrados como recomendaciones (imágenes permitidas desde assets.lelo.com)
 
-### 3b. Conversación
-- [ ] Escribir un mensaje → respuesta en streaming (aparece letra por letra)
-- [ ] Tono de Flavia: cálido, sin juicio, directo, con humor sutil
-- [ ] Probar preguntar sobre menopausia o educación sexual (temas nuevos)
-- [ ] Las burbujas: usuario en degradado rosa, Flavia en blanco cálido
-
-### 3c. Recomendaciones inteligentes
-- [ ] Después de 3+ mensajes, Flavia puede recomendar contenido de la biblioteca
-- [ ] Las recomendaciones se basan en el tema detectado de la conversación
-- [ ] Máximo 3 por sesión, nunca dos seguidas, contenido antes que productos
-
-**Lo que no se ve:**
-- **13 temas** detectados automáticamente por IA (era 7, ahora 13)
-- Detección por keywords + emociones + contexto semántico
-- Temas nuevos: celos, límites, placer, menopausia, disfunción eréctil, educación sexual
-- Fallback automático: si OpenAI falla → cambia a Anthropic sin que el usuario lo note
-- Cada sesión se guarda completa en base de datos
-- Resumen de sesión generado por IA (se puede enviar por email)
-- Voice profile de Flavia: su tono, sus expresiones, sus metáforas — todo codificado para que la IA suene como ella
-
----
-
-## 4. Dashboard — Espacio personal del usuario
-
-**Abrir:** `localhost:3000/dashboard` (necesita estar logueado)
-
-- [ ] Saludo dinámico (Buenos días/tardes/noches)
-- [ ] Frase diaria de Flavia (rota cada día, 10 frases reales)
-- [ ] **Progreso emocional** — mensajes motivacionales según cuántas sesiones lleva
-- [ ] **"Retoma tu conversación"** — última sesión con tema, tiempo y último mensaje
-- [ ] **"Para ti ahora"** — 3 piezas de la biblioteca priorizadas por:
-  - El tema activo del usuario
-  - Las secciones más relevantes para ese tema
-- [ ] **"Tus favoritos"** — contenido marcado con corazón (sin duplicados con "Para ti")
-- [ ] **Historial de conversaciones** — últimas 5 sesiones con tema y fecha
-- [ ] Card de plan (Gratis / Plus activo)
-- [ ] Resumen de sesión con opción de enviar por email
-
-**Lo que no se ve:**
-- La priorización de contenido usa un mapa tema→secciones (ej: si hablas de "deseo", prioriza "Tips educación sexual" y "Lo más hablado")
-- Los favoritos se deduplicean automáticamente de las recomendaciones
-- Todo se carga en paralelo (sesiones + biblioteca + favoritos + plan) para velocidad
+### A revisar con Flavia (❓)
+- ❓ ¿Los títulos y descripciones de las 6 secciones están bien?
+- ❓ ¿Qué contenido va en "¿Te ha pasado?" — escenarios/historias escritas por ella?
+- ❓ ¿Qué contenido va en "QuicKly" — preguntas reales de su audiencia en redes?
+- ❓ ¿Qué contenido va en "Emocional-mente" — reflexiones sobre emociones?
+- ❓ ¿Más libros o películas para "Te recomiendo"?
+- ❓ ¿Hay contenido específico para adolescentes?
+- ❓ ¿Los 5 artículos de Coopidrogas están bien resumidos?
 
 ---
 
-## 5. Sistema de autenticación
+## C. Dashboard — Espacio personal
 
-**Abrir:** `localhost:3000/login`
+### Lo que se ve
+- Saludo dinámico (Buenos días/tardes/noches)
+- Frase diaria de Flavia (rota cada día, 10 frases reales)
+- Progreso emocional: mensajes motivacionales según cuántas sesiones lleva el usuario
+- "Retoma tu conversación" — última sesión con tema, tiempo, último mensaje
+- "Para ti ahora" — 3 piezas de la biblioteca personalizadas
+- "Tus favoritos" — contenido marcado con corazón
+- Historial de conversaciones — últimas 5 sesiones
+- Card de plan (Gratis / Plus con badges)
+- Resumen de sesión con opción de enviar por email
+- Empty state para nuevos usuarios: CTA + tarjetas de temas
 
-- [ ] Login con código de 8 dígitos por email (sin contraseñas)
-- [ ] Flujo: email → código → dentro
-- [ ] Sesión persistente (no te pide login cada vez)
+### Lo que no se ve (🔍)
+- 🔍 La sección "Para ti" prioriza por tema activo + sección relevante (ej: si hablas de deseo → prioriza "Tips educación sexual" y "Lo más hablado")
+- 🔍 Mapa de 13 temas → secciones prioritarias (cada tema tiene 2 secciones preferentes)
+- 🔍 Favoritos se deduplicean de las recomendaciones (nunca ves el mismo item dos veces)
+- 🔍 Todo se carga en paralelo (5 queries simultáneas) para velocidad
 
-**Lo que no se ve:**
-- Supabase Auth con OTP
-- Middleware que refresca la sesión automáticamente en cada petición
-- Rutas protegidas: chat, dashboard, cuenta, favoritos — redirigen a login si no hay sesión
-
----
-
-## 6. Comunidad (feature flag activo)
-
-**Abrir:** `localhost:3000/comunidad`
-
-- [ ] Hilos de discusión por tema
-- [ ] Comentarios anidados
-- [ ] Crear hilo (solo usuarios Plus)
-- [ ] Historias de usuarios (anónimas por defecto)
-- [ ] Flavia puede responder con IA en hilos
-- [ ] Sistema de reportes
-
-**Lo que no se ve:**
-- Moderación por IA automática (detecta contenido inapropiado antes de publicar)
-- Panel de admin unificado en `/admin/moderacion`
-- Feature-flagged: se puede activar/desactivar sin tocar código
+### A revisar con Flavia (❓)
+- ❓ ¿Las 10 frases diarias son buenas o tiene mejores?
+- ❓ ¿Los mensajes de progreso emocional suenan bien?
 
 ---
 
-## 7. Billing y planes
+## D. Comunidad (feature flag)
 
-**Abrir:** `localhost:3000/plans`
+### Lo que se ve
+- Hilos de discusión organizados por tema
+- Dos tabs: "Conversaciones" y "Historias"
+- Comentarios anidados (respuestas a respuestas)
+- Botón "Invitar a Flavia" — la IA responde como Flavia en un hilo (solo Plus)
+- Historias de usuarios (anónimas por defecto)
+- Botón de reportar contenido
+- Crear hilo: solo usuarios Plus
 
-- [ ] Plan Gratis vs Flavia Plus
-- [ ] Checkout con Stripe
-- [ ] Portal de gestión de suscripción
+### Lo que no se ve (🔍)
+- 🔍 Moderación automática por IA antes de publicar
+- 🔍 Panel de admin unificado para moderar todo (hilos, comentarios, historias, reportes)
+- 🔍 Rate limiting: free users → 3 respuestas/día, 1 historia/semana
+- 🔍 Se puede activar/desactivar toda la comunidad con un feature flag sin tocar código
+- 🔍 Las respuestas de "Flavia" en comunidad usan el mismo voice profile que el chat
 
-**Lo que no se ve:**
-- Webhook de Stripe → sincroniza estado de pago con Supabase en tiempo real
-- Si el pago falla, el usuario vuelve a free automáticamente
-
----
-
-## 8. Panel de administración
-
-**Abrir:** `localhost:3000/admin` (solo admins)
-
-- [ ] Contadores: sesiones de chat, mensajes totales, piezas de biblioteca
-- [ ] Top temas más hablados (con los 13 temas y colores)
-- [ ] `/admin/moderacion` — moderación de threads, comentarios, historias, reportes
-- [ ] `/admin/stories` — gestión de historias de usuarios
-
----
-
-## 9. Infraestructura técnica (lo invisible)
-
-Esto no se "muestra" pero es importante que Flavia sepa que existe:
-
-- **Base de datos**: 9 tablas en Supabase (chat, favoritos, feedback, comunidad, billing)
-- **Migración SQL lista** para expandir los topics en producción
-- **Analytics**: PostHog integrado para entender comportamiento de usuarios
-- **Email**: Resend configurado para enviar resúmenes de sesión
-- **CMS**: Sanity preparado (cuando quieran que un equipo editorial gestione contenido sin tocar código)
-- **SEO**: Metadata + Open Graph en todas las páginas, dinámico para items de biblioteca
-- **Performance**: Carga en paralelo, streaming de chat, revalidación cada 60s del CMS
-- **Seguridad**: Auth OTP, rutas protegidas, moderación de contenido, admin por email
+### A revisar con Flavia (❓)
+- ❓ ¿Se activa la comunidad desde el inicio o se espera a tener usuarios?
+- ❓ ¿Solo Plus puede crear hilos, o también free?
 
 ---
 
-## 10. Lo que queda pendiente (para ser transparentes)
+## E. Landing page
 
-| Pendiente | Qué necesitamos |
-|---|---|
-| **Voz clonada de Flavia** | 30 min de audio limpio de Flavia hablando (sin música, sin ruido) |
-| **Sección "¿Te ha pasado?"** | Escenarios/historias escritas por Flavia |
-| **Sección "QuicKly"** | Preguntas reales de audiencia (de redes sociales) |
-| **Sección "Emocional-mente"** | Contenido dedicado de Flavia sobre emociones |
-| **Contenido para adolescentes** | Material segmentado para esa audiencia |
-| **Más libros/películas** | Para enriquecer "Te recomiendo" |
-| **Versión en inglés** | Ejecutar el plan de localización en [docs/english-localization-plan.md](docs/english-localization-plan.md) |
-| **Dominio y deploy final** | flavia.app configurado en Vercel |
+### Lo que se ve
+- Hero con foto de Flavia, nombre, tagline y CTA
+- Demo visual del chat
+- 8 temas como puntos de entrada (con links al chat)
+- **Nuevo: 6 secciones de la biblioteca** como cards de descubrimiento
+- Sección "Cómo funciona"
+- Value props
+- Sección de planes
+- Footer
+
+### A revisar con Flavia (❓)
+- ❓ ¿El tagline/copy del hero está bien?
+- ❓ ¿Qué fotos quiere usar? (hay 5 fotos suyas cargadas)
 
 ---
 
-## Números clave
+## F. Auth y cuenta
 
-| Métrica | Valor |
+- Login sin contraseña: email → código de 8 dígitos → dentro
+- Página de cuenta: plan activo, fecha de renovación, gestionar suscripción
+- Historial de recomendaciones clickeadas
+- Logout
+
+### Lo que no se ve (🔍)
+- 🔍 Supabase Auth con OTP (más seguro que contraseñas)
+- 🔍 Sesión persistente con refresh automático en cada petición
+- 🔍 Redirect inteligente: si intentas entrar a /chat sin login → login → vuelves a /chat
+
+---
+
+## G. Billing
+
+### Lo que se ve
+- Página de planes: Gratis vs Flavia Plus
+- Checkout con Stripe (tarjeta)
+- Portal de gestión de suscripción (cambiar tarjeta, cancelar)
+- Banner post-checkout (éxito/cancelado)
+
+### Lo que no se ve (🔍)
+- 🔍 Webhook de Stripe sincroniza estado en tiempo real
+- 🔍 Si falla el pago → vuelve a free automáticamente
+- 🔍 Eventos monitorizados: checkout started, completed, paywall hit
+
+---
+
+## H. Admin
+
+### Lo que se ve
+- Dashboard de métricas: usuarios Plus, tasa de conversión, cancelaciones
+- Uso: usuarios totales, sesiones, mensajes (hoy/semana)
+- Gráfico sparkline de mensajes últimos 30 días
+- Top temas más hablados (barra, 13 temas con colores)
+- Tabla de usuarios recientes (emails enmascarados)
+- Sesiones recientes
+- Moderación de comunidad: pending/reported/actioned
+- Gestión de historias: aprobar/rechazar
+- Link directo a Stripe Dashboard
+
+---
+
+## I. Infraestructura y cosas técnicas
+
+No se "muestran", pero vale la pena mencionarlas como inversión de producto:
+
+- 🔍 **PWA**: Instalable como app en móvil (icono, splash screen, modo standalone)
+- 🔍 **SEO completo**: Metadata + Open Graph en todas las páginas, dinámico para items de biblioteca
+- 🔍 **Analytics**: PostHog tracking 10+ eventos (home viewed, chat opened, first message, paywall hit, checkout, recomendaciones...)
+- 🔍 **Email**: Resend configurado, plantilla HTML branded para resúmenes de sesión
+- 🔍 **i18n**: Español + inglés con next-intl, locale switcher, 9 archivos de traducción por idioma
+- 🔍 **Performance**: Streaming, carga en paralelo, revalidación cada 60s del CMS
+- 🔍 **Base de datos**: 10+ tablas en Supabase (perfiles, sesiones, mensajes, suscripciones, favoritos, feedback, comunidad...)
+- 🔍 **Migración SQL lista** para expandir topics en producción
+- 🔍 **Tipado completo**: TypeScript estricto en todo el proyecto, Zod para validación de datos
+
+---
+
+## J. Números clave
+
+| Qué | Cuánto |
 |---|---|
 | Temas del chat | 13 |
 | Piezas en la biblioteca | 25 |
@@ -227,5 +218,26 @@ Esto no se "muestra" pero es importante que Flavia sepa que existe:
 | Formatos de contenido | 7 |
 | Segmentos de audiencia | 6 |
 | Tarjetas de entrada al chat | 8 |
-| Tablas en base de datos | 9+ |
+| Tablas en base de datos | 10+ |
 | Páginas / rutas | 20+ |
+| Endpoints API | 14 |
+| Eventos de analytics | 10+ |
+| Idiomas | 2 (ES + EN) |
+
+---
+
+## K. Lo que falta (ser transparentes)
+
+| Pendiente | Qué necesitamos de Flavia |
+|---|---|
+| **Voz clonada** | 30 min de audio limpio hablando (sin música, sin ruido, habitación silenciosa) |
+| **Contenido "¿Te ha pasado?"** | Escenarios/historias escritas por ella |
+| **Contenido "QuicKly"** | Preguntas reales de su audiencia (Instagram, YouTube, etc.) |
+| **Contenido "Emocional-mente"** | Reflexiones/contenido sobre emociones |
+| **Más para "Te recomiendo"** | Más libros, películas, podcasts que recomiende |
+| **Material para adolescentes** | Contenido segmentado para esa audiencia |
+| **Versión en inglés** | Ejecutar el plan de localización en [docs/english-localization-plan.md](docs/english-localization-plan.md) |
+| **Revisión del voice profile** | Sesión de prueba del chat + feedback sobre tono/frases |
+| **Fotos y branding** | Confirmar qué fotos usar, revisar colores y estilo |
+| **Dominio y deploy** | flavia.app configurado en Vercel |
+| **Contenido de Sanity** | Decidir cuándo migrar de contenido hardcoded a CMS |
