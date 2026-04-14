@@ -232,6 +232,12 @@ export default async function AdminPage() {
         >
           {tAdmin("page.view_stripe")}
         </a>
+        <Link
+          href="/admin/review-flavia"
+          className="rounded-full border border-amber-300/80 bg-amber-50/80 px-4 py-2 text-xs font-medium text-amber-700 transition hover:bg-amber-100"
+        >
+          Revisar contenido Flavia
+        </Link>
       </div>
 
       {/* ── Moderation Alert Banner ───────────────────────────────── */}
