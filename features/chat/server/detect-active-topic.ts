@@ -14,57 +14,47 @@ type DetectActiveTopicParams = {
 
 const topicKeywordMap: Record<ChatTopic, string[]> = {
   desire: [
-    "desire",
     "deseo",
     "fantasy",
     "fantasia",
     "arousal",
-    "excited",
     "turn on",
     "libido",
-    "placer",
     "atraccion",
     "atrae",
+    "excitación",
+    "excitacion",
   ],
   couple_connection: [
-    "partner",
     "pareja",
     "relationship",
-    "together",
     "intimacy together",
     "bond",
-    "distance",
     "disconnect",
     "desconexion",
-    "cold",
-    "far apart",
     "reconnect",
     "reconectar",
+    "relación de pareja",
   ],
-  self_connection: ["self", "myself", "solo", "alone", "autoconocimiento", "inner", "identity", "who i am"],
+  self_connection: ["autoconocimiento", "reconectar conmigo", "mi cuerpo", "relación conmigo"],
   communication: [
-    "talk",
-    "communication",
-    "say",
-    "conversation",
-    "express",
     "comunicar",
-    "decir",
-    "how to tell",
+    "comunicación",
     "no se como decir",
     "miedo a decir",
-    "block",
     "bloqueo",
+    "how to tell",
+    "no me atrevo a decir",
   ],
-  body_confidence: ["body", "cuerpo", "confidence", "insecure", "appearance", "mirror", "shame", "vergüenza", "verguenza"],
-  routine: ["routine", "habit", "ritual", "daily", "week", "practice", "consistency", "stuck", "same thing", "piloto automatico", "monotonia"],
-  curiosity: ["curious", "explore", "new", "learn", "question", "wonder", "discover", "try", "experiment"],
-  jealousy: ["jealous", "jealousy", "celos", "celosa", "celoso", "inseguridad", "desconfianza", "miedo a perder"],
-  boundaries: ["boundary", "boundaries", "limite", "límite", "limites", "límites", "decir que no", "culpa", "espacio"],
-  pleasure: ["pleasure", "placer", "orgasm", "orgasmo", "masturbacion", "masturbación", "disfrutar", "autoplacer", "clitoris", "clítoris"],
-  menopause: ["menopause", "menopausia", "hormonal", "resequedad", "climaterio", "sofocos", "lubricante", "envejecer"],
-  erectile_dysfunction: ["erection", "ereccion", "erección", "disfuncion erectil", "disfunción eréctil", "impotencia", "pene", "viagra"],
-  education: ["educacion sexual", "educación sexual", "tabú", "tabu", "mito", "pornografia", "pornografía", "hijos", "niños", "enseñar"],
+  body_confidence: ["cuerpo", "insecure", "appearance", "mirror", "shame", "vergüenza", "verguenza", "body image"],
+  routine: ["piloto automatico", "monotonia", "monotonía", "rutina sexual", "siempre lo mismo en la cama"],
+  curiosity: ["explorar mi sexualidad", "educación sexual", "es normal que", "tengo dudas sobre"],
+  jealousy: ["celos", "celosa", "celoso", "inseguridad", "desconfianza", "miedo a perder"],
+  boundaries: ["limite", "límite", "limites", "límites", "decir que no", "culpa por decir no", "espacio personal"],
+  pleasure: ["orgasm", "orgasmo", "masturbacion", "masturbación", "autoplacer", "clitoris", "clítoris", "placer sexual"],
+  menopause: ["menopausia", "menopause", "hormonal", "resequedad", "climaterio", "sofocos", "lubricante"],
+  erectile_dysfunction: ["ereccion", "erección", "disfuncion erectil", "disfunción eréctil", "impotencia", "se me baja", "no se me para"],
+  education: ["educacion sexual", "educación sexual", "tabú", "tabu", "mito sexual", "pornografia", "pornografía", "enseñar sobre sexo"],
 };
 
 const emotionTopicMap: Array<{ keywords: string[]; topic: ChatTopic }> = [
@@ -151,7 +141,9 @@ function detectTopicHeuristically(recentMessages: ChatMessage[]): ChatTopic | nu
     }
   }
 
-  if (bestScore > 0) {
+  // Require at least 2 weighted keyword matches to trigger heuristic detection.
+  // This prevents single generic words from forcing a sexual topic assignment.
+  if (bestScore >= 2) {
     return bestTopic;
   }
 
