@@ -1,5 +1,6 @@
 import "server-only";
 
+import { getUserPlan } from "@/features/billing/server/get-user-plan";
 import { buildChatContext } from "@/features/chat/server/build-chat-context";
 import { createChatSession } from "@/features/chat/server/create-chat-session";
 import { detectActiveTopic } from "@/features/chat/server/detect-active-topic";
@@ -207,7 +208,12 @@ export async function processChatTurn({
   const sanitizedMessage = sanitizeIncomingMessage(input.message);
 
   try {
-    const usage = await enforceUsagePolicy({ userId, sessionId: session.id });
+    // Single getUserPlan call per turn — threaded through both the usage
+    // policy and the chat-context builder. Was: 2 calls (one inside
+    // enforceUsagePolicy, one here for isPlusUser).
+    const userPlan = await getUserPlan({ userId });
+
+    const usage = await enforceUsagePolicy({ userId, sessionId: session.id, plan: userPlan });
 
     if (!usage.allowed && !usage.requiresUpgrade) {
       throw new Error(usage.reason ?? "Chat usage policy blocked this request.");
@@ -242,6 +248,7 @@ export async function processChatTurn({
     const context = await buildChatContext({
       session: sessionWithTopic,
       history,
+      plan: userPlan,
     });
     const userTurnCount = history.filter((message) => message.role === "user").length;
 
@@ -385,7 +392,10 @@ export async function processChatTurnStream({
 
   const session = await createChatSession({ userId, sessionId: input.sessionId });
   const sanitizedMessage = sanitizeIncomingMessage(input.message);
-  const usage = await enforceUsagePolicy({ userId, sessionId: session.id });
+  // Single getUserPlan call per streaming turn — threaded through usage
+  // policy and chat context.
+  const userPlan = await getUserPlan({ userId });
+  const usage = await enforceUsagePolicy({ userId, sessionId: session.id, plan: userPlan });
 
   // If paywall, return a single "done" event — no streaming needed
   if (usage.requiresUpgrade) {
@@ -432,7 +442,7 @@ export async function processChatTurnStream({
   const detectedTopic = await detectActiveTopic({ recentMessages: history }).catch(() => null);
   const sessionWithTopic = await persistActiveTopic(session, userId, detectedTopic ?? session.activeTopic);
 
-  const context = await buildChatContext({ session: sessionWithTopic, history });
+  const context = await buildChatContext({ session: sessionWithTopic, history, plan: userPlan });
   const userTurnCount = history.filter((m) => m.role === "user").length;
 
   // Get the stream

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 
+import { AudioMessage } from "@/components/chat/audio-message";
 import type { ChatMessage } from "@/features/chat/types";
 import { formatRelativeTime } from "@/lib/locale";
 
@@ -10,13 +11,23 @@ type ChatMessageItemProps = {
   message: ChatMessage;
   streaming?: boolean;
   createdAt?: string;
+  isAudioMessage?: boolean;
+  isPlus?: boolean;
 };
 
-export function ChatMessageItem({ message, streaming, createdAt }: ChatMessageItemProps) {
+export function ChatMessageItem({
+  message,
+  streaming,
+  createdAt,
+  isAudioMessage = false,
+  isPlus = false,
+}: ChatMessageItemProps) {
   const locale = useLocale();
   const t = useTranslations("shared");
   const isUser = message.role === "user";
   const isShort = message.content.length < 40;
+  const renderAsAudio =
+    !isUser && isAudioMessage && !streaming && message.content.trim().length > 0;
 
   return (
     <article
@@ -35,24 +46,28 @@ export function ChatMessageItem({ message, streaming, createdAt }: ChatMessageIt
         </div>
       )}
 
-      <div className={isShort ? "w-fit" : ""}>
-        <div
-          className={
-            isUser
-              ? "max-w-xl rounded-2xl rounded-br-md bg-gradient-to-br from-rose-400 to-rose-500 px-4 py-3 text-sm text-white shadow-[0_8px_20px_rgba(220,100,100,0.15)]"
-              : "max-w-xl rounded-2xl rounded-bl-md bg-gradient-to-b from-white to-rose-50/80 border border-rose-200/50 px-4 py-3 text-sm text-stone-800 shadow-[0_6px_16px_rgba(180,120,100,0.08)]"
-          }
-        >
-          <p className={`mb-1.5 text-[10px] uppercase tracking-[0.2em] ${isUser ? "text-rose-200/70" : "text-rose-400/70"}`}>
-            {isUser ? t("chat.user_label") : "Flavia"}
-          </p>
-          <p className="whitespace-pre-wrap leading-relaxed">
-            {message.content}
-            {streaming ? (
-              <span className="ml-0.5 inline-block h-4 w-1.5 animate-pulse bg-rose-400/70" />
-            ) : null}
-          </p>
-        </div>
+      <div className={isShort && !renderAsAudio ? "w-fit" : ""}>
+        {renderAsAudio ? (
+          <AudioMessage text={message.content} locked={!isPlus} />
+        ) : (
+          <div
+            className={
+              isUser
+                ? "max-w-xl rounded-2xl rounded-br-md bg-gradient-to-br from-rose-400 to-rose-500 px-4 py-3 text-sm text-white shadow-[0_8px_20px_rgba(220,100,100,0.15)]"
+                : "max-w-xl rounded-2xl rounded-bl-md bg-gradient-to-b from-white to-rose-50/80 border border-rose-200/50 px-4 py-3 text-sm text-stone-800 shadow-[0_6px_16px_rgba(180,120,100,0.08)]"
+            }
+          >
+            <p className={`mb-1.5 text-[10px] uppercase tracking-[0.2em] ${isUser ? "text-rose-200/70" : "text-rose-400/70"}`}>
+              {isUser ? t("chat.user_label") : "Flavia"}
+            </p>
+            <p className="whitespace-pre-wrap leading-relaxed">
+              {message.content}
+              {streaming ? (
+                <span className="ml-0.5 inline-block h-4 w-1.5 animate-pulse bg-rose-400/70" />
+              ) : null}
+            </p>
+          </div>
+        )}
 
         {/* Timestamp */}
         {createdAt && (

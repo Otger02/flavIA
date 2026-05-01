@@ -50,6 +50,9 @@ export const chatContextSchema = z.object({
   recentMessages: z.array(chatMessageSchema).max(CHAT_HISTORY_LIMIT),
   activeTopic: chatTopicSchema.nullable(),
   userStateSummary: z.string().nullable(),
+  topic: z.string().optional(),
+  turnCount: z.number().int().nonnegative().optional(),
+  isPlusUser: z.boolean().optional(),
 });
 
 export const chatUserStateUpdateSchema = z.object({

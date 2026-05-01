@@ -12,9 +12,10 @@ type ChatMessageListProps = {
   hasPersistedSession: boolean;
   loading: boolean;
   messages: ClientChatMessage[];
+  isPlus?: boolean;
 };
 
-export function ChatMessageList({ hasPersistedSession, loading, messages }: ChatMessageListProps) {
+export function ChatMessageList({ hasPersistedSession, loading, messages, isPlus = false }: ChatMessageListProps) {
   const t = useTranslations("shared");
   const endRef = useRef<HTMLDivElement | null>(null);
   const previousLengthRef = useRef(messages.length);
@@ -50,9 +51,26 @@ export function ChatMessageList({ hasPersistedSession, loading, messages }: Chat
           </p>
         </div>
       ) : (
-        messages.map((message) => (
-          <ChatMessageItem key={message.id} message={message} streaming={message.streaming} createdAt={message.createdAt} />
-        ))
+        (() => {
+          let assistantCount = 0;
+          return messages.map((message) => {
+            let isAudioMessage = false;
+            if (message.role === "assistant") {
+              assistantCount += 1;
+              isAudioMessage = assistantCount % 3 !== 0;
+            }
+            return (
+              <ChatMessageItem
+                key={message.id}
+                message={message}
+                streaming={message.streaming}
+                createdAt={message.createdAt}
+                isAudioMessage={isAudioMessage}
+                isPlus={isPlus}
+              />
+            );
+          });
+        })()
       )}
       {loading && !messages.some((m) => m.streaming) ? (
         <div className="self-start">

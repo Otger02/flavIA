@@ -13,7 +13,8 @@
 		"pleasure": "Placer",
 		"menopause": "Menopausia",
 		"erectile_dysfunction": "Erección",
-		"education": "Educación sexual"
+		"education": "Educación sexual",
+		"identity": "Identidad"
 	},
 	"topic_starters": {
 		"desire": "Quiero hablar sobre el deseo. Últimamente siento que algo ha cambiado.",
@@ -52,7 +53,14 @@
 		"recommendation_product_cta": "Ir al producto",
 		"recommendation_product_label": "Para seguir avanzando",
 		"recommendation_content_label": "Te puede interesar",
-		"recommendation_cta": "Ver recomendación"
+		"recommendation_cta": "Ver recomendación",
+		"audio_show_text": "Ver en texto",
+		"audio_hide_text": "Ocultar texto",
+		"audio_loading": "Preparando audio...",
+		"audio_ready": "Audio listo — toca para escuchar",
+		"audio_unavailable": "Audio no disponible",
+		"audio_locked_label": "Escucha a Flavia en Flavia Plus",
+		"audio_locked_cta": "Descubrir Plus"
 	},
 	"feedback": {
 		"meta_title": "Feedback",
@@ -110,6 +118,27 @@
 		"emocionalmente": {
 			"title": "Emocional-mente",
 			"description": "Emociones, conflictos y salud mental en la intimidad."
+		},
+		"soy_normal_o_distinto": {
+			"title": "¿Soy normal o solo distinto?",
+			"description": "Un espacio para entender que la diversidad sexual es la norma, no la excepción."
+		},
+		"tengo_miedo": {
+			"title": "Tengo miedo",
+			"description": "El miedo en la intimidad también tiene nombre. Aquí puedes ponerle palabras."
+		}
+	},
+	"disclaimers": {
+		"adult": {
+			"title": "Antes de entrar",
+			"body": "Este espacio contiene contenido sobre sexualidad y relaciones íntimas para adultos. ¿Confirmas que eres mayor de 18 años?",
+			"confirm": "Sí, soy mayor de 18",
+			"under_18": "No, tengo menos de 18"
+		},
+		"teen": {
+			"title": "Esta sección es para jóvenes",
+			"body": "Esta sección está diseñada para jóvenes de 13 a 17 años, con contenido de educación sexual apropiado para su edad. Si eres adulto, el contenido para ti está en las otras secciones.",
+			"acknowledge": "Entendido"
 		}
 	}
 }

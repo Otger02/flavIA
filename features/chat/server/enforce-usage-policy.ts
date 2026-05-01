@@ -1,29 +1,30 @@
 import "server-only";
 
-import { BILLING_FEATURE_KEYS } from "@/features/billing/constants";
-import { canAccessFeature } from "@/features/billing/server/can-access-feature";
-import { getUserPlan } from "@/features/billing/server/get-user-plan";
+import {
+  FREE_SESSION_MESSAGE_LIMIT,
+  PLUS_SESSION_MESSAGE_LIMIT,
+} from "@/features/billing/constants";
+import { canAccessPlus, canAccessPro } from "@/features/billing/access";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import type { UserPlan } from "@/features/billing/types";
 import type { ChatUsagePolicy } from "@/features/chat/types";
-
-const FREE_SESSION_MESSAGE_LIMIT = 5;
 
 type EnforceUsagePolicyParams = {
   userId: string;
   sessionId?: string;
+  // Caller-provided to avoid a duplicate getUserPlan round-trip per turn.
+  // The plan is fetched once at the orchestrator (processChatTurn /
+  // processChatTurnStream / chat page render) and threaded through.
+  plan: UserPlan;
 };
 
 export async function enforceUsagePolicy({
   userId,
   sessionId,
+  plan,
 }: EnforceUsagePolicyParams): Promise<ChatUsagePolicy> {
-  const plan = await getUserPlan({ userId });
-  const featureAccess = await canAccessFeature({
-    feature: BILLING_FEATURE_KEYS.chatPriority,
-    plan,
-  });
-
-  if (featureAccess.allowed) {
+  // Pro: unlimited chat, no enforcement.
+  if (canAccessPro(plan)) {
     return {
       allowed: true,
       requiresUpgrade: false,
@@ -33,13 +34,20 @@ export async function enforceUsagePolicy({
     };
   }
 
+  // Plus: 100 messages per session, soft-cap (no upgrade prompt — Pro is
+  // optional). Free: 4 messages per session, then paywall to Plus.
+  const isPlus = canAccessPlus(plan);
+  const sessionLimit = isPlus
+    ? PLUS_SESSION_MESSAGE_LIMIT
+    : FREE_SESSION_MESSAGE_LIMIT;
+
   if (!sessionId) {
     return {
       allowed: true,
       requiresUpgrade: false,
       requires_upgrade: false,
       reason: null,
-      remainingTurns: FREE_SESSION_MESSAGE_LIMIT,
+      remainingTurns: sessionLimit,
     };
   }
 
@@ -56,14 +64,22 @@ export async function enforceUsagePolicy({
   }
 
   const usedMessages = count ?? 0;
-  const remainingTurns = Math.max(FREE_SESSION_MESSAGE_LIMIT - usedMessages, 0);
-  const requiresUpgrade = usedMessages >= FREE_SESSION_MESSAGE_LIMIT;
+  const remainingTurns = Math.max(sessionLimit - usedMessages, 0);
+  const overLimit = usedMessages >= sessionLimit;
+
+  // Only free users see the paywall — Plus users hitting their session
+  // cap get a soft block (allowed=false) without an upgrade prompt.
+  const requiresUpgrade = overLimit && !isPlus;
 
   return {
-    allowed: !requiresUpgrade,
+    allowed: !overLimit,
     requiresUpgrade,
     requires_upgrade: requiresUpgrade,
-    reason: requiresUpgrade ? "Has llegado al limite gratuito de esta sesion." : null,
+    reason: overLimit
+      ? isPlus
+        ? "Has llegado al limite de mensajes de esta sesion. Empieza una nueva."
+        : "Has llegado al limite gratuito de esta sesion."
+      : null,
     remainingTurns,
   };
 }

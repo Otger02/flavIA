@@ -13,7 +13,8 @@
 		"pleasure": "Pleasure",
 		"menopause": "Menopause",
 		"erectile_dysfunction": "Erection",
-		"education": "Sexual education"
+		"education": "Sexual education",
+		"identity": "Identity"
 	},
 	"topic_starters": {
 		"desire": "I want to talk about desire. Lately I feel like something has changed.",
@@ -52,7 +53,14 @@
 		"recommendation_product_cta": "Go to product",
 		"recommendation_product_label": "To keep moving forward",
 		"recommendation_content_label": "You might be interested",
-		"recommendation_cta": "See recommendation"
+		"recommendation_cta": "See recommendation",
+		"audio_show_text": "Show transcript",
+		"audio_hide_text": "Hide transcript",
+		"audio_loading": "Preparing audio...",
+		"audio_ready": "Audio ready — tap to listen",
+		"audio_unavailable": "Audio unavailable",
+		"audio_locked_label": "Listen to Flavia on Flavia Plus",
+		"audio_locked_cta": "Discover Plus"
 	},
 	"feedback": {
 		"meta_title": "Feedback",
@@ -110,6 +118,27 @@
 		"emocionalmente": {
 			"title": "Emotionally speaking",
 			"description": "Emotions, conflict and mental health in intimacy."
+		},
+		"soy_normal_o_distinto": {
+			"title": "Am I normal or just different?",
+			"description": "A space to understand that sexual diversity is the norm, not the exception."
+		},
+		"tengo_miedo": {
+			"title": "I'm afraid",
+			"description": "Fear in intimacy also has a name. Here you can put it into words."
+		}
+	},
+	"disclaimers": {
+		"adult": {
+			"title": "Before you come in",
+			"body": "This space contains content about sexuality and intimate relationships for adults. Do you confirm that you are 18 or older?",
+			"confirm": "Yes, I'm 18 or older",
+			"under_18": "No, I'm under 18"
+		},
+		"teen": {
+			"title": "This section is for teens",
+			"body": "This section is designed for young people aged 13 to 17, with sex-education content appropriate for their age. If you're an adult, the content for you is in the other sections.",
+			"acknowledge": "Got it"
 		}
 	}
 }

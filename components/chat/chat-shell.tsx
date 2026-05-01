@@ -23,9 +23,10 @@ type ChatShellProps = {
   initialSessionId: string | null;
   initialUsage: ChatUsagePolicy | null;
   initialTopic?: string | null;
+  isPlus?: boolean;
 };
 
-export function ChatShell({ initialMessages, initialSessionId, initialUsage, initialTopic }: ChatShellProps) {
+export function ChatShell({ initialMessages, initialSessionId, initialUsage, initialTopic, isPlus = false }: ChatShellProps) {
   const t = useTranslations("shared");
   const { error, hasHistory, loading, messages, recommendation, sendMessage, sessionId, usage } = useChat({
     initialMessages,
@@ -81,6 +82,7 @@ export function ChatShell({ initialMessages, initialSessionId, initialUsage, ini
           hasPersistedSession={Boolean(sessionId || initialSessionId)}
           loading={loading}
           messages={messages}
+          isPlus={isPlus}
         />
 
         {recommendation ? (
