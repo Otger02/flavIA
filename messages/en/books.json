@@ -1,0 +1,33 @@
+{
+	"list": {
+		"meta_title": "Books",
+		"meta_description": "Books by Flavia Dos Santos on sexuality, intimacy and partner relationships. Downloadable PDF and physical options.",
+		"eyebrow": "Books by Flavia",
+		"title": "What Flavia has written",
+		"subtitle": "Books to read slowly. Each answers real questions she hears in her practice — no taboo, no moralizing.",
+		"empty_state": "We'll add the books here soon.",
+		"detail_cta": "See details",
+		"owned_badge": "Yours"
+	},
+	"detail": {
+		"back": "← Back to books",
+		"not_found": "Book not found",
+		"description_title": "What it's about",
+		"description_empty": "We'll add the description for this book soon.",
+		"teaser_eyebrow": "Free preview",
+		"teaser_title": "The first pages",
+		"teaser_empty": "No preview available yet.",
+		"physical_section": "Find it in print",
+		"physical_subtitle": "If you prefer paper, here are the bookstores that carry it.",
+		"pages_count": "{count} pages",
+		"buy_cta": "Buy PDF · {price}",
+		"buy_pending": "Preparing...",
+		"download_cta": "Download my PDF",
+		"login_to_buy": "Log in to buy",
+		"checkout_error": "We couldn't start the payment. Try again.",
+		"coming_soon": "Coming soon",
+		"coming_soon_note": "We're getting the shop ready. Email hola@flavia.app to be notified when it launches.",
+		"purchase_success": "Payment received. Your PDF is ready to download.",
+		"purchase_error": "The payment didn't go through. No charge was made. You can try again any time."
+	}
+}

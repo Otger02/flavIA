@@ -3,6 +3,7 @@ import "server-only";
 import Stripe from "stripe";
 
 import { BILLING_WEBHOOK_RELEVANT_EVENTS } from "@/features/billing/constants";
+import { recordBookPurchase } from "@/features/books/server/book-purchases";
 import { createAdminSupabaseClient } from "@/lib/supabase/admin";
 import { ANALYTICS_EVENTS, trackServerEvent } from "@/lib/analytics/track";
 import { getStripeServerConfig } from "@/lib/stripe/config";
@@ -105,6 +106,56 @@ export async function syncSubscriptionFromStripe(
 
   if (input.eventType === "checkout.session.completed") {
     const session = eventObject as Stripe.Checkout.Session;
+
+    // Book purchases: mode='payment' with metadata.kind === 'book'.
+    // Decoupled from the subscription path so a book sale never touches
+    // the `subscriptions` table or affects a user's plan.
+    if (session.mode === "payment" && session.metadata?.kind === "book") {
+      const userId = session.metadata.userId ?? session.client_reference_id ?? null;
+      const bookSlug = session.metadata.bookSlug ?? null;
+      const amountCop = Number(session.metadata.amountCop ?? 0);
+
+      if (!userId || !bookSlug) {
+        console.error(
+          `[books][webhook] Missing userId or bookSlug on session ${session.id}; skipping.`,
+        );
+        return {
+          handled: true,
+          eventType: input.eventType,
+          subscriptionId: null,
+        };
+      }
+
+      const paymentIntentId =
+        typeof session.payment_intent === "string"
+          ? session.payment_intent
+          : session.payment_intent?.id ?? null;
+
+      await recordBookPurchase({
+        userId,
+        bookSlug,
+        stripeSessionId: session.id,
+        stripePaymentIntentId: paymentIntentId,
+        amountCop: Number.isFinite(amountCop) && amountCop > 0 ? amountCop : 30000,
+      });
+
+      await trackServerEvent({
+        distinctId: userId,
+        event: ANALYTICS_EVENTS.checkoutCompleted,
+        properties: {
+          checkoutSessionId: session.id,
+          kind: "book",
+          bookSlug,
+          amountCop,
+        },
+      }).catch(() => null);
+
+      return {
+        handled: true,
+        eventType: input.eventType,
+        subscriptionId: null,
+      };
+    }
 
     if (session.subscription) {
       const stripe = new Stripe(getStripeServerConfig().secretKey);

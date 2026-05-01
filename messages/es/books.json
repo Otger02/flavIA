@@ -1,0 +1,33 @@
+{
+	"list": {
+		"meta_title": "Libros",
+		"meta_description": "Libros de Flavia Dos Santos sobre sexualidad, intimidad y relaciones de pareja. PDF descargable y opciones físicas.",
+		"eyebrow": "Libros de Flavia",
+		"title": "Lo que Flavia ha escrito",
+		"subtitle": "Libros para leer despacio. Cada uno responde a preguntas reales que llegan a consulta — sin tabú, sin moralizar.",
+		"empty_state": "Pronto añadiremos los libros aquí.",
+		"detail_cta": "Ver detalle",
+		"owned_badge": "Tuyo"
+	},
+	"detail": {
+		"back": "← Volver a libros",
+		"not_found": "Libro no encontrado",
+		"description_title": "De qué trata",
+		"description_empty": "Pronto añadiremos la descripción de este libro.",
+		"teaser_eyebrow": "Lectura gratuita",
+		"teaser_title": "Las primeras páginas",
+		"teaser_empty": "Aún no hay extracto disponible.",
+		"physical_section": "Encuéntralo en físico",
+		"physical_subtitle": "Si prefieres papel, aquí están las librerías que lo tienen.",
+		"pages_count": "{count} páginas",
+		"buy_cta": "Comprar PDF · {price}",
+		"buy_pending": "Preparando...",
+		"download_cta": "Descargar mi PDF",
+		"login_to_buy": "Inicia sesión para comprar",
+		"checkout_error": "No pudimos iniciar el pago. Inténtalo de nuevo.",
+		"coming_soon": "Próximamente",
+		"coming_soon_note": "Estamos preparando la tienda. Si quieres avisarnos cuando salga, escríbenos a hola@flavia.app.",
+		"purchase_success": "Pago recibido. Tu PDF ya está disponible para descargar.",
+		"purchase_error": "El pago no se completó. No se realizó ningún cargo. Puedes volver a intentarlo cuando quieras."
+	}
+}

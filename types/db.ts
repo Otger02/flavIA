@@ -553,6 +553,42 @@ export type Database = {
         };
         Relationships: [];
       };
+      book_purchases: {
+        Row: {
+          id: string;
+          user_id: string;
+          book_slug: string;
+          stripe_session_id: string;
+          stripe_payment_intent_id: string | null;
+          amount_cop: number;
+          purchased_at: string;
+          refunded_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          book_slug: string;
+          stripe_session_id: string;
+          stripe_payment_intent_id?: string | null;
+          amount_cop: number;
+          purchased_at?: string;
+          refunded_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          book_slug?: string;
+          stripe_session_id?: string;
+          stripe_payment_intent_id?: string | null;
+          amount_cop?: number;
+          purchased_at?: string;
+          refunded_at?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       subscriptions: {
         Row: {
           id: string;
