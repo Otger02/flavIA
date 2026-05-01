@@ -8,6 +8,8 @@ import { ChatShell } from "@/components/chat/chat-shell";
 import { enforceUsagePolicy } from "@/features/chat/server/enforce-usage-policy";
 import { getChatHistory } from "@/features/chat/server/get-chat-history";
 import { getLatestChatSession } from "@/features/chat/server/get-latest-chat-session";
+import { getUserPlan } from "@/features/billing/server/get-user-plan";
+import { BILLING_PLUS_PLAN } from "@/features/billing/constants";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("shared");
@@ -27,7 +29,15 @@ export default async function ChatPage({ searchParams }: ChatPageProps) {
   const user = await getUser();
   const session = !hasTopic && user ? await getLatestChatSession({ userId: user.id }) : null;
   const messages = session ? await getChatHistory({ sessionId: session.id }) : [];
-  const usage = user ? await enforceUsagePolicy({ userId: user.id, sessionId: session?.id }) : null;
+  // Single getUserPlan call per page render — passed to enforceUsagePolicy
+  // and used locally to derive isPlus.
+  const plan = user ? await getUserPlan({ userId: user.id }) : null;
+  const usage =
+    user && plan
+      ? await enforceUsagePolicy({ userId: user.id, sessionId: session?.id, plan })
+      : null;
+  const isPlus =
+    plan?.plan === BILLING_PLUS_PLAN && (plan.status === "active" || plan.status === "trialing");
 
   return (
     <>
@@ -44,6 +54,7 @@ export default async function ChatPage({ searchParams }: ChatPageProps) {
         initialSessionId={session?.id ?? null}
         initialUsage={usage}
         initialTopic={params.topic ?? null}
+        isPlus={isPlus}
       />
     </>
   );

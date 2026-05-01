@@ -3,7 +3,7 @@ import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 
-import { ALL_TOPICS } from "@/lib/topic-config";
+import { CHAT_TOPICS } from "@/features/chat/constants";
 import { getAiProviderKeys } from "@/lib/env";
 import { getTopicDetectionPrompt } from "@/lib/ai/prompts/topic-detection-prompt";
 import type { ChatMessage, ChatTopic } from "@/features/chat/types";
@@ -98,7 +98,7 @@ function normalizeTopic(value: string | null | undefined): ChatTopic | null {
   }
 
   const normalizedValue = value.trim().toLowerCase();
-  return ALL_TOPICS.includes(normalizedValue as ChatTopic) ? (normalizedValue as ChatTopic) : null;
+  return CHAT_TOPICS.includes(normalizedValue as ChatTopic) ? (normalizedValue as ChatTopic) : null;
 }
 
 function detectTopicHeuristically(recentMessages: ChatMessage[]): ChatTopic | null {
@@ -112,7 +112,7 @@ function detectTopicHeuristically(recentMessages: ChatMessage[]): ChatTopic | nu
   const latestText = latestMessage.content.toLowerCase();
   const weightedScores = new Map<ChatTopic, number>();
 
-  for (const topic of ALL_TOPICS) {
+  for (const topic of CHAT_TOPICS) {
     weightedScores.set(topic, 0);
   }
 
@@ -120,7 +120,7 @@ function detectTopicHeuristically(recentMessages: ChatMessage[]): ChatTopic | nu
     const weight = index === array.length - 1 ? 3 : 1;
     const content = message.content.toLowerCase();
 
-    for (const topic of ALL_TOPICS) {
+    for (const topic of CHAT_TOPICS) {
       const matches = topicKeywordMap[topic].filter((keyword) => content.includes(keyword)).length;
 
       if (matches > 0) {
@@ -132,7 +132,7 @@ function detectTopicHeuristically(recentMessages: ChatMessage[]): ChatTopic | nu
   let bestTopic: ChatTopic | null = null;
   let bestScore = 0;
 
-  for (const topic of ALL_TOPICS) {
+  for (const topic of CHAT_TOPICS) {
     const score = weightedScores.get(topic) ?? 0;
 
     if (score > bestScore) {

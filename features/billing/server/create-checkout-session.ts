@@ -5,11 +5,40 @@ import Stripe from "stripe";
 import { createAdminSupabaseClient } from "@/lib/supabase/admin";
 import { ANALYTICS_EVENTS, trackServerEvent } from "@/lib/analytics/track";
 import { getStripePublicConfig, getStripeServerConfig } from "@/lib/stripe/config";
-import { BILLING_DEFAULT_CURRENCY } from "@/features/billing/constants";
+import {
+  BILLING_DEFAULT_CURRENCY,
+  BILLING_PLUS_PLAN,
+  BILLING_PRO_PLAN,
+} from "@/features/billing/constants";
 import type {
+  BillingPlan,
   CheckoutSession,
   CheckoutSessionInput,
 } from "@/features/billing/types";
+
+function resolvePriceIdForPlan(
+  plan: BillingPlan,
+  config: ReturnType<typeof getStripeServerConfig>,
+): string {
+  // TODO(flavia-pro): wire a real Stripe price ID for Pro once Flavia
+  // confirms pricing. Until STRIPE_PRO_PRICE_ID is set, Pro checkout is
+  // intentionally blocked here so users can't accidentally start a
+  // subscription against the wrong product.
+  if (plan === BILLING_PLUS_PLAN) {
+    return config.flaviaPlusPriceId;
+  }
+
+  if (plan === BILLING_PRO_PLAN) {
+    if (!config.flaviaProPriceId) {
+      throw new Error(
+        "Flavia Pro is not yet available for checkout. Set STRIPE_PRO_PRICE_ID once pricing is confirmed.",
+      );
+    }
+    return config.flaviaProPriceId;
+  }
+
+  throw new Error(`No Stripe price configured for plan "${plan}".`);
+}
 
 export async function createCheckoutSession(
   input: CheckoutSessionInput,
@@ -18,6 +47,7 @@ export async function createCheckoutSession(
   const publicStripeConfig = getStripePublicConfig();
   const supabase = createAdminSupabaseClient();
   const stripe = new Stripe(stripeConfig.secretKey);
+  const priceId = resolvePriceIdForPlan(input.plan, stripeConfig);
 
   const { data: existingSubscription, error: subscriptionError } = await supabase
     .from("subscriptions")
@@ -56,7 +86,7 @@ export async function createCheckoutSession(
     customer: customerId,
     line_items: [
       {
-        price: stripeConfig.flaviaPlusPriceId,
+        price: priceId,
         quantity: 1,
       },
     ],

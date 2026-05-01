@@ -24,6 +24,15 @@ const serverEnvSchema = z.object({
   STRIPE_SECRET_KEY: z.string().min(1),
   STRIPE_WEBHOOK_SECRET: emptyStringToUndefined(z.string().min(1)),
   STRIPE_FLAVIA_PLUS_PRICE_ID: z.string().min(1),
+  // TODO(flavia-pro): Pro tier price not finalized yet. Optional until
+  // Flavia confirms pricing — checkout for plan="pro" throws a clear error
+  // when this isn't set. Replace with a real Stripe price ID then.
+  STRIPE_PRO_PRICE_ID: emptyStringToUndefined(z.string().min(1)),
+  // TODO(flavia-books): Book Stripe price not yet created. Single 30k COP
+  // price reused across all books for now. Optional until Flavia confirms
+  // — book checkout throws a clear error when this isn't set, and the buy
+  // button on /libros/[slug] renders a "Próximamente" disabled state.
+  STRIPE_BOOK_PRICE_30K: emptyStringToUndefined(z.string().min(1)),
   SANITY_PROJECT_ID: z.string().min(1),
   SANITY_DATASET: z.string().min(1),
   SANITY_API_VERSION: z.iso.date(),
@@ -60,6 +69,8 @@ export function getServerEnv(): ServerEnv {
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
     STRIPE_FLAVIA_PLUS_PRICE_ID: process.env.STRIPE_FLAVIA_PLUS_PRICE_ID,
+    STRIPE_PRO_PRICE_ID: process.env.STRIPE_PRO_PRICE_ID,
+    STRIPE_BOOK_PRICE_30K: process.env.STRIPE_BOOK_PRICE_30K,
     SANITY_PROJECT_ID: process.env.SANITY_PROJECT_ID,
     SANITY_DATASET: process.env.SANITY_DATASET,
     SANITY_API_VERSION: process.env.SANITY_API_VERSION,
