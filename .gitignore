@@ -27,3 +27,14 @@ pnpm-debug.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Sanity backups y temporales
+sanity.config.ts.backup
+vite.config.cjs
+
+# Knowledge files locales (PDFs originales, audios)
+scripts/flavia-knowledge/pdfs/
+scripts/flavia-knowledge/audio/
+
+# Carpeta auto-generada por Sanity
+.sanity/

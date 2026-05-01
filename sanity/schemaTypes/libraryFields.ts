@@ -1,12 +1,14 @@
 import { defineArrayMember, defineField } from "sanity";
 
 import {
+  LIBRARY_AUDIENCES,
   LIBRARY_CONTENT_TYPES,
   LIBRARY_DOCUMENT_TYPES,
   LIBRARY_INTENT_TAGS,
+  LIBRARY_SECTIONS,
   LIBRARY_TOPIC_TAGS,
   type LibraryContentType,
-} from "@/features/library/constants";
+} from "../../features/library/constants";
 
 export function createLibraryFields(
   contentType: LibraryContentType,
@@ -51,6 +53,18 @@ export function createLibraryFields(
       options: { list: LIBRARY_CONTENT_TYPES.map((value) => ({ title: value, value })) },
       validation: (rule) => rule.required(),
       readOnly: true,
+    }),
+    defineField({
+      name: "sectionTag",
+      title: "Section",
+      type: "string",
+      options: { list: LIBRARY_SECTIONS.map((value) => ({ title: value, value })) },
+    }),
+    defineField({
+      name: "audienceTags",
+      title: "Audience Tags",
+      type: "array",
+      of: [defineArrayMember({ type: "string", options: { list: LIBRARY_AUDIENCES.map((value) => ({ title: value, value })) } })],
     }),
     defineField({ name: "isPremium", title: "Is Premium", type: "boolean", initialValue: false }),
     defineField({ name: "chatRecommended", title: "Chat Recommended", type: "boolean", initialValue: false }),

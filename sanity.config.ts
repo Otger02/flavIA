@@ -1,17 +1,13 @@
-import { defineConfig } from "sanity";
+﻿import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
-
-import { structure } from "@/structure";
-import { schemaTypes } from "@/sanity/schemaTypes";
+import { structure } from "./structure";
+import { schemaTypes } from "./sanity/schemaTypes";
 
 export default defineConfig({
   name: "default",
-  title: "Flavia Studio",
-  projectId: process.env.SANITY_PROJECT_ID ?? "placeholder-project-id",
-  dataset: process.env.SANITY_DATASET ?? "production",
-  basePath: "/studio",
+  title: "flavIA",
+  projectId: "li52jeft",
+  dataset: "production",
   plugins: [structureTool({ structure })],
-  schema: {
-    types: schemaTypes,
-  },
+  schema: { types: schemaTypes },
 });

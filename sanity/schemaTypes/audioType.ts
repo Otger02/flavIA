@@ -1,6 +1,6 @@
 import { defineType } from "sanity";
 
-import { createLibraryFields } from "@/sanity/schemaTypes/libraryFields";
+import { createLibraryFields } from "./libraryFields";
 
 export const audioType = defineType({
   name: "audio",
