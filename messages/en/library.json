@@ -13,9 +13,23 @@
 			"by_topic": "Explore by topic",
 			"all_topics": "All",
 			"by_format": "Explore by format",
-			"all_formats": "All formats"
+			"all_formats": "All formats",
+			"by_audience": "Audience",
+			"audience_default": "For adults",
+			"audience_teens": "For teens"
 		},
 		"empty_state": "There are no pieces for this combination yet. Try another topic or format to keep exploring the library.",
+		"teen_mode_banner": {
+			"prefix": "You're viewing content for teens.",
+			"question": "Are you 18 or older?",
+			"cta": "Switch here →"
+		},
+		"adult_only_notice": {
+			"title": "This content is for adults.",
+			"question": "Are you 18 or older?",
+			"cta": "Confirm here →",
+			"back": "← Back to teen content"
+		},
 		"format_labels": {
 			"article": "Article",
 			"audio": "Audio",
@@ -23,7 +37,8 @@
 			"faq": "FAQ",
 			"script": "Script",
 			"video": "Video",
-			"book_recommendation": "Book recommendation"
+			"book_recommendation": "Book recommendation",
+			"quickly": "QuicKly"
 		},
 		"section_labels": {},
 		"source_fallback": "Flavia Library",

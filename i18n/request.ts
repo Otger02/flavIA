@@ -10,6 +10,7 @@ const messageNamespaces = [
   "billing",
   "dashboard",
   "library",
+  "books",
   "community",
   "admin",
   "shared",

@@ -13,9 +13,23 @@
 			"by_topic": "Explora por tema",
 			"all_topics": "Todos",
 			"by_format": "Explora por formato",
-			"all_formats": "Todo"
+			"all_formats": "Todo",
+			"by_audience": "Audiencia",
+			"audience_default": "Para adultos",
+			"audience_teens": "Para jóvenes"
 		},
 		"empty_state": "No hay piezas para esta combinación todavía. Prueba otro tema o formato para explorar la biblioteca.",
+		"teen_mode_banner": {
+			"prefix": "Estás viendo contenido para jóvenes.",
+			"question": "¿Eres mayor de 18?",
+			"cta": "Cambia aquí →"
+		},
+		"adult_only_notice": {
+			"title": "Este contenido es para adultos.",
+			"question": "¿Eres mayor de 18?",
+			"cta": "Confirma aquí →",
+			"back": "← Volver a contenido para jóvenes"
+		},
 		"format_labels": {
 			"article": "Artículo",
 			"audio": "Audio",
@@ -23,7 +37,8 @@
 			"faq": "FAQ",
 			"script": "Guión",
 			"video": "Video",
-			"book_recommendation": "Recomendación de libro"
+			"book_recommendation": "Recomendación de libro",
+			"quickly": "QuicKly"
 		},
 		"section_labels": {},
 		"source_fallback": "Biblioteca Flavia",

@@ -1,6 +1,13 @@
 import "server-only";
 
-import type { LibraryContentType } from "@/features/library/constants";
+import {
+  LIBRARY_AUDIENCES,
+  LIBRARY_CONTENT_TYPES,
+  LIBRARY_SECTIONS,
+  type LibraryAudience,
+  type LibraryContentType,
+  type LibrarySection,
+} from "@/features/library/constants";
 import { realLibraryContent } from "@/features/library/real-library-content";
 import { sanityClient } from "@/lib/sanity/client";
 import { urlForImage } from "@/lib/sanity/image";
@@ -15,10 +22,13 @@ export type LibraryItemDetail = {
   title: string;
   slug: string;
   excerpt: string | null;
+  shortAnswer: string | null;
   coverImageUrl: string | null;
   body: unknown[];
   topicTags: string[];
   intentTags: string[];
+  audienceTags: LibraryAudience[];
+  sectionTag: LibrarySection | null;
   isPremium: boolean;
   publishedAt: string | null;
   youtubeUrl: string | null;
@@ -38,15 +48,18 @@ export type LibraryItemDetail = {
 
 type SanityLibraryItemDetail = {
   _id: string;
-  _type: LibraryContentType;
+  _type: string;
   title: string;
   slug: string;
   excerpt?: string | null;
+  shortAnswer?: string | null;
   coverImage?: unknown;
   body?: unknown[];
   topicTags?: string[] | null;
   intentTags?: string[] | null;
-  contentType?: LibraryContentType | null;
+  audienceTags?: string[] | null;
+  sectionTag?: string | null;
+  contentType?: string | null;
   editorialSource?: string | null;
   isPremium?: boolean | null;
   chatRecommended?: boolean | null;
@@ -54,11 +67,11 @@ type SanityLibraryItemDetail = {
   youtubeUrl?: string | null;
   relatedContent?: Array<{
     _id: string;
-    _type: LibraryContentType;
+    _type: string;
     title: string;
     slug: string;
     excerpt?: string | null;
-    contentType?: LibraryContentType | null;
+    contentType?: string | null;
     editorialSource?: string | null;
     isPremium?: boolean | null;
     youtubeUrl?: string | null;
@@ -66,34 +79,60 @@ type SanityLibraryItemDetail = {
   relatedProducts?: Array<{ href?: string | null; title?: string | null }> | null;
 };
 
+function resolveContentType(value: string | null | undefined, type: string): LibraryContentType {
+  if (value && (LIBRARY_CONTENT_TYPES as readonly string[]).includes(value)) {
+    return value as LibraryContentType;
+  }
+  if (type === "quicklyItem") return "quickly";
+  if ((LIBRARY_CONTENT_TYPES as readonly string[]).includes(type)) {
+    return type as LibraryContentType;
+  }
+  return "article";
+}
+
 function mapLibraryItemDetail(item: SanityLibraryItemDetail): LibraryItemDetail {
+  const audienceTags = (item.audienceTags ?? []).filter((value): value is LibraryAudience =>
+    (LIBRARY_AUDIENCES as readonly string[]).includes(value),
+  );
+  const contentType = resolveContentType(item.contentType, item._type);
+  const sectionTag =
+    item.sectionTag && (LIBRARY_SECTIONS as readonly string[]).includes(item.sectionTag)
+      ? (item.sectionTag as LibrarySection)
+      : null;
+
   return {
     chatRecommended: item.chatRecommended ?? false,
-    contentType: item.contentType ?? item._type,
+    contentType,
     editorialSource: item.editorialSource ?? null,
     id: item._id,
-    type: item.contentType ?? item._type,
+    type: contentType,
     title: item.title,
     slug: item.slug,
-    excerpt: item.excerpt ?? null,
+    excerpt: item.excerpt ?? item.shortAnswer ?? null,
+    shortAnswer: item.shortAnswer ?? null,
     coverImageUrl: urlForImage(item.coverImage)?.width(1600).height(900).fit("crop").url() ?? null,
     body: item.body ?? [],
     topicTags: item.topicTags ?? [],
     intentTags: item.intentTags ?? [],
+    audienceTags,
+    sectionTag,
     isPremium: item.isPremium ?? false,
     publishedAt: item.publishedAt ?? null,
     youtubeUrl: item.youtubeUrl ?? null,
-    relatedContent: (item.relatedContent ?? []).map((entry) => ({
-      contentType: entry.contentType ?? entry._type,
-      editorialSource: entry.editorialSource ?? null,
-      excerpt: entry.excerpt ?? null,
-      id: entry._id,
-      isPremium: entry.isPremium ?? false,
-      slug: entry.slug,
-      title: entry.title,
-      type: entry.contentType ?? entry._type,
-      youtubeUrl: entry.youtubeUrl ?? null,
-    })),
+    relatedContent: (item.relatedContent ?? []).map((entry) => {
+      const entryContentType = resolveContentType(entry.contentType, entry._type);
+      return {
+        contentType: entryContentType,
+        editorialSource: entry.editorialSource ?? null,
+        excerpt: entry.excerpt ?? null,
+        id: entry._id,
+        isPremium: entry.isPremium ?? false,
+        slug: entry.slug,
+        title: entry.title,
+        type: entryContentType,
+        youtubeUrl: entry.youtubeUrl ?? null,
+      };
+    }),
     relatedProducts: (item.relatedProducts ?? []).flatMap((product) => {
       if (!product.title || !product.href) {
         return [];
@@ -120,6 +159,7 @@ function getFallbackLibraryItemBySlug(slug: string): LibraryItemDetail | null {
     title: item.title,
     slug: item.slug,
     excerpt: item.excerpt,
+    shortAnswer: null,
     coverImageUrl: item.coverImageUrl,
     body: item.body.map((paragraph, index) => ({
       _key: `${item.slug}-${index}`,
@@ -128,6 +168,8 @@ function getFallbackLibraryItemBySlug(slug: string): LibraryItemDetail | null {
     })),
     topicTags: item.topicTags,
     intentTags: item.intentTags,
+    audienceTags: item.audienceTags ?? [],
+    sectionTag: item.sectionTag ?? null,
     isPremium: item.isPremium,
     publishedAt: item.publishedAt,
     youtubeUrl: item.youtubeUrl ?? null,

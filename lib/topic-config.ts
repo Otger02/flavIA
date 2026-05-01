@@ -20,6 +20,7 @@ export const ALL_TOPICS = [
   "menopause",
   "erectile_dysfunction",
   "education",
+  "identity",
 ] as const;
 
 export type TopicSlug = (typeof ALL_TOPICS)[number];
@@ -39,6 +40,7 @@ export const TOPIC_TRANSLATION_KEYS: Record<TopicSlug, `topics.${TopicSlug}`> = 
   menopause: "topics.menopause",
   erectile_dysfunction: "topics.erectile_dysfunction",
   education: "topics.education",
+  identity: "topics.identity",
 };
 
 // ── Badge / tag colors ─────────────────────────────────────────────────
@@ -56,6 +58,7 @@ export const TOPIC_BADGE_COLORS: Record<TopicSlug, string> = {
   menopause: "bg-purple-100 text-purple-700",
   erectile_dysfunction: "bg-blue-100 text-blue-700",
   education: "bg-emerald-100 text-emerald-700",
+  identity: "bg-rose-100 text-rose-800",
 };
 
 // ── Filter pill colors (active/inactive states for library-style filters) ──
@@ -73,6 +76,7 @@ export const TOPIC_FILTER_COLORS: Record<TopicSlug, { active: string; inactive: 
   menopause: { active: "bg-purple-500 text-white", inactive: "bg-purple-50 text-purple-700 hover:bg-purple-100" },
   erectile_dysfunction: { active: "bg-blue-500 text-white", inactive: "bg-blue-50 text-blue-700 hover:bg-blue-100" },
   education: { active: "bg-emerald-500 text-white", inactive: "bg-emerald-50 text-emerald-700 hover:bg-emerald-100" },
+  identity: { active: "bg-rose-600 text-white", inactive: "bg-rose-50 text-rose-800 hover:bg-rose-100" },
 };
 
 // ── Community border variant ───────────────────────────────────────────
@@ -90,6 +94,7 @@ export const TOPIC_COMMUNITY_COLORS: Record<TopicSlug, string> = {
   menopause: "bg-purple-100 text-purple-700 border-purple-200",
   erectile_dysfunction: "bg-blue-100 text-blue-700 border-blue-200",
   education: "bg-emerald-100 text-emerald-700 border-emerald-200",
+  identity: "bg-rose-100 text-rose-800 border-rose-200",
 };
 
 // ── Helpers for safe access from untyped DB strings ───────────────────

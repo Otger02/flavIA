@@ -1,6 +1,7 @@
 import "server-only";
 
 import {
+  LIBRARY_AUDIENCES,
   LIBRARY_CONTENT_TYPES,
   LIBRARY_INTENT_TAGS,
   LIBRARY_TOPIC_TAGS,
@@ -26,6 +27,7 @@ export type LibraryItem = {
   title: string;
   slug: string;
   excerpt: string | null;
+  shortAnswer: string | null;
   coverImageUrl: string | null;
   topicTags: string[];
   intentTags: string[];
@@ -45,14 +47,17 @@ export type LibraryFilters = {
 
 type SanityLibraryItem = {
   _id: string;
-  _type: LibraryContentType;
+  _type: string;
   title: string;
   slug: string;
   excerpt?: string | null;
+  shortAnswer?: string | null;
   coverImage?: unknown;
   topicTags?: string[] | null;
   intentTags?: string[] | null;
-  contentType?: LibraryContentType | null;
+  sectionTag?: string | null;
+  audienceTags?: string[] | null;
+  contentType?: string | null;
   editorialSource?: string | null;
   isPremium?: boolean | null;
   chatRecommended?: boolean | null;
@@ -92,19 +97,41 @@ function normalizeSection(value: string | null | undefined): LibrarySection | nu
   return LIBRARY_SECTIONS.includes(value as LibrarySection) ? (value as LibrarySection) : null;
 }
 
+function normalizeAudience(value: string | null | undefined): LibraryAudience | null {
+  if (!value) {
+    return null;
+  }
+
+  return (LIBRARY_AUDIENCES as readonly string[]).includes(value)
+    ? (value as LibraryAudience)
+    : null;
+}
+
 function mapLibraryItem(item: SanityLibraryItem): LibraryItem {
+  const sectionTag = normalizeSection(item.sectionTag) ?? undefined;
+  const audienceTags = (item.audienceTags ?? [])
+    .map((value) => normalizeAudience(value))
+    .filter((value): value is LibraryAudience => value !== null);
+  const resolvedContentType =
+    normalizeContentType(item.contentType) ??
+    (item._type === "quicklyItem" ? "quickly" : normalizeContentType(item._type)) ??
+    "article";
+
   return {
     chatRecommended: item.chatRecommended ?? false,
-    contentType: item.contentType ?? item._type,
+    contentType: resolvedContentType,
     editorialSource: item.editorialSource ?? null,
     id: item._id,
-    type: item.contentType ?? item._type,
+    type: resolvedContentType,
     title: item.title,
     slug: item.slug,
-    excerpt: item.excerpt ?? null,
+    excerpt: item.excerpt ?? item.shortAnswer ?? null,
+    shortAnswer: item.shortAnswer ?? null,
     coverImageUrl: urlForImage(item.coverImage)?.width(1200).height(675).fit("crop").url() ?? null,
     topicTags: item.topicTags ?? [],
     intentTags: item.intentTags ?? [],
+    sectionTag,
+    audienceTags: audienceTags.length > 0 ? audienceTags : undefined,
     isPremium: item.isPremium ?? false,
     publishedAt: item.publishedAt ?? null,
     youtubeUrl: item.youtubeUrl ?? null,
@@ -116,14 +143,18 @@ function getFallbackLibraryItems(filters: LibraryFilters): LibraryItem[] {
   const intent = normalizeIntent(filters.intent);
   const contentType = normalizeContentType(filters.contentType);
   const section = normalizeSection(filters.section);
-  const audience = filters.audience ?? null;
+  const audience = normalizeAudience(filters.audience);
+  const excludeTeens = audience !== "adolescentes";
 
   return realLibraryContent
     .filter((item) => (topic ? item.topicTags.includes(topic) : true))
     .filter((item) => (intent ? item.intentTags.includes(intent) : true))
     .filter((item) => (contentType ? item.contentType === contentType : true))
     .filter((item) => (section ? item.sectionTag === section : true))
-    .filter((item) => (audience ? item.audienceTags?.includes(audience as LibraryAudience) : true))
+    .filter((item) => (audience ? item.audienceTags?.includes(audience) : true))
+    .filter((item) =>
+      excludeTeens ? !(item.audienceTags ?? []).includes("adolescentes") : true,
+    )
     .map((item) => ({
       audienceTags: item.audienceTags,
       chatRecommended: item.chatRecommended,
@@ -134,6 +165,7 @@ function getFallbackLibraryItems(filters: LibraryFilters): LibraryItem[] {
       title: item.title,
       slug: item.slug,
       excerpt: item.excerpt,
+      shortAnswer: null,
       coverImageUrl: item.coverImageUrl,
       topicTags: item.topicTags,
       intentTags: item.intentTags,
@@ -145,10 +177,14 @@ function getFallbackLibraryItems(filters: LibraryFilters): LibraryItem[] {
 }
 
 export async function getLibraryItems(filters: LibraryFilters = {}): Promise<LibraryItem[]> {
+  const audience = normalizeAudience(filters.audience);
   const params = {
     contentType: normalizeContentType(filters.contentType),
     intent: normalizeIntent(filters.intent),
     topic: normalizeTopic(filters.topic),
+    section: normalizeSection(filters.section),
+    audience,
+    excludeTeens: audience !== "adolescentes",
   };
 
   if (!sanityClient) {
