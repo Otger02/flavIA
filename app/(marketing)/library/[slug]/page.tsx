@@ -10,6 +10,9 @@ import { BILLING_FREE_PLAN } from "@/features/billing/constants";
 import { getLibraryItemBySlug } from "@/features/library/server/get-library-item-by-slug";
 import { getUserFavorites } from "@/features/favorites/server/get-user-favorites";
 import { FavoriteButton } from "@/components/library/favorite-button";
+import { ItemAgeGuard } from "@/components/library/item-age-guard";
+import { LibraryCoverFallback } from "@/components/library/library-cover-fallback";
+import { TeenSectionNotice } from "@/components/ui/teen-section-notice";
 import { CommentSection } from "@/components/community/comment-section";
 import { getComments } from "@/features/community/server/get-comments";
 import { isCommunityEnabled } from "@/lib/feature-flags";
@@ -105,8 +108,8 @@ export default async function LibraryItemPage({ params }: LibraryItemPageProps) 
             {t("item.back")}
           </Link>
           <header className="space-y-4">
-            {item.coverImageUrl ? (
-              <div className="overflow-hidden rounded-[2rem] border border-stone-300/70 bg-stone-200 shadow-[0_20px_60px_rgba(61,42,24,0.08)]">
+            <div className="overflow-hidden rounded-[2rem] border border-stone-300/70 bg-stone-200 shadow-[0_20px_60px_rgba(61,42,24,0.08)]">
+              {item.coverImageUrl ? (
                 <Image
                   src={item.coverImageUrl}
                   alt={item.title}
@@ -114,8 +117,15 @@ export default async function LibraryItemPage({ params }: LibraryItemPageProps) 
                   height={900}
                   className="aspect-[16/8] w-full object-cover"
                 />
-              </div>
-            ) : null}
+              ) : (
+                <div className="aspect-[16/8] w-full">
+                  <LibraryCoverFallback
+                    title={item.title}
+                    sectionTag={item.sectionTag ?? undefined}
+                  />
+                </div>
+              )}
+            </div>
             <span className="inline-block rounded-full bg-rose-100 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.15em] text-rose-600">
               {t("item.premium_badge")}
             </span>
@@ -161,15 +171,78 @@ export default async function LibraryItemPage({ params }: LibraryItemPageProps) 
   // Check if user has favorited this item
   const favorites = user ? await getUserFavorites({ userId: user.id, itemType: "content" }) : [];
   const isFavorited = favorites.some((f) => f.itemId === item.id);
+  const isTeenContent = (item.audienceTags ?? []).includes("adolescentes");
+  const isQuicklyItem = item.contentType === "quickly";
+
+  if (isQuicklyItem) {
+    return (
+      <article className="mx-auto max-w-2xl space-y-6">
+        {isTeenContent ? <TeenSectionNotice /> : null}
+        <Link href="/library?section=quickly" className="inline-flex text-sm font-medium text-stone-600 underline underline-offset-4">
+          {t("item.back")}
+        </Link>
+        <ItemAgeGuard isTeenContent={isTeenContent}>
+          <header className="space-y-3">
+            <p className="text-xs uppercase tracking-[0.3em] text-sky-600">
+              {formatContentType("quickly")}
+            </p>
+            <h1 className="font-[family-name:var(--font-display)] text-3xl leading-tight text-stone-900">
+              {item.title}
+            </h1>
+            <div className="flex flex-wrap gap-2">
+              {item.topicTags.map((tag) => {
+                const colors = TOPIC_FILTER_COLORS[tag as keyof typeof TOPIC_FILTER_COLORS] ?? { inactive: "bg-stone-100 text-stone-600" };
+                return (
+                  <span key={tag} className={`rounded-full px-3 py-1 text-xs ${colors.inactive}`}>
+                    {resolveTopicLabel(tag)}
+                  </span>
+                );
+              })}
+            </div>
+          </header>
+
+          <section className="rounded-[1.5rem] border border-sky-200/60 bg-gradient-to-b from-white to-sky-50/60 p-6 shadow-[0_8px_24px_rgba(80,140,200,0.08)]">
+            <p className="whitespace-pre-line text-base leading-8 text-stone-800">
+              {item.shortAnswer ?? item.excerpt ?? t("item.body_empty")}
+            </p>
+            {user ? (
+              <div className="mt-5 flex justify-end">
+                <FavoriteButton itemId={item.id} itemType="content" initialFavorited={isFavorited} />
+              </div>
+            ) : null}
+          </section>
+
+          {item.topicTags.length > 0 ? (
+            <section className="rounded-[1.5rem] border border-rose-200/40 bg-gradient-to-b from-white/90 to-rose-50/50 p-6 text-center">
+              <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">
+                {t("item.cta.eyebrow")}
+              </p>
+              <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-stone-600">
+                {t("item.cta.description")}
+              </p>
+              <Link
+                href={user ? `/chat?topic=${item.topicTags[0]}` : "/login"}
+                className="mt-4 inline-flex rounded-full bg-gradient-to-r from-rose-400 to-rose-500 px-6 py-2.5 text-sm font-medium text-white shadow-[0_8px_20px_rgba(220,100,100,0.18)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(220,100,100,0.25)]"
+              >
+                {user ? t("item.cta.logged_in") : t("item.cta.logged_out")}
+              </Link>
+            </section>
+          ) : null}
+        </ItemAgeGuard>
+      </article>
+    );
+  }
 
   return (
     <article className="mx-auto max-w-4xl space-y-8">
+      {isTeenContent ? <TeenSectionNotice /> : null}
       <Link href="/library" className="inline-flex text-sm font-medium text-stone-600 underline underline-offset-4">
         {t("item.back")}
       </Link>
+      <ItemAgeGuard isTeenContent={isTeenContent}>
       <header className="space-y-4">
-        {item.coverImageUrl ? (
-          <div className="overflow-hidden rounded-[2rem] border border-stone-300/70 bg-stone-200 shadow-[0_20px_60px_rgba(61,42,24,0.08)]">
+        <div className="overflow-hidden rounded-[2rem] border border-stone-300/70 bg-stone-200 shadow-[0_20px_60px_rgba(61,42,24,0.10)]">
+          {item.coverImageUrl ? (
             <Image
               src={item.coverImageUrl}
               alt={item.title}
@@ -177,8 +250,15 @@ export default async function LibraryItemPage({ params }: LibraryItemPageProps) 
               height={900}
               className="aspect-[16/8] w-full object-cover"
             />
-          </div>
-        ) : null}
+          ) : (
+            <div className="aspect-[16/8] w-full">
+              <LibraryCoverFallback
+                title={item.title}
+                sectionTag={item.sectionTag ?? undefined}
+              />
+            </div>
+          )}
+        </div>
         <div className="flex flex-wrap items-center gap-3">
           <p className="text-sm uppercase tracking-[0.3em] text-stone-500">{formatContentType(item.contentType)}</p>
           {item.isPremium ? (
@@ -302,6 +382,7 @@ export default async function LibraryItemPage({ params }: LibraryItemPageProps) 
           </div>
         </section>
       ) : null}
+      </ItemAgeGuard>
     </article>
   );
 }

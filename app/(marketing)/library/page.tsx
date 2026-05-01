@@ -11,6 +11,8 @@ import {
 import { getUser } from "@/features/auth/server/get-user";
 import { getUserFavorites } from "@/features/favorites/server/get-user-favorites";
 import { FavoriteButton } from "@/components/library/favorite-button";
+import { LibraryAgeBanner } from "@/components/library/library-age-banner";
+import { LibraryCoverFallback } from "@/components/library/library-cover-fallback";
 import { TOPIC_FILTER_COLORS, getTopicTranslationKey } from "@/lib/topic-config";
 import { LIBRARY_SECTION_CONFIG, getSectionTranslationKey } from "@/features/library/sections";
 
@@ -37,10 +39,16 @@ type LibraryPageProps = {
     contentType?: string;
     section?: string;
     topic?: string;
+    audience?: string;
   }>;
 };
 
-function buildFilterHref(filters: { contentType?: string | null; section?: string | null; topic?: string | null }) {
+function buildFilterHref(filters: {
+  contentType?: string | null;
+  section?: string | null;
+  topic?: string | null;
+  audience?: string | null;
+}) {
   const params = new URLSearchParams();
 
   if (filters.section) {
@@ -53,6 +61,10 @@ function buildFilterHref(filters: { contentType?: string | null; section?: strin
 
   if (filters.contentType) {
     params.set("contentType", filters.contentType);
+  }
+
+  if (filters.audience) {
+    params.set("audience", filters.audience);
   }
 
   const queryString = params.toString();
@@ -68,7 +80,10 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
   const selectedSection = params.section ?? null;
   const selectedTopic = params.topic ?? null;
   const selectedContentType = params.contentType ?? null;
-  const hasFilters = selectedSection || selectedTopic || selectedContentType;
+  const selectedAudience = params.audience ?? null;
+  const hasFilters =
+    selectedSection || selectedTopic || selectedContentType || selectedAudience;
+  const isTeenView = selectedAudience === "adolescentes";
 
   const resolveTopicLabel = (topic: string) => {
     const key = getTopicTranslationKey(topic);
@@ -96,7 +111,12 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
   const selectedSectionCopy = selectedSection ? resolveSectionCopy(selectedSection) : null;
 
   const [items, user] = await Promise.all([
-    getLibraryItems({ contentType: selectedContentType, topic: selectedTopic, section: selectedSection }),
+    getLibraryItems({
+      contentType: selectedContentType,
+      topic: selectedTopic,
+      section: selectedSection,
+      audience: selectedAudience,
+    }),
     getUser(),
   ]);
 
@@ -107,6 +127,7 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
 
   return (
     <section className="space-y-10">
+      <LibraryAgeBanner />
       <div className="space-y-4">
         <p className="text-sm uppercase tracking-[0.3em] text-stone-500">{t("listing.eyebrow")}</p>
         <h1 className="font-[family-name:var(--font-display)] text-4xl text-stone-900">
@@ -121,20 +142,36 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
         </p>
       </div>
 
-      {/* Section grid — shown when no filters are active */}
+      {/* Audience entry point — shown alongside the section grid */}
       {!hasFilters ? (
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <Link
+            href="/library?audience=adolescentes"
+            className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-xs font-medium text-emerald-800 transition hover:bg-emerald-100"
+          >
+            <span aria-hidden>🌱</span>
+            {t("listing.filters.audience_teens")}
+          </Link>
+        </div>
+      ) : null}
+
+      {/* Section grid — shown when no filters are active and not in teen view */}
+      {!hasFilters && !isTeenView ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {sections.map((section) => (
             <Link
               key={section.key}
               href={`/library?section=${section.key}`}
-              className={`group rounded-[1.5rem] border bg-gradient-to-br ${section.color} p-6 shadow-[0_8px_24px_rgba(180,120,100,0.06)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(180,120,100,0.12)]`}
+              className={`group relative overflow-hidden rounded-[1.5rem] border bg-gradient-to-br ${section.color} p-6 shadow-[0_14px_36px_rgba(180,120,100,0.14)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_56px_rgba(180,120,100,0.22)]`}
             >
-              <span className="text-2xl">{section.icon}</span>
-              <h3 className="mt-3 font-[family-name:var(--font-display)] text-xl text-stone-900">
+              <span className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/40 blur-2xl transition-opacity group-hover:opacity-80" />
+              <span className="relative inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white/80 text-2xl shadow-[0_4px_12px_rgba(180,120,100,0.10)] backdrop-blur">
+                {section.icon}
+              </span>
+              <h3 className="relative mt-4 font-[family-name:var(--font-display)] text-xl text-stone-900">
                 {section.copy?.title ?? t("listing.fallback_title")}
               </h3>
-              <p className="mt-2 text-sm leading-6 text-stone-600">
+              <p className="relative mt-2 text-sm leading-6 text-stone-700">
                 {section.copy?.description ?? ""}
               </p>
             </Link>
@@ -142,8 +179,8 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
         </div>
       ) : null}
 
-      {/* Section tabs — shown when any filter is active */}
-      {hasFilters ? (
+      {/* Section tabs — shown when any filter is active and not in teen view */}
+      {hasFilters && !isTeenView ? (
         <div className="flex flex-wrap items-center gap-2">
           <Link
             href="/library"
@@ -154,7 +191,7 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
           {sections.map((section) => (
             <Link
               key={section.key}
-              href={buildFilterHref({ section: section.key, topic: null, contentType: null })}
+              href={buildFilterHref({ section: section.key, topic: null, contentType: null, audience: selectedAudience })}
               className={`rounded-full px-4 py-2 text-xs transition ${
                 selectedSection === section.key
                   ? "bg-stone-900 text-stone-50"
@@ -174,7 +211,7 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
             <p className="text-xs uppercase tracking-[0.2em] text-stone-500">{t("listing.filters.by_topic")}</p>
             <div className="mt-4 flex flex-wrap gap-2">
               <Link
-                href={buildFilterHref({ contentType: selectedContentType, section: selectedSection, topic: null })}
+                href={buildFilterHref({ contentType: selectedContentType, section: selectedSection, topic: null, audience: selectedAudience })}
                 className={`rounded-full px-4 py-2 text-xs transition ${
                   !selectedTopic ? "bg-stone-900 text-stone-50" : "bg-stone-100 text-stone-700 hover:bg-stone-200"
                 }`}
@@ -186,7 +223,7 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
                 return (
                   <Link
                     key={topic}
-                    href={buildFilterHref({ contentType: selectedContentType, section: selectedSection, topic })}
+                    href={buildFilterHref({ contentType: selectedContentType, section: selectedSection, topic, audience: selectedAudience })}
                     className={`rounded-full px-4 py-2 text-xs transition ${
                       selectedTopic === topic ? colors.active : colors.inactive
                     }`}
@@ -201,7 +238,7 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
             <p className="text-xs uppercase tracking-[0.2em] text-stone-500">{t("listing.filters.by_format")}</p>
             <div className="mt-4 flex flex-wrap gap-2">
               <Link
-                href={buildFilterHref({ contentType: null, section: selectedSection, topic: selectedTopic })}
+                href={buildFilterHref({ contentType: null, section: selectedSection, topic: selectedTopic, audience: selectedAudience })}
                 className={`rounded-full px-4 py-2 text-xs transition ${
                   !selectedContentType ? "bg-stone-900 text-stone-50" : "bg-stone-100 text-stone-700 hover:bg-stone-200"
                 }`}
@@ -211,7 +248,7 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
               {LIBRARY_CONTENT_TYPES.map((contentType) => (
                 <Link
                   key={contentType}
-                  href={buildFilterHref({ contentType, section: selectedSection, topic: selectedTopic })}
+                  href={buildFilterHref({ contentType, section: selectedSection, topic: selectedTopic, audience: selectedAudience })}
                   className={`rounded-full px-4 py-2 text-xs transition ${
                     selectedContentType === contentType
                       ? "bg-stone-900 text-stone-50"
@@ -221,6 +258,31 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
                   {formatContentType(contentType)}
                 </Link>
               ))}
+            </div>
+            <div className="mt-6">
+              <p className="text-xs uppercase tracking-[0.2em] text-stone-500">{t("listing.filters.by_audience")}</p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Link
+                  href={buildFilterHref({ contentType: selectedContentType, section: selectedSection, topic: selectedTopic, audience: null })}
+                  className={`rounded-full px-4 py-2 text-xs transition ${
+                    selectedAudience !== "adolescentes"
+                      ? "bg-stone-900 text-stone-50"
+                      : "bg-stone-100 text-stone-700 hover:bg-stone-200"
+                  }`}
+                >
+                  {t("listing.filters.audience_default")}
+                </Link>
+                <Link
+                  href={buildFilterHref({ contentType: selectedContentType, section: selectedSection, topic: selectedTopic, audience: "adolescentes" })}
+                  className={`rounded-full px-4 py-2 text-xs transition ${
+                    selectedAudience === "adolescentes"
+                      ? "bg-emerald-600 text-white"
+                      : "bg-emerald-50 text-emerald-800 hover:bg-emerald-100"
+                  }`}
+                >
+                  {t("listing.filters.audience_teens")}
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -233,9 +295,9 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
       ) : (
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {items.map((item) => (
-            <article key={item.id} className="overflow-hidden rounded-[2rem] border border-stone-300 bg-white shadow-[0_20px_60px_rgba(61,42,24,0.08)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_26px_66px_rgba(61,42,24,0.12)]">
+            <article key={item.id} className="overflow-hidden rounded-[2rem] border border-stone-200 bg-white shadow-[0_18px_46px_rgba(61,42,24,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(61,42,24,0.16)]">
               <Link href={`/library/${item.slug}`} className="group block">
-                <div className="relative aspect-[16/10] overflow-hidden bg-stone-200">
+                <div className="relative aspect-[16/10] overflow-hidden bg-stone-100">
                   {item.coverImageUrl ? (
                     <Image
                       src={item.coverImageUrl}
@@ -244,10 +306,18 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
                       sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                  ) : null}
-                  <div className="absolute inset-0 bg-gradient-to-t from-stone-950/70 via-stone-950/20 to-transparent" />
+                  ) : (
+                    <div className="absolute inset-0 transition-transform duration-500 group-hover:scale-105">
+                      <LibraryCoverFallback title={item.title} sectionTag={item.sectionTag} />
+                    </div>
+                  )}
+                  {item.coverImageUrl ? (
+                    <div className="absolute inset-0 bg-gradient-to-t from-stone-950/70 via-stone-950/20 to-transparent" />
+                  ) : (
+                    <div className="absolute inset-0 bg-gradient-to-t from-stone-950/30 via-transparent to-transparent" />
+                  )}
                   <div className="absolute left-4 top-4 flex flex-wrap items-center gap-2">
-                    <span className="rounded-full bg-white/85 px-3 py-1 text-[11px] uppercase tracking-[0.15em] text-stone-900 backdrop-blur">
+                    <span className="rounded-full bg-white/90 px-3 py-1 text-[11px] uppercase tracking-[0.15em] text-stone-900 shadow-sm backdrop-blur">
                       {formatContentType(item.contentType)}
                     </span>
                     {item.youtubeUrl ? (

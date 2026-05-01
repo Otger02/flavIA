@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 
 import { LocaleSwitcher } from "@/components/layout/locale-switcher";
 import { MobileNav } from "@/components/layout/mobile-nav";
+import { AgeDisclaimer } from "@/components/ui/age-disclaimer";
 import { getUser } from "@/features/auth/server/get-user";
 import { isCommunityEnabled } from "@/lib/feature-flags";
 
@@ -36,6 +37,7 @@ export default async function MarketingLayout({ children }: MarketingLayoutProps
               </>
             ) : null}
             <Link href="/library" className="transition-colors hover:text-stone-900">{t("nav.library")}</Link>
+            <Link href="/libros" className="transition-colors hover:text-stone-900">{t("nav.books")}</Link>
             <Link href="/plans" className="transition-colors hover:text-stone-900">{t("nav.plans")}</Link>
             {isLoggedIn ? (
               <>
@@ -59,12 +61,14 @@ export default async function MarketingLayout({ children }: MarketingLayoutProps
                     { href: "/dashboard", label: t("nav.dashboard") },
                     { href: "/chat", label: t("nav.chat") },
                     { href: "/library", label: t("nav.library") },
+                    { href: "/libros", label: t("nav.books") },
                     { href: "/plans", label: t("nav.plans") },
                     communityLink,
                     { href: "/account", label: t("nav.account") },
                   ]
                 : [
                     { href: "/library", label: t("nav.library") },
+                    { href: "/libros", label: t("nav.books") },
                     { href: "/plans", label: t("nav.plans") },
                     { href: "/login", label: t("nav.login") },
                   ]
@@ -74,6 +78,7 @@ export default async function MarketingLayout({ children }: MarketingLayoutProps
         </header>
         <main className="flex-1">{children}</main>
       </div>
+      <AgeDisclaimer />
     </div>
   );
 }
