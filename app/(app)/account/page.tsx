@@ -11,6 +11,7 @@ import { getRecentChatSessions } from "@/features/chat/server/get-recent-chat-se
 import { getClickedRecommendations } from "@/features/recommendations/server/get-clicked-recommendations";
 import { getTopicTranslationKey } from "@/lib/topic-config";
 import { formatDate, getLocale } from "@/lib/locale";
+import { DeleteAccountButton } from "@/components/account/delete-account-button";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("dashboard");
@@ -253,6 +254,17 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
           )}
         </section>
       </div>
+
+      <section className="rounded-[2rem] border border-red-100 bg-white/60 p-6 shadow-[0_8px_30px_rgba(180,80,80,0.04)]">
+        <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-red-400">Zona de peligro</p>
+        <h2 className="mt-3 font-[family-name:var(--font-display)] text-2xl text-stone-900">Eliminar cuenta</h2>
+        <p className="mt-2 max-w-lg text-sm leading-6 text-stone-500">
+          Una vez eliminada, tu cuenta y todos tus datos (conversaciones, preferencias, historial) se borrarán de forma permanente. No podremos recuperarlos.
+        </p>
+        <div className="mt-5">
+          <DeleteAccountButton />
+        </div>
+      </section>
     </section>
   );
 }

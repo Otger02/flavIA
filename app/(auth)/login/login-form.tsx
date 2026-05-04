@@ -33,6 +33,14 @@ export default function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = setInterval(() => setResendCooldown((c) => c - 1), 1000);
+    return () => clearInterval(timer);
+  }, [resendCooldown]);
+
   useEffect(() => {
     const urlError = searchParams.get("error");
     if (urlError) {
@@ -40,8 +48,7 @@ export default function LoginForm() {
     }
   }, [searchParams, t]);
 
-  async function handleSendCode(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function sendOtp() {
     setLoading(true);
     setError(null);
 
@@ -62,8 +69,14 @@ export default function LoginForm() {
     }
 
     setStep("code");
+    setResendCooldown(60);
     setLoading(false);
     setTimeout(() => inputRefs.current[0]?.focus(), 50);
+  }
+
+  async function handleSendCode(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    await sendOtp();
   }
 
   async function verifyCode(fullCode: string) {
@@ -198,17 +211,38 @@ export default function LoginForm() {
               <p className="mt-4 text-sm text-stone-500">{t("login.form.verifying")}</p>
             ) : null}
 
-            <button
-              type="button"
-              onClick={() => {
-                setStep("email");
-                setCode(["", "", "", "", "", "", "", ""]);
-                setError(null);
-              }}
-              className="mt-6 text-xs text-stone-500 underline underline-offset-2 hover:text-stone-700"
-            >
-              {t("login.form.change_email")}
-            </button>
+            <div className="mt-6 flex flex-col items-center gap-3">
+              <button
+                type="button"
+                disabled={resendCooldown > 0 || loading}
+                onClick={() => {
+                  setCode(["", "", "", "", "", "", "", ""]);
+                  void sendOtp();
+                }}
+                className="text-xs text-rose-500 underline underline-offset-2 hover:text-rose-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {resendCooldown > 0
+                  ? `Reenviar código en ${resendCooldown}s`
+                  : "Reenviar código"}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setStep("email");
+                  setCode(["", "", "", "", "", "", "", ""]);
+                  setError(null);
+                }}
+                className="text-xs text-stone-500 underline underline-offset-2 hover:text-stone-700"
+              >
+                {t("login.form.change_email")}
+              </button>
+              <a
+                href={`mailto:${t("login.form.support_email")}?subject=No puedo acceder a mi cuenta`}
+                className="text-xs text-stone-400 hover:text-stone-600"
+              >
+                ¿Necesitas ayuda? Contáctanos
+              </a>
+            </div>
           </div>
         ) : (
           <form
