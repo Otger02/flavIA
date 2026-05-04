@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { syncSubscriptionFromStripe } from "@/features/billing/server/sync-subscription-from-stripe";
+import { sendPurchaseConfirmationEmail } from "@/lib/email/send-purchase-confirmation";
 import { getStripeServerConfig } from "@/lib/stripe/config";
 import Stripe from "stripe";
 
@@ -32,6 +33,14 @@ export async function POST(request: NextRequest) {
     payload: event as unknown as Record<string, unknown>,
     signature,
   });
+
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object as Stripe.Checkout.Session;
+    const email = session.customer_details?.email ?? session.customer_email;
+    if (email) {
+      void sendPurchaseConfirmationEmail({ to: email, planName: "Flavia Plus" });
+    }
+  }
 
   return NextResponse.json(result, { status: 200 });
 }

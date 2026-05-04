@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { sendWelcomeEmail } from "@/lib/email/send-welcome";
 
 function getLocaleFromPathname(pathname: string) {
   return pathname === "/en" || pathname.startsWith("/en/") ? "en" : "es";
@@ -46,9 +47,16 @@ export async function GET(request: NextRequest) {
   const code = searchParams.get("code");
   if (code) {
     const supabase = await createServerSupabaseClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
+      // Fire welcome email for new users (created within the last 2 minutes)
+      if (data.user?.email && data.user.created_at) {
+        const ageMs = Date.now() - new Date(data.user.created_at).getTime();
+        if (ageMs < 2 * 60 * 1000) {
+          void sendWelcomeEmail(data.user.email);
+        }
+      }
       return NextResponse.redirect(`${origin}${dashboardPath}`);
     }
   }
