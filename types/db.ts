@@ -431,6 +431,7 @@ export type Database = {
           is_anonymous: boolean;
           status: "published" | "hidden" | "removed";
           is_flavia_ai: boolean;
+          is_official_reply: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -444,6 +445,7 @@ export type Database = {
           is_anonymous?: boolean;
           status?: "published" | "hidden" | "removed";
           is_flavia_ai?: boolean;
+          is_official_reply?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -457,6 +459,7 @@ export type Database = {
           is_anonymous?: boolean;
           status?: "published" | "hidden" | "removed";
           is_flavia_ai?: boolean;
+          is_official_reply?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -549,6 +552,120 @@ export type Database = {
           confidence?: number | null;
           reason?: string | null;
           model?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      professional_verifications: {
+        Row: {
+          id: string;
+          user_id: string;
+          professional_type: "psychologist" | "sexologist" | "doctor";
+          specialty: string | null;
+          full_legal_name: string;
+          license_number: string;
+          license_country: string;
+          bio: string | null;
+          linkedin_url: string | null;
+          website_url: string | null;
+          document_storage_paths: string[];
+          archived_document_paths: string[];
+          status: "pending" | "approved" | "rejected" | "revoked";
+          submitted_at: string;
+          reviewed_at: string | null;
+          reviewed_by: string | null;
+          rejection_reason: string | null;
+          approved_display_name: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          professional_type: "psychologist" | "sexologist" | "doctor";
+          specialty?: string | null;
+          full_legal_name: string;
+          license_number: string;
+          license_country: string;
+          bio?: string | null;
+          linkedin_url?: string | null;
+          website_url?: string | null;
+          document_storage_paths?: string[];
+          archived_document_paths?: string[];
+          status?: "pending" | "approved" | "rejected" | "revoked";
+          submitted_at?: string;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          rejection_reason?: string | null;
+          approved_display_name?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          professional_type?: "psychologist" | "sexologist" | "doctor";
+          specialty?: string | null;
+          full_legal_name?: string;
+          license_number?: string;
+          license_country?: string;
+          bio?: string | null;
+          linkedin_url?: string | null;
+          website_url?: string | null;
+          document_storage_paths?: string[];
+          archived_document_paths?: string[];
+          status?: "pending" | "approved" | "rejected" | "revoked";
+          submitted_at?: string;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          rejection_reason?: string | null;
+          approved_display_name?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      professional_verification_audit: {
+        Row: {
+          id: string;
+          verification_id: string;
+          admin_user_id: string | null;
+          action:
+            | "submitted"
+            | "approved"
+            | "rejected"
+            | "revoked"
+            | "request_more_info"
+            | "resubmitted";
+          notes: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          verification_id: string;
+          admin_user_id?: string | null;
+          action:
+            | "submitted"
+            | "approved"
+            | "rejected"
+            | "revoked"
+            | "request_more_info"
+            | "resubmitted";
+          notes?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          verification_id?: string;
+          admin_user_id?: string | null;
+          action?:
+            | "submitted"
+            | "approved"
+            | "rejected"
+            | "revoked"
+            | "request_more_info"
+            | "resubmitted";
+          notes?: string | null;
           created_at?: string;
         };
         Relationships: [];

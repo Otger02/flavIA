@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const { targetType, targetId, content, isAnonymous, parentCommentId } = body as Record<string, unknown>;
+  const { targetType, targetId, content, isAnonymous, parentCommentId, isOfficialReply } = body as Record<string, unknown>;
 
   if (!targetType || !VALID_TARGET_TYPES.includes(targetType as CommentTargetType)) {
     return NextResponse.json({ error: "Invalid targetType" }, { status: 400 });
@@ -69,6 +69,7 @@ export async function POST(request: NextRequest) {
     content: content.trim(),
     isAnonymous: isAnonymous === true,
     parentCommentId: typeof parentCommentId === "string" ? parentCommentId : null,
+    isOfficialReply: isOfficialReply === true,
   });
 
   if (!result.ok) {

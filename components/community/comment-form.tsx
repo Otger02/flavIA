@@ -8,12 +8,14 @@ type CommentFormProps = {
   targetType: "thread" | "library_item" | "story";
   targetId: string;
   onCommentAdded?: () => void;
+  isVerifiedProfessional?: boolean;
 };
 
-export function CommentForm({ targetType, targetId, onCommentAdded }: CommentFormProps) {
+export function CommentForm({ targetType, targetId, onCommentAdded, isVerifiedProfessional = false }: CommentFormProps) {
   const tc = useTranslations("community");
   const [content, setContent] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(true);
+  const [isOfficialReply, setIsOfficialReply] = useState(false);
   const [state, setState] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -30,7 +32,13 @@ export function CommentForm({ targetType, targetId, onCommentAdded }: CommentFor
       const res = await fetch("/api/community/comments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ targetType, targetId, content, isAnonymous }),
+        body: JSON.stringify({
+          targetType,
+          targetId,
+          content,
+          isAnonymous,
+          isOfficialReply: isVerifiedProfessional && !isAnonymous ? isOfficialReply : false,
+        }),
       });
 
       const data = await res.json();
@@ -40,6 +48,7 @@ export function CommentForm({ targetType, targetId, onCommentAdded }: CommentFor
       }
 
       setContent("");
+      setIsOfficialReply(false);
       setState("idle");
       onCommentAdded?.();
     } catch (err) {
@@ -58,27 +67,54 @@ export function CommentForm({ targetType, targetId, onCommentAdded }: CommentFor
         placeholder={tc("comment_form.placeholder")}
         className="w-full rounded-xl border border-stone-200/60 bg-white/80 px-4 py-3 text-sm text-stone-900 placeholder:text-stone-400 focus:border-rose-300 focus:outline-none focus:ring-2 focus:ring-rose-200/50"
       />
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            role="switch"
-            aria-checked={isAnonymous}
-            onClick={() => setIsAnonymous(!isAnonymous)}
-            className={`relative h-5 w-9 rounded-full transition-colors ${
-              isAnonymous ? "bg-rose-400" : "bg-stone-200"
-            }`}
-          >
-            <span
-              className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform ${
-                isAnonymous ? "translate-x-4" : ""
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              role="switch"
+              aria-checked={isAnonymous}
+              onClick={() => {
+                setIsAnonymous(!isAnonymous);
+                if (!isAnonymous) setIsOfficialReply(false);
+              }}
+              className={`relative h-5 w-9 rounded-full transition-colors ${
+                isAnonymous ? "bg-rose-400" : "bg-stone-200"
               }`}
-            />
-          </button>
-          <span className="text-xs text-stone-500">
-            {isAnonymous ? tc("comment_form.anonymous_on") : tc("comment_form.anonymous_off")}
-          </span>
+            >
+              <span
+                className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform ${
+                  isAnonymous ? "translate-x-4" : ""
+                }`}
+              />
+            </button>
+            <span className="text-xs text-stone-500">
+              {isAnonymous ? tc("comment_form.anonymous_on") : tc("comment_form.anonymous_off")}
+            </span>
+          </div>
+
+          {isVerifiedProfessional && !isAnonymous && (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                role="switch"
+                aria-checked={isOfficialReply}
+                onClick={() => setIsOfficialReply(!isOfficialReply)}
+                className={`relative h-5 w-9 rounded-full transition-colors ${
+                  isOfficialReply ? "bg-[#c4605a]" : "bg-stone-200"
+                }`}
+              >
+                <span
+                  className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform ${
+                    isOfficialReply ? "translate-x-4" : ""
+                  }`}
+                />
+              </button>
+              <span className="text-xs text-[#c4605a] font-medium">Respuesta oficial</span>
+            </div>
+          )}
         </div>
+
         <button
           type="submit"
           disabled={!isValid || state === "submitting"}

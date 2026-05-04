@@ -13,6 +13,7 @@ type CommentSectionProps = {
   initialComments: CommunityComment[];
   initialTotal: number;
   currentUserId?: string | null;
+  isVerifiedProfessional?: boolean;
 };
 
 export function CommentSection({
@@ -21,6 +22,7 @@ export function CommentSection({
   initialComments,
   initialTotal,
   currentUserId,
+  isVerifiedProfessional = false,
 }: CommentSectionProps) {
   const [comments, setComments] = useState(initialComments);
   const [total, setTotal] = useState(initialTotal);
@@ -63,6 +65,7 @@ export function CommentSection({
           targetType={targetType}
           targetId={targetId}
           onCommentAdded={refreshComments}
+          isVerifiedProfessional={isVerifiedProfessional}
         />
       ) : (
         <div className="rounded-xl border border-stone-200/40 bg-stone-50/60 p-4 text-center">

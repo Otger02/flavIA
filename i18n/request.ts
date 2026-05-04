@@ -16,6 +16,7 @@ const messageNamespaces = [
   "admin",
   "shared",
   "emails",
+  "verification",
 ] as const;
 
 async function loadMessages(locale: AppLocale) {

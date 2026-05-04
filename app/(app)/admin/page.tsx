@@ -238,6 +238,12 @@ export default async function AdminPage() {
         >
           Revisar contenido Flavia
         </Link>
+        <Link
+          href="/admin/profesionales"
+          className="rounded-full border border-rose-200/60 bg-rose-50/60 px-4 py-2 text-xs font-medium text-rose-700 transition hover:bg-rose-100"
+        >
+          Verificación de profesionales
+        </Link>
       </div>
 
       {/* ── Moderation Alert Banner ───────────────────────────────── */}

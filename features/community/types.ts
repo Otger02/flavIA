@@ -34,10 +34,16 @@ export type CommunityComment = {
   is_anonymous: boolean;
   status: CommentStatus;
   is_flavia_ai: boolean;
+  is_official_reply: boolean;
   created_at: string;
   updated_at: string;
   // Joined from profiles
   display_name?: string | null;
+  // Joined from professional_verifications
+  is_verified_professional?: boolean;
+  verified_professional_type?: string | null;
+  verified_professional_specialty?: string | null;
+  verified_professional_bio?: string | null;
 };
 
 export type ModerationResult = {

@@ -14,11 +14,13 @@ import { ReportButton } from "@/components/community/report-button";
 import { COMMUNITY_TOPIC_COLORS } from "@/features/community/constants";
 import type { CommunityTopic } from "@/features/community/constants";
 import { formatDate, getLocale } from "@/lib/locale";
+import { getVerifiedProfessionalByUserId } from "@/features/professional-verification/server/get-verified-professional";
 
 export const dynamic = "force-dynamic";
 
 type Props = {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ filter?: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -32,10 +34,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ThreadDetailPage({ params }: Props) {
+export default async function ThreadDetailPage({ params, searchParams }: Props) {
   if (!isCommunityEnabled()) notFound();
 
   const { slug } = await params;
+  const { filter } = await searchParams;
+  const filterProfessionals = filter === "professionals";
+
   const locale = await getLocale();
   const t = await getTranslations("shared");
   const tc = await getTranslations("community");
@@ -46,11 +51,16 @@ export default async function ThreadDetailPage({ params }: Props) {
   const viewer = user ? await getViewerPlan() : null;
   const isPlus = viewer?.plan && viewer.plan.plan !== BILLING_FREE_PLAN && viewer.plan.status !== "canceled";
 
-  const { comments, total: commentCount } = await getComments({
-    targetType: "thread",
-    targetId: thread.id,
-  });
+  const [{ comments, total: commentCount }, verifiedProfessional] = await Promise.all([
+    getComments({
+      targetType: "thread",
+      targetId: thread.id,
+      filterProfessionals,
+    }),
+    user ? getVerifiedProfessionalByUserId(user.id) : Promise.resolve(null),
+  ]);
 
+  const isVerifiedProfessional = verifiedProfessional !== null;
   const hasAiReply = comments.some((c) => c.is_flavia_ai);
 
   const topicLabel = thread.topic ? t(`topics.${thread.topic}`) : null;
@@ -117,6 +127,30 @@ export default async function ThreadDetailPage({ params }: Props) {
         </div>
       )}
 
+      {/* Filter bar */}
+      <div className="flex items-center gap-2">
+        <a
+          href={`/comunidad/${slug}`}
+          className={`rounded-full px-3 py-1.5 text-xs transition ${
+            !filterProfessionals
+              ? "bg-stone-900 text-white"
+              : "bg-stone-100 text-stone-600 hover:bg-stone-200"
+          }`}
+        >
+          Todas las respuestas
+        </a>
+        <a
+          href={`/comunidad/${slug}?filter=professionals`}
+          className={`rounded-full px-3 py-1.5 text-xs transition ${
+            filterProfessionals
+              ? "bg-[#c4605a] text-white"
+              : "bg-stone-100 text-stone-600 hover:bg-stone-200"
+          }`}
+        >
+          ✦ Solo profesionales
+        </a>
+      </div>
+
       {/* Comments */}
       <CommentSection
         targetType="thread"
@@ -124,6 +158,7 @@ export default async function ThreadDetailPage({ params }: Props) {
         initialComments={comments}
         initialTotal={commentCount}
         currentUserId={user?.id ?? null}
+        isVerifiedProfessional={isVerifiedProfessional}
       />
     </div>
   );

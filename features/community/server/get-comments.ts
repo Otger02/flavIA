@@ -9,13 +9,14 @@ type GetCommentsOptions = {
   targetId: string;
   page?: number;
   pageSize?: number;
+  filterProfessionals?: boolean;
 };
 
 export async function getComments(options: GetCommentsOptions): Promise<{
   comments: CommunityComment[];
   total: number;
 }> {
-  const { targetType, targetId, page = 1, pageSize = 50 } = options;
+  const { targetType, targetId, page = 1, pageSize = 50, filterProfessionals = false } = options;
   const supabase = await createServerSupabaseClient();
 
   const { data, count, error } = await supabase
@@ -44,13 +45,48 @@ export async function getComments(options: GetCommentsOptions): Promise<{
       is_anonymous: row.is_anonymous as boolean,
       status: row.status as CommunityComment["status"],
       is_flavia_ai: row.is_flavia_ai as boolean,
+      is_official_reply: (row.is_official_reply as boolean) ?? false,
       created_at: row.created_at as string,
       updated_at: row.updated_at as string,
       display_name: row.is_anonymous ? null : profiles?.display_name ?? null,
     };
   });
 
-  return { comments, total: count ?? 0 };
+  // Batch-fetch verification status for non-anonymous, non-AI commenters
+  const userIdsToCheck = [
+    ...new Set(
+      comments
+        .filter((c) => !c.is_anonymous && !c.is_flavia_ai)
+        .map((c) => c.user_id),
+    ),
+  ];
+
+  if (userIdsToCheck.length > 0) {
+    const { data: verified } = await supabase
+      .from("professional_verifications")
+      .select("user_id, professional_type, specialty, bio")
+      .eq("status", "approved")
+      .in("user_id", userIdsToCheck);
+
+    if (verified && verified.length > 0) {
+      const verifiedMap = new Map(verified.map((v) => [v.user_id, v]));
+      for (const comment of comments) {
+        const vp = verifiedMap.get(comment.user_id);
+        if (vp) {
+          comment.is_verified_professional = true;
+          comment.verified_professional_type = vp.professional_type;
+          comment.verified_professional_specialty = vp.specialty;
+          comment.verified_professional_bio = vp.bio;
+        }
+      }
+    }
+  }
+
+  const filtered = filterProfessionals
+    ? comments.filter((c) => c.is_verified_professional || c.is_official_reply || c.is_flavia_ai)
+    : comments;
+
+  return { comments: filtered, total: filterProfessionals ? filtered.length : (count ?? 0) };
 }
 
 type CreateCommentInput = {
@@ -60,6 +96,7 @@ type CreateCommentInput = {
   content: string;
   isAnonymous: boolean;
   parentCommentId?: string | null;
+  isOfficialReply?: boolean;
 };
 
 type CreateCommentResult =
@@ -67,7 +104,7 @@ type CreateCommentResult =
   | { ok: false; error: string };
 
 export async function createComment(input: CreateCommentInput): Promise<CreateCommentResult> {
-  const { userId, targetType, targetId, content, isAnonymous, parentCommentId } = input;
+  const { userId, targetType, targetId, content, isAnonymous, parentCommentId, isOfficialReply = false } = input;
 
   const modResult = await moderateContent(content);
   const status = modResult.decision === "approved" && modResult.confidence > 0.85
@@ -85,6 +122,7 @@ export async function createComment(input: CreateCommentInput): Promise<CreateCo
       parent_comment_id: parentCommentId || null,
       content: content.trim(),
       is_anonymous: isAnonymous,
+      is_official_reply: isOfficialReply,
       status,
     })
     .select()
