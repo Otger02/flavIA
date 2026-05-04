@@ -20,12 +20,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 type ChatPageProps = {
-  searchParams: Promise<{ topic?: string }>;
+  searchParams: Promise<{ topic?: string; opening?: string }>;
 };
 
 export default async function ChatPage({ searchParams }: ChatPageProps) {
   const params = await searchParams;
   const hasTopic = Boolean(params.topic);
+  const opening = params.opening ? decodeURIComponent(params.opening) : null;
   const user = await getUser();
   const session = !hasTopic && user ? await getLatestChatSession({ userId: user.id }) : null;
   const messages = session ? await getChatHistory({ sessionId: session.id }) : [];
@@ -54,6 +55,7 @@ export default async function ChatPage({ searchParams }: ChatPageProps) {
         initialSessionId={session?.id ?? null}
         initialUsage={usage}
         initialTopic={params.topic ?? null}
+        initialMessage={opening}
         isPlus={isPlus}
       />
     </>

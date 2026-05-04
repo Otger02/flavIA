@@ -50,13 +50,21 @@ export async function GET(request: NextRequest) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      // Fire welcome email for new users (created within the last 2 minutes)
-      if (data.user?.email && data.user.created_at) {
-        const ageMs = Date.now() - new Date(data.user.created_at).getTime();
-        if (ageMs < 2 * 60 * 1000) {
-          void sendWelcomeEmail(data.user.email);
-        }
+      const isNewUser = data.user?.created_at
+        ? Date.now() - new Date(data.user.created_at).getTime() < 2 * 60 * 1000
+        : false;
+
+      // Fire welcome email for new users
+      if (data.user?.email && isNewUser) {
+        void sendWelcomeEmail(data.user.email);
       }
+
+      // New users go to onboarding; returning users or explicit redirectTo go to destination
+      if (isNewUser && !redirectTo) {
+        const onboardingPath = getLocalizedPathname("/onboarding", locale);
+        return NextResponse.redirect(`${origin}${onboardingPath}`);
+      }
+
       return NextResponse.redirect(`${origin}${dashboardPath}`);
     }
   }

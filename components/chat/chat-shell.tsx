@@ -23,10 +23,11 @@ type ChatShellProps = {
   initialSessionId: string | null;
   initialUsage: ChatUsagePolicy | null;
   initialTopic?: string | null;
+  initialMessage?: string | null;
   isPlus?: boolean;
 };
 
-export function ChatShell({ initialMessages, initialSessionId, initialUsage, initialTopic, isPlus = false }: ChatShellProps) {
+export function ChatShell({ initialMessages, initialSessionId, initialUsage, initialTopic, initialMessage, isPlus = false }: ChatShellProps) {
   const t = useTranslations("shared");
   const { error, hasHistory, loading, messages, recommendation, sendMessage, sessionId, usage } = useChat({
     initialMessages,
@@ -35,6 +36,7 @@ export function ChatShell({ initialMessages, initialSessionId, initialUsage, ini
   });
 
   const topicSentRef = useRef(false);
+  const messageSentRef = useRef(false);
 
   // Auto-send topic opener if navigated with ?topic=
   useEffect(() => {
@@ -48,6 +50,14 @@ export function ChatShell({ initialMessages, initialSessionId, initialUsage, ini
       void sendMessage(t(`topic_starters.${initialTopic}`));
     }
   }, [initialTopic, loading, sendMessage, t]);
+
+  // Auto-send custom opening message (e.g. from onboarding prompt suggestions)
+  useEffect(() => {
+    if (initialMessage && !messageSentRef.current && !loading) {
+      messageSentRef.current = true;
+      void sendMessage(initialMessage);
+    }
+  }, [initialMessage, loading, sendMessage]);
 
   const isInputDisabled = loading || usage?.requiresUpgrade;
 
