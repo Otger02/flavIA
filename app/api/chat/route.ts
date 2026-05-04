@@ -3,6 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getUser } from "@/features/auth/server/get-user";
 import { ChatTurnProcessingError, processChatTurnStream } from "@/features/chat/server/process-chat-turn";
 import { chatTurnRequestSchema } from "@/features/chat/types";
+import { checkChatRateLimit } from "@/lib/rate-limit/chat";
 
 export const runtime = "nodejs";
 
@@ -11,6 +12,25 @@ export async function POST(request: NextRequest) {
 
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const rateLimit = await checkChatRateLimit(user.id);
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      {
+        error: "Demasiadas solicitudes. Espera un momento antes de continuar.",
+        code: "rate_limited",
+        retryable: true,
+      },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(rateLimit.retryAfter),
+          "X-RateLimit-Limit": "10",
+          "X-RateLimit-Remaining": "0",
+        },
+      },
+    );
   }
 
   const json = await request.json();
@@ -37,6 +57,7 @@ export async function POST(request: NextRequest) {
         "Content-Type": "application/x-ndjson",
         "Cache-Control": "no-cache",
         Connection: "keep-alive",
+        "X-RateLimit-Remaining": String(rateLimit.remaining),
       },
     });
   } catch (error) {
