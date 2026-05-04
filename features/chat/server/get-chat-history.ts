@@ -11,15 +11,23 @@ type GetChatHistoryParams = {
 };
 
 type ChatMessageRow = Database["public"]["Tables"]["chat_messages"]["Row"];
-type ChatMessageSelect = Pick<ChatMessageRow, "id" | "session_id" | "role" | "content" | "created_at">;
+type ChatMessageSelect = Pick<
+  ChatMessageRow,
+  "id" | "session_id" | "role" | "content" | "created_at" | "metadata"
+>;
 
 function mapChatMessage(row: ChatMessageSelect): ChatMessage {
+  const metadata =
+    row.metadata && typeof row.metadata === "object" && !Array.isArray(row.metadata)
+      ? (row.metadata as Record<string, unknown>)
+      : undefined;
   return {
     id: row.id,
     sessionId: row.session_id,
     role: row.role,
     content: row.content,
     createdAt: row.created_at,
+    ...(metadata && Object.keys(metadata).length > 0 ? { metadata } : {}),
   };
 }
 
@@ -31,7 +39,7 @@ export async function getChatHistory({
 
   const { data: messages, error } = await supabase
     .from("chat_messages")
-    .select("id, session_id, role, content, created_at, user_id")
+    .select("id, session_id, role, content, created_at, user_id, metadata")
     .eq("session_id", sessionId)
     .order("created_at", { ascending: false })
     .limit(limit);

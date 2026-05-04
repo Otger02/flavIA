@@ -13,9 +13,16 @@ type ChatMessageListProps = {
   loading: boolean;
   messages: ClientChatMessage[];
   isPlus?: boolean;
+  sessionId?: string | null;
 };
 
-export function ChatMessageList({ hasPersistedSession, loading, messages, isPlus = false }: ChatMessageListProps) {
+export function ChatMessageList({
+  hasPersistedSession,
+  loading,
+  messages,
+  isPlus = false,
+  sessionId = null,
+}: ChatMessageListProps) {
   const t = useTranslations("shared");
   const endRef = useRef<HTMLDivElement | null>(null);
   const previousLengthRef = useRef(messages.length);
@@ -67,6 +74,7 @@ export function ChatMessageList({ hasPersistedSession, loading, messages, isPlus
                 createdAt={message.createdAt}
                 isAudioMessage={isAudioMessage}
                 isPlus={isPlus}
+                sessionId={sessionId}
               />
             );
           });

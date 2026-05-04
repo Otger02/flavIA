@@ -210,6 +210,26 @@ export function useChat({
                   : m,
               ),
             );
+          } else if (event.type === "affiliate_recommendation" && event.product) {
+            // Optimistic attach: paint the affiliate card immediately
+            // on the streaming placeholder so the user sees it before
+            // the `done` event finalises the message list. The server
+            // also persists the same data in chat_messages.metadata, so
+            // the final `setMessages(payload.messages)` from `done`
+            // keeps it in place.
+            setMessages((currentMessages) =>
+              currentMessages.map((m) =>
+                m.id === streamingPlaceholder.id
+                  ? {
+                      ...m,
+                      metadata: {
+                        ...(m.metadata ?? {}),
+                        affiliateRecommendation: event.product,
+                      },
+                    }
+                  : m,
+              ),
+            );
           } else if (event.type === "done") {
             const parsed = chatTurnResponseSchema.safeParse(event);
             if (parsed.success) {

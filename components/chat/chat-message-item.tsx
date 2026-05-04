@@ -3,8 +3,13 @@
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 
+import { AffiliateRecommendationCard } from "@/components/chat/affiliate-recommendation-card";
 import { AudioMessage } from "@/components/chat/audio-message";
-import type { ChatMessage } from "@/features/chat/types";
+import {
+  affiliateRecommendationCardSchema,
+  type AffiliateRecommendationCard as AffiliateRecommendationCardData,
+  type ChatMessage,
+} from "@/features/chat/types";
 import { formatRelativeTime } from "@/lib/locale";
 
 type ChatMessageItemProps = {
@@ -13,7 +18,17 @@ type ChatMessageItemProps = {
   createdAt?: string;
   isAudioMessage?: boolean;
   isPlus?: boolean;
+  sessionId?: string | null;
 };
+
+function readAffiliateRecommendation(
+  message: ChatMessage,
+): AffiliateRecommendationCardData | null {
+  const raw = message.metadata?.affiliateRecommendation;
+  if (!raw) return null;
+  const parsed = affiliateRecommendationCardSchema.safeParse(raw);
+  return parsed.success ? parsed.data : null;
+}
 
 export function ChatMessageItem({
   message,
@@ -21,6 +36,7 @@ export function ChatMessageItem({
   createdAt,
   isAudioMessage = false,
   isPlus = false,
+  sessionId = null,
 }: ChatMessageItemProps) {
   const locale = useLocale();
   const t = useTranslations("shared");
@@ -28,6 +44,7 @@ export function ChatMessageItem({
   const isShort = message.content.length < 40;
   const renderAsAudio =
     !isUser && isAudioMessage && !streaming && message.content.trim().length > 0;
+  const affiliateRecommendation = !isUser && !streaming ? readAffiliateRecommendation(message) : null;
 
   return (
     <article
@@ -75,6 +92,15 @@ export function ChatMessageItem({
             {formatRelativeTime(createdAt, locale)}
           </p>
         )}
+
+        {/* Affiliate recommendation card — appears below Flavia's message
+            when the detection layer matched a product for this turn. */}
+        {affiliateRecommendation ? (
+          <AffiliateRecommendationCard
+            recommendation={affiliateRecommendation}
+            sessionId={sessionId}
+          />
+        ) : null}
       </div>
 
       {/* User indicator — user only */}

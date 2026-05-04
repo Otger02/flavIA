@@ -553,6 +553,36 @@ export type Database = {
         };
         Relationships: [];
       };
+      affiliate_recommendation_events: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          session_id: string;
+          product_slug: string;
+          event_type: "shown" | "clicked" | "dismissed";
+          metadata: Record<string, unknown>;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string | null;
+          session_id: string;
+          product_slug: string;
+          event_type: "shown" | "clicked" | "dismissed";
+          metadata?: Record<string, unknown>;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string | null;
+          session_id?: string;
+          product_slug?: string;
+          event_type?: "shown" | "clicked" | "dismissed";
+          metadata?: Record<string, unknown>;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       book_purchases: {
         Row: {
           id: string;

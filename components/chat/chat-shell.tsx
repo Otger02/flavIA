@@ -83,6 +83,7 @@ export function ChatShell({ initialMessages, initialSessionId, initialUsage, ini
           loading={loading}
           messages={messages}
           isPlus={isPlus}
+          sessionId={sessionId ?? initialSessionId ?? null}
         />
 
         {recommendation ? (

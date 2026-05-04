@@ -60,11 +60,29 @@ export const chatUserStateUpdateSchema = z.object({
   summary: z.string().nullable(),
 });
 
+/**
+ * Slim affiliate-product card data passed alongside the chat reply.
+ * Mirrored from `AffiliateRecommendationCardData` in the affiliate-products
+ * feature; redeclared here as a Zod object to keep `features/chat` free
+ * of cross-feature imports at the type-system level.
+ */
+export const affiliateRecommendationCardSchema = z.object({
+  slug: z.string(),
+  title: z.string(),
+  brand: z.string(),
+  brandDisplayName: z.string(),
+  shortDescription: z.string(),
+  productImageUrl: z.string().nullable(),
+  affiliateUrl: z.string().url(),
+  priceRange: z.string().nullable(),
+});
+
 export const chatTurnResponseSchema = z.object({
   session: chatSessionSchema,
   reply: chatMessageSchema,
   messages: z.array(chatMessageSchema),
   recommendation: recommendationCardSchema.nullable(),
+  affiliateRecommendation: affiliateRecommendationCardSchema.nullable(),
   usage: chatUsagePolicySchema,
 });
 
@@ -77,3 +95,4 @@ export type ChatUsagePolicy = z.infer<typeof chatUsagePolicySchema>;
 export type ChatContext = z.infer<typeof chatContextSchema>;
 export type ChatUserStateUpdate = z.infer<typeof chatUserStateUpdateSchema>;
 export type ChatTurnResponse = z.infer<typeof chatTurnResponseSchema>;
+export type AffiliateRecommendationCard = z.infer<typeof affiliateRecommendationCardSchema>;

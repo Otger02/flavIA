@@ -1,5 +1,11 @@
 import "server-only";
 
+import { detectProductContext } from "@/features/affiliate-products/server/detect-product-context";
+import {
+  selectAffiliateRecommendation,
+  type AffiliateRecommendationCardData,
+} from "@/features/affiliate-products/server/select-recommendation";
+import { recordRecommendationEvent } from "@/features/affiliate-products/server/track-recommendation-event";
 import { getUserPlan } from "@/features/billing/server/get-user-plan";
 import { buildChatContext } from "@/features/chat/server/build-chat-context";
 import { createChatSession } from "@/features/chat/server/create-chat-session";
@@ -16,7 +22,59 @@ import { getProductRecommendations } from "@/features/recommendations/server/get
 import { logRecommendation } from "@/features/recommendations/server/log-recommendation";
 import { generateChatResponse, generateChatResponseStream } from "@/lib/ai/client";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import type { ChatSession, ChatTurnRequest, ChatTurnResponse } from "@/features/chat/types";
+import type { ChatMessage, ChatSession, ChatTurnRequest, ChatTurnResponse } from "@/features/chat/types";
+
+/**
+ * Runs the Haiku-based affiliate-product detector + product selection in
+ * one shot. Always resolves (errors swallowed downstream). Returns null
+ * when nothing should be shown.
+ *
+ * Kicked off in parallel with persistence inside both the buffered and
+ * streaming chat paths — never blocks the main LLM response.
+ */
+async function detectAndSelectAffiliateRecommendation(params: {
+  userMessage: string;
+  recentMessages: ChatMessage[];
+  userTurnCount: number;
+  sessionId: string;
+}): Promise<{
+  card: AffiliateRecommendationCardData;
+  contextTags: string[];
+  keywords: string[];
+  confidence: "low" | "medium" | "high";
+} | null> {
+  try {
+    const detection = await detectProductContext({
+      userMessage: params.userMessage,
+      recentMessages: params.recentMessages,
+      turnCount: params.userTurnCount,
+    });
+
+    if (!detection.shouldRecommend) {
+      return null;
+    }
+
+    const card = await selectAffiliateRecommendation({
+      detection,
+      sessionId: params.sessionId,
+    });
+
+    if (!card) {
+      return null;
+    }
+
+    return {
+      card,
+      contextTags: detection.contextTags,
+      keywords: detection.keywords,
+      confidence: detection.confidence,
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "unknown";
+    console.warn(`[affiliate-recommend] pipeline failed: ${message}`);
+    return null;
+  }
+}
 
 type ProcessChatTurnParams = {
   userId: string;
@@ -229,6 +287,7 @@ export async function processChatTurn({
         reply: paywallReply,
         messages: [...historyBeforeTurn, paywallReply],
         recommendation: null,
+        affiliateRecommendation: null,
         usage,
       };
     }
@@ -311,6 +370,44 @@ export async function processChatTurn({
     });
 
     let recommendation = recommendationChoice?.recommendation ?? null;
+
+    // Run the affiliate-product detection in parallel with the existing
+    // recommendation logging. Both finish before we persist the assistant
+    // message so the affiliate rec lands in `chat_messages.metadata`
+    // alongside the message itself — survives reloads + history fetches.
+    const [affiliateRecommendation, recommendationLogResult] = await Promise.all([
+      detectAndSelectAffiliateRecommendation({
+        userMessage: sanitizedMessage,
+        recentMessages: history,
+        userTurnCount,
+        sessionId: session.id,
+      }),
+      recommendationChoice && recommendation
+        ? logRecommendation({
+            userId,
+            sessionId: session.id,
+            surface: "chat",
+            itemId: recommendationChoice.targetId,
+            itemType: recommendationChoice.targetType,
+            activeTopic: context.activeTopic,
+            score: recommendation.score,
+          }).catch(() => null)
+        : Promise.resolve(null),
+    ]);
+
+    // Priority gate: when an affiliate product fires on the same turn,
+    // suppress the legacy library-content recommendation. Only one
+    // recommendation card renders per turn — the affiliate one wins.
+    // The legacy log row from the Promise.all above remains intact
+    // (analytics records what was *chosen*, not what was *displayed*).
+    if (affiliateRecommendation && recommendation) {
+      recommendation = null;
+    }
+
+    // Enrichment runs AFTER the gate so the assistant's message text
+    // doesn't lead into a library recommendation that won't appear.
+    // When the gate is a no-op (affiliate didn't fire), the enrichment
+    // input is byte-for-byte identical to the legacy behavior.
     const finalReplyContent = enrichAssistantReply({
       activeTopic: context.activeTopic,
       recommendationKind: recommendation?.kind ?? null,
@@ -323,24 +420,31 @@ export async function processChatTurn({
       userId,
       role: "assistant",
       content: finalReplyContent,
+      metadata: affiliateRecommendation
+        ? { affiliateRecommendation: affiliateRecommendation.card }
+        : undefined,
     });
 
     if (recommendationChoice && recommendation) {
-      const logResult = await logRecommendation({
-        userId,
-        sessionId: session.id,
-        surface: "chat",
-        itemId: recommendationChoice.targetId,
-        itemType: recommendationChoice.targetType,
-        activeTopic: context.activeTopic,
-        score: recommendation.score,
-      }).catch(() => null);
-
       recommendation = {
         ...recommendation,
-        logId: logResult?.logId ?? null,
+        logId: recommendationLogResult?.logId ?? null,
         rationale: buildHumanRecommendationRationale(recommendation.kind, context.activeTopic),
       };
+    }
+
+    if (affiliateRecommendation) {
+      void recordRecommendationEvent({
+        userId,
+        sessionId: session.id,
+        productSlug: affiliateRecommendation.card.slug,
+        eventType: "shown",
+        metadata: {
+          contextTags: affiliateRecommendation.contextTags,
+          keywords: affiliateRecommendation.keywords,
+          confidence: affiliateRecommendation.confidence,
+        },
+      });
     }
 
     const messages = await getChatHistory({ sessionId: session.id });
@@ -355,6 +459,7 @@ export async function processChatTurn({
       reply,
       messages,
       recommendation,
+      affiliateRecommendation: affiliateRecommendation?.card ?? null,
       usage,
     };
   } catch (error) {
@@ -411,6 +516,7 @@ export async function processChatTurnStream({
             reply: paywallReply,
             messages: [...historyBeforeTurn, paywallReply],
             recommendation: null,
+            affiliateRecommendation: null,
             usage,
           }),
         );
@@ -458,7 +564,10 @@ export async function processChatTurnStream({
           controller.enqueue(encodeEvent({ type: "token", content: token }));
         }
 
-        // Post-LLM work
+        // ── Post-LLM work ─────────────────────────────────────────────
+        // The user has already seen Flavia's full reply by this point.
+        // Affiliate detection runs in parallel with the existing
+        // recommendation pipeline and never blocks the main token stream.
         const recommendationRequest = {
           userId,
           surface: "chat" as const,
@@ -491,10 +600,20 @@ export async function processChatTurnStream({
           lastRecommendationTurn = turnsBeforeLastRec ?? 0;
         }
 
-        const [contentRecommendations, productRecommendations] = await Promise.all([
-          getContentRecommendations(recommendationRequest),
-          getProductRecommendations(recommendationRequest),
-        ]);
+        // Run affiliate detection alongside the legacy recommendation
+        // fetches. Detection may take ~1-3s on Haiku — that's fine here
+        // because tokens have already streamed.
+        const [contentRecommendations, productRecommendations, affiliateRecommendation] =
+          await Promise.all([
+            getContentRecommendations(recommendationRequest),
+            getProductRecommendations(recommendationRequest),
+            detectAndSelectAffiliateRecommendation({
+              userMessage: sanitizedMessage,
+              recentMessages: history,
+              userTurnCount,
+              sessionId: session.id,
+            }),
+          ]);
 
         const recommendationChoice = await chooseRecommendation({
           content: contentRecommendations,
@@ -505,6 +624,15 @@ export async function processChatTurnStream({
         });
 
         let recommendation = recommendationChoice?.recommendation ?? null;
+
+        // Priority gate: when an affiliate product fires on the same turn,
+        // suppress the legacy library-content recommendation. Only one
+        // recommendation card renders per turn — the affiliate one wins.
+        // Placed BEFORE enrichment so the assistant's message text doesn't
+        // lead into a library recommendation that won't appear.
+        if (affiliateRecommendation && recommendation) {
+          recommendation = null;
+        }
 
         const finalReplyContent = enrichAssistantReply({
           activeTopic: context.activeTopic,
@@ -518,6 +646,9 @@ export async function processChatTurnStream({
           userId,
           role: "assistant",
           content: finalReplyContent,
+          metadata: affiliateRecommendation
+            ? { affiliateRecommendation: affiliateRecommendation.card }
+            : undefined,
         });
 
         if (recommendationChoice && recommendation) {
@@ -538,6 +669,29 @@ export async function processChatTurnStream({
           };
         }
 
+        if (affiliateRecommendation) {
+          // Emit a dedicated stream event so clients that want to
+          // attach the card optimistically (before `done`) can do so.
+          controller.enqueue(
+            encodeEvent({
+              type: "affiliate_recommendation",
+              product: affiliateRecommendation.card,
+            }),
+          );
+
+          void recordRecommendationEvent({
+            userId,
+            sessionId: session.id,
+            productSlug: affiliateRecommendation.card.slug,
+            eventType: "shown",
+            metadata: {
+              contextTags: affiliateRecommendation.contextTags,
+              keywords: affiliateRecommendation.keywords,
+              confidence: affiliateRecommendation.confidence,
+            },
+          });
+        }
+
         // Send enrichment suffix separately if the enriched content has more than the raw LLM output
         const enrichmentSuffix = finalReplyContent.slice(fullContent.length);
         if (enrichmentSuffix) {
@@ -555,6 +709,7 @@ export async function processChatTurnStream({
             reply,
             messages,
             recommendation,
+            affiliateRecommendation: affiliateRecommendation?.card ?? null,
             usage,
           }),
         );
