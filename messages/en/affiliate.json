@@ -1,0 +1,23 @@
+{
+	"brands": {
+		"lelo": "LELO",
+		"platanomelon": "Platanomelón",
+		"gleeden": "Gleeden",
+		"ginocanesten": "Ginocanesten",
+		"tena": "TENA",
+		"procaps": "Procaps",
+		"dislicores_global_wines": "Dislicores & Global Wines",
+		"copas_menstruales": "Menstrual cups"
+	},
+	"shared": {
+		"cta_view": "See more",
+		"cta_learn_more": "Learn more",
+		"cta_buy": "Buy",
+		"recommended_eyebrow": "Flavia's pick",
+		"affiliate_disclosure": "Flavia may earn a commission from this recommendation. At no extra cost to you.",
+		"price_label": "Price",
+		"unavailable": "Product currently unavailable."
+	},
+	"recommended_for_you": "Might help you",
+	"dismiss_aria_label": "Dismiss recommendation"
+}

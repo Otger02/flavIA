@@ -11,6 +11,7 @@ const messageNamespaces = [
   "dashboard",
   "library",
   "books",
+  "affiliate",
   "community",
   "admin",
   "shared",

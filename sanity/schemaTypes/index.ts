@@ -1,3 +1,4 @@
+import { affiliateProductType } from "./affiliateProductType";
 import { articleType } from "./articleType";
 import { audioType } from "./audioType";
 import { bookType } from "./bookType";
@@ -17,5 +18,6 @@ export const schemaTypes = [
   videoType,
   quicklyItemType,
   bookType,
+  affiliateProductType,
   pageType,
 ];
