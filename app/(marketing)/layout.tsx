@@ -77,6 +77,24 @@ export default async function MarketingLayout({ children }: MarketingLayoutProps
           />
         </header>
         <main className="flex-1">{children}</main>
+        <footer className="mt-16 border-t border-rose-200/40 pt-8 pb-4">
+          <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:justify-between sm:text-left">
+            <p className="text-xs text-stone-400">
+              © {new Date().getFullYear()} FlavIA. Todos los derechos reservados.
+            </p>
+            <nav className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-stone-400 sm:justify-end">
+              <Link href="/terminos" className="transition-colors hover:text-stone-600">
+                Términos de uso
+              </Link>
+              <Link href="/privacidad" className="transition-colors hover:text-stone-600">
+                Privacidad
+              </Link>
+              <Link href="/disclaimer" className="transition-colors hover:text-stone-600">
+                Aviso médico
+              </Link>
+            </nav>
+          </div>
+        </footer>
       </div>
       <AgeDisclaimer />
     </div>
