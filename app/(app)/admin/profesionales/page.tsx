@@ -179,7 +179,7 @@ function FilterChip(props: {
       href={props.href}
       className={`rounded-full px-3 py-1.5 text-xs transition ${
         props.active
-          ? "bg-stone-900 text-white"
+          ? "bg-rose-500 text-white"
           : "bg-stone-100 text-stone-700 hover:bg-stone-200"
       }`}
     >

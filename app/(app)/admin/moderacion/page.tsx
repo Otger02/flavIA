@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
@@ -131,6 +132,15 @@ export default async function ModeracionPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-8">
       <div>
+        <Link
+          href="/admin"
+          className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-stone-500 transition hover:text-stone-900"
+        >
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+          Admin
+        </Link>
         <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-rose-400">
           {tAdmin("page.eyebrow")}
         </p>

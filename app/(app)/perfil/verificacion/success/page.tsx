@@ -21,7 +21,7 @@ export default async function VerificationSuccessPage() {
       <div className="flex flex-wrap gap-3">
         <Link
           href="/perfil/verificacion/estado"
-          className="rounded-full bg-stone-900 px-5 py-2.5 text-xs font-medium text-white transition hover:-translate-y-0.5"
+          className="rounded-full bg-gradient-to-r from-rose-400 to-rose-500 px-5 py-2.5 text-xs font-medium text-white shadow-[0_8px_20px_rgba(220,100,100,0.20)] transition hover:-translate-y-0.5"
         >
           {t("view_status_cta")}
         </Link>

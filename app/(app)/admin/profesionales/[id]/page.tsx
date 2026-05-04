@@ -39,6 +39,10 @@ function isImagePath(path: string): boolean {
 export default async function AdminVerificationDetailPage({ params }: Props) {
   const admin = await requireAdmin();
   const { id } = await params;
+
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!UUID_RE.test(id)) notFound();
+
   const t = await getTranslations("verification.admin");
   const tType = await getTranslations("verification.professional_type");
   const locale = await getLocale();

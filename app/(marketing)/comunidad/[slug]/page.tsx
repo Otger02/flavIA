@@ -133,7 +133,7 @@ export default async function ThreadDetailPage({ params, searchParams }: Props) 
           href={`/comunidad/${slug}`}
           className={`rounded-full px-3 py-1.5 text-xs transition ${
             !filterProfessionals
-              ? "bg-stone-900 text-white"
+              ? "bg-rose-500 text-white"
               : "bg-stone-100 text-stone-600 hover:bg-stone-200"
           }`}
         >
