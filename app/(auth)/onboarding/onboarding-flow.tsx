@@ -21,15 +21,22 @@ const TOPICS = [
 ] as const;
 
 const RELATIONSHIP_STATUS = [
-  { id: "soltera", label: "Soltera" },
+  { id: "sin_pareja", label: "Sin pareja" },
   { id: "en_pareja", label: "En pareja" },
-  { id: "casada", label: "Casada" },
-  { id: "recien_separada", label: "Recién separada" },
+  { id: "casada_o", label: "Casada/o" },
+  { id: "recien_separada_o", label: "Recién separada/o" },
   { id: "abierta", label: "Relación abierta" },
   { id: "prefiero_no_decir", label: "Prefiero no decir" },
 ] as const;
 
-const COUPLED_STATUSES = new Set(["en_pareja", "casada"]);
+const PRONOUNS = [
+  { id: "ella", label: "ella / la" },
+  { id: "el", label: "él / lo" },
+  { id: "elle", label: "elle / le" },
+  { id: "prefiero_no_decir", label: "Prefiero no decir" },
+] as const;
+
+const COUPLED_STATUSES = new Set(["en_pareja", "casada_o"]);
 
 type TopicId = typeof TOPICS[number]["id"];
 
@@ -97,12 +104,12 @@ const TOPIC_PROMPTS: Record<TopicId, { solo: string[]; couple: string[] }> = {
   despues_del_parto: {
     couple: [
       "Después del parto nuestra intimidad ha cambiado mucho",
-      "Mi pareja lo intenta pero yo no me siento lista",
+      "Mi pareja lo intenta pero yo no me siento listo/a",
       "Quiero reconectar con mi sexualidad postparto",
     ],
     solo: [
       "Después del parto mi relación con mi cuerpo ha cambiado",
-      "No siento el mismo deseo desde que fui madre",
+      "No siento el mismo deseo desde que fui padre/madre",
       "Quiero reconectar con mi sexualidad sin presión",
     ],
   },
@@ -183,6 +190,7 @@ export function OnboardingFlow() {
   const [displayName, setDisplayName] = useState("");
   const [topics, setTopics] = useState<string[]>([]);
   const [relationshipStatus, setRelationshipStatus] = useState("");
+  const [pronouns, setPronouns] = useState("");
   const [saving, setSaving] = useState(false);
 
   function toggleTopic(id: string) {
@@ -193,7 +201,7 @@ export function OnboardingFlow() {
 
   async function handlePersonalizeDone() {
     setSaving(true);
-    await completeOnboarding({ displayName, relationshipStatus });
+    await completeOnboarding({ displayName, relationshipStatus, pronouns });
     setSaving(false);
     setStep("suggestions");
   }
@@ -288,6 +296,30 @@ export function OnboardingFlow() {
                       key={id}
                       type="button"
                       onClick={() => toggleTopic(id)}
+                      className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
+                        selected
+                          ? "bg-rose-500 text-white shadow-sm"
+                          : "bg-stone-100 text-stone-600 hover:bg-stone-200"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Pronouns */}
+            <div>
+              <p className="text-sm font-medium text-stone-700">Tus pronombres <span className="font-normal text-stone-400">(opcional)</span></p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {PRONOUNS.map(({ id, label }) => {
+                  const selected = pronouns === id;
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => setPronouns(selected ? "" : id)}
                       className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
                         selected
                           ? "bg-rose-500 text-white shadow-sm"

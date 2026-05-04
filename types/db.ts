@@ -112,6 +112,7 @@ export type Database = {
           preferred_language: string;
           onboarding_completed: boolean;
           relationship_status: string | null;
+          pronouns: string | null;
           plan_status: string;
           is_active: boolean;
           created_at: string;
@@ -124,6 +125,7 @@ export type Database = {
           preferred_language?: string;
           onboarding_completed?: boolean;
           relationship_status?: string | null;
+          pronouns?: string | null;
           plan_status?: string;
           is_active?: boolean;
           created_at?: string;
@@ -136,6 +138,7 @@ export type Database = {
           preferred_language?: string;
           onboarding_completed?: boolean;
           relationship_status?: string | null;
+          pronouns?: string | null;
           plan_status?: string;
           is_active?: boolean;
           created_at?: string;

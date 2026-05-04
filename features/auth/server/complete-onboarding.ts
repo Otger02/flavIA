@@ -5,9 +5,10 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 type CompleteOnboardingInput = {
   displayName: string;
   relationshipStatus: string;
+  pronouns: string;
 };
 
-export async function completeOnboarding({ displayName, relationshipStatus }: CompleteOnboardingInput) {
+export async function completeOnboarding({ displayName, relationshipStatus, pronouns }: CompleteOnboardingInput) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -18,6 +19,7 @@ export async function completeOnboarding({ displayName, relationshipStatus }: Co
     .update({
       display_name: displayName.trim() || null,
       relationship_status: relationshipStatus || null,
+      pronouns: pronouns || null,
       onboarding_completed: true,
     })
     .eq("id", user.id);
