@@ -559,6 +559,57 @@ export type Database = {
         };
         Relationships: [];
       };
+      meta_integrations: {
+        Row: {
+          id: string;
+          user_id: string;
+          meta_user_id: string;
+          instagram_business_account_id: string | null;
+          facebook_page_id: string | null;
+          facebook_page_name: string | null;
+          access_token: string;
+          token_expires_at: string | null;
+          granted_scopes: string[];
+          last_refreshed_at: string | null;
+          status: "active" | "revoked" | "expired" | "error";
+          error_details: Record<string, unknown> | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          meta_user_id: string;
+          instagram_business_account_id?: string | null;
+          facebook_page_id?: string | null;
+          facebook_page_name?: string | null;
+          access_token: string;
+          token_expires_at?: string | null;
+          granted_scopes?: string[];
+          last_refreshed_at?: string | null;
+          status?: "active" | "revoked" | "expired" | "error";
+          error_details?: Record<string, unknown> | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          meta_user_id?: string;
+          instagram_business_account_id?: string | null;
+          facebook_page_id?: string | null;
+          facebook_page_name?: string | null;
+          access_token?: string;
+          token_expires_at?: string | null;
+          granted_scopes?: string[];
+          last_refreshed_at?: string | null;
+          status?: "active" | "revoked" | "expired" | "error";
+          error_details?: Record<string, unknown> | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       professional_verifications: {
         Row: {
           id: string;

@@ -86,5 +86,47 @@
 		"pending_count": "{count} pending",
 		"approved_count": "{count} approved",
 		"rejected_count": "{count} rejected"
+	},
+	"integrations": {
+		"meta": {
+			"page_title": "Meta integrations",
+			"page_eyebrow": "Admin",
+			"page_subtitle": "Connect Flavia's Instagram so the system can read posts, comments and hashtag content. Connection happens only from here.",
+			"not_configured_title": "Set Meta credentials first",
+			"not_configured_body": "Before you can connect an account, add the following variables to .env.local and restart the server:",
+			"not_connected_title": "No account connected yet",
+			"not_connected_body": "Start the authorization flow to link the Facebook account (with the connected Instagram Business) you'll use.",
+			"connect_cta": "Connect with Meta",
+			"connected_account_unnamed": "Meta account",
+			"no_ig_business_warning": "We didn't detect a connected Instagram Business Account. Check on facebook.com that your IG account is linked to the Page.",
+			"just_connected": "Account connected. The automatic token refresh runs nightly.",
+			"error_eyebrow": "Something went wrong",
+			"error": {
+				"user_denied": "You cancelled the authorization on Facebook. You can try again whenever.",
+				"state_invalid": "OAuth session expired or tampered with. Restart the flow.",
+				"exchange_failed": "Meta returned an error during the code exchange. Check the server logs.",
+				"not_configured": "Meta env vars are missing. Configure them and retry.",
+				"meta_returned_error": "Meta returned an error during authorization. Try again.",
+				"missing_code_or_state": "Meta's response was missing required parameters."
+			},
+			"status": {
+				"active_eyebrow": "Active",
+				"revoked_eyebrow": "Revoked",
+				"expired_eyebrow": "Expired",
+				"error_eyebrow": "Error"
+			},
+			"field": {
+				"expires": "Expires",
+				"last_refreshed": "Last refreshed",
+				"meta_user_id": "Meta user ID",
+				"scopes": "Granted scopes"
+			},
+			"error_details_title": "Last error details",
+			"revoke_cta": "Disconnect",
+			"revoke_confirm": "Sure? Tap again",
+			"revoke_pending": "Disconnecting…",
+			"revoke_error": "We couldn't disconnect. Try again.",
+			"revoke_note": "Disconnect marks the integration as revoked in our database. To revoke the token on Meta's side too, go to Facebook → Settings → Business Integrations and remove the app."
+		}
 	}
 }

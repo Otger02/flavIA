@@ -86,5 +86,47 @@
 		"pending_count": "{count} pendiente{count, plural, one {} other {s}}",
 		"approved_count": "{count} aprobada{count, plural, one {} other {s}}",
 		"rejected_count": "{count} rechazada{count, plural, one {} other {s}}"
+	},
+	"integrations": {
+		"meta": {
+			"page_title": "Integraciones de Meta",
+			"page_eyebrow": "Admin",
+			"page_subtitle": "Conecta la cuenta de Instagram de Flavia para que el sistema pueda leer publicaciones, comentarios y posts de hashtags. Sólo se conecta desde aquí.",
+			"not_configured_title": "Configura las credenciales de Meta primero",
+			"not_configured_body": "Antes de poder conectar una cuenta, añade en .env.local las siguientes variables y reinicia el servidor:",
+			"not_connected_title": "Aún no hay ninguna cuenta conectada",
+			"not_connected_body": "Inicia el flujo de autorización para vincular la cuenta de Facebook (con el Instagram Business asociado) que vas a usar.",
+			"connect_cta": "Conectar con Meta",
+			"connected_account_unnamed": "Cuenta de Meta",
+			"no_ig_business_warning": "No detectamos un Instagram Business Account asociado. Verifica en la app que la cuenta de IG esté vinculada a la página de Facebook.",
+			"just_connected": "Cuenta conectada correctamente. El refresco automático de tokens corre cada noche.",
+			"error_eyebrow": "Algo no salió bien",
+			"error": {
+				"user_denied": "Cancelaste la autorización en Facebook. Vuelve a intentarlo cuando quieras.",
+				"state_invalid": "Sesión de OAuth expirada o manipulada. Inicia el flujo de nuevo.",
+				"exchange_failed": "Meta devolvió un error al intercambiar el código por un token. Revisa los logs del servidor.",
+				"not_configured": "Faltan variables de entorno de Meta. Configúralas y reintenta.",
+				"meta_returned_error": "Meta devolvió un error durante la autorización. Inténtalo de nuevo.",
+				"missing_code_or_state": "La respuesta de Meta no incluyó los parámetros esperados."
+			},
+			"status": {
+				"active_eyebrow": "Activa",
+				"revoked_eyebrow": "Revocada",
+				"expired_eyebrow": "Expirada",
+				"error_eyebrow": "Con errores"
+			},
+			"field": {
+				"expires": "Expira",
+				"last_refreshed": "Último refresco",
+				"meta_user_id": "ID de usuario en Meta",
+				"scopes": "Permisos concedidos"
+			},
+			"error_details_title": "Detalles del último error",
+			"revoke_cta": "Desconectar",
+			"revoke_confirm": "¿Seguro? Toca de nuevo",
+			"revoke_pending": "Desconectando…",
+			"revoke_error": "No pudimos desconectar. Inténtalo de nuevo.",
+			"revoke_note": "Desconectar marca la integración como revocada en nuestra base de datos. Para revocar el token también del lado de Meta, ve a Facebook → Configuración → Integraciones de empresa y quita la app."
+		}
 	}
 }
