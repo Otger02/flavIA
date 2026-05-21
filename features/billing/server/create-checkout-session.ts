@@ -10,6 +10,10 @@ import {
   BILLING_PLUS_PLAN,
   BILLING_PRO_PLAN,
 } from "@/features/billing/constants";
+import {
+  STRIPE_CUSTOMER_METADATA_KEYS,
+  STRIPE_METADATA_KEYS,
+} from "@/features/billing/stripe-metadata";
 import type {
   BillingPlan,
   CheckoutSession,
@@ -64,7 +68,9 @@ export async function createCheckoutSession(
   if (!customerId) {
     const customer = await stripe.customers.create({
       metadata: {
-        supabaseUserId: input.userId,
+        // Customer-level lookup key — see STRIPE_CUSTOMER_METADATA_KEYS
+        // docs. Stripe does NOT propagate this to subscriptions.
+        [STRIPE_CUSTOMER_METADATA_KEYS.supabaseUserId]: input.userId,
       },
     });
 
@@ -94,8 +100,11 @@ export async function createCheckoutSession(
     cancel_url: input.cancelUrl || `${publicStripeConfig.appUrl}/plans?checkout=cancelled`,
     client_reference_id: input.userId,
     metadata: {
-      userId: input.userId,
-      plan: input.plan,
+      [STRIPE_METADATA_KEYS.userId]: input.userId,
+      // INFORMATIONAL ONLY — webhook does not read this; plan is
+      // derived from priceId. See stripe-metadata.ts for the full
+      // rationale.
+      [STRIPE_METADATA_KEYS.plan]: input.plan,
     },
   });
 

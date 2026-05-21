@@ -3,6 +3,10 @@ import "server-only";
 import Stripe from "stripe";
 
 import { BILLING_WEBHOOK_RELEVANT_EVENTS } from "@/features/billing/constants";
+import {
+  BOOK_METADATA_KIND,
+  STRIPE_METADATA_KEYS,
+} from "@/features/billing/stripe-metadata";
 import { recordBookPurchase } from "@/features/books/server/book-purchases";
 import { createAdminSupabaseClient } from "@/lib/supabase/admin";
 import { ANALYTICS_EVENTS, trackServerEvent } from "@/lib/analytics/track";
@@ -45,7 +49,12 @@ function mapPriceIdToPlan(priceId: string | null | undefined) {
 
 async function upsertSubscriptionFromStripeSubscription(subscription: Stripe.Subscription) {
   const supabase = createAdminSupabaseClient();
-  const userId = subscription.metadata.userId || subscription.metadata.supabaseUserId;
+  // Single canonical key. Previously this also tried
+  // `subscription.metadata.supabaseUserId` as a fallback, but no
+  // writer ever sets that key on subscriptions (it's a customer-level
+  // key that Stripe does not auto-propagate). Dropped to avoid
+  // implying a producer that doesn't exist.
+  const userId = subscription.metadata[STRIPE_METADATA_KEYS.userId];
   const priceId = subscription.items.data[0]?.price.id ?? null;
   const currentPeriodEnd =
     "current_period_end" in subscription && typeof subscription.current_period_end === "number"
@@ -110,10 +119,14 @@ export async function syncSubscriptionFromStripe(
     // Book purchases: mode='payment' with metadata.kind === 'book'.
     // Decoupled from the subscription path so a book sale never touches
     // the `subscriptions` table or affects a user's plan.
-    if (session.mode === "payment" && session.metadata?.kind === "book") {
-      const userId = session.metadata.userId ?? session.client_reference_id ?? null;
-      const bookSlug = session.metadata.bookSlug ?? null;
-      const amountCop = Number(session.metadata.amountCop ?? 0);
+    if (
+      session.mode === "payment" &&
+      session.metadata?.[STRIPE_METADATA_KEYS.kind] === BOOK_METADATA_KIND
+    ) {
+      const userId =
+        session.metadata[STRIPE_METADATA_KEYS.userId] ?? session.client_reference_id ?? null;
+      const bookSlug = session.metadata[STRIPE_METADATA_KEYS.bookSlug] ?? null;
+      const amountCop = Number(session.metadata[STRIPE_METADATA_KEYS.amountCop] ?? 0);
 
       if (!userId || !bookSlug) {
         console.error(
@@ -161,18 +174,22 @@ export async function syncSubscriptionFromStripe(
       const stripe = new Stripe(getStripeServerConfig().secretKey);
       let subscription = await stripe.subscriptions.retrieve(String(session.subscription));
 
-      if (session.metadata?.userId && !subscription.metadata.userId) {
+      const sessionUserId = session.metadata?.[STRIPE_METADATA_KEYS.userId];
+      if (sessionUserId && !subscription.metadata[STRIPE_METADATA_KEYS.userId]) {
         subscription = await stripe.subscriptions.update(subscription.id, {
           metadata: {
             ...subscription.metadata,
-            userId: session.metadata.userId,
+            [STRIPE_METADATA_KEYS.userId]: sessionUserId,
           },
         });
       }
 
       await upsertSubscriptionFromStripeSubscription(subscription);
 
-      const distinctId = session.metadata?.userId ?? subscription.metadata.userId ?? session.client_reference_id;
+      const distinctId =
+        sessionUserId ??
+        subscription.metadata[STRIPE_METADATA_KEYS.userId] ??
+        session.client_reference_id;
 
       if (distinctId) {
         await trackServerEvent({
@@ -202,11 +219,15 @@ export async function syncSubscriptionFromStripe(
   ) {
     const subscription = eventObject as Stripe.Subscription;
 
-    // If no userId yet, re-fetch from Stripe in case checkout handler already set it
-    if (!subscription.metadata.userId && !subscription.metadata.supabaseUserId) {
+    // If no userId yet, re-fetch from Stripe in case checkout handler
+    // already set it. Previously this also checked
+    // `subscription.metadata.supabaseUserId` — dropped because that
+    // key is customer-scoped (not propagated to subscriptions by
+    // Stripe) so no real producer could have populated it here.
+    if (!subscription.metadata[STRIPE_METADATA_KEYS.userId]) {
       const stripe = new Stripe(getStripeServerConfig().secretKey);
       const fresh = await stripe.subscriptions.retrieve(subscription.id);
-      if (fresh.metadata.userId || fresh.metadata.supabaseUserId) {
+      if (fresh.metadata[STRIPE_METADATA_KEYS.userId]) {
         await upsertSubscriptionFromStripeSubscription(fresh);
         return { handled: true, eventType: input.eventType, subscriptionId: fresh.id };
       }

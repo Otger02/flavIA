@@ -5,6 +5,10 @@ import Stripe from "stripe";
 import { ANALYTICS_EVENTS, trackServerEvent } from "@/lib/analytics/track";
 import { getStripePublicConfig, getStripeServerConfig } from "@/lib/stripe/config";
 import { getBookBySlug } from "@/features/books/server/get-books";
+import {
+  BOOK_METADATA_KIND,
+  STRIPE_METADATA_KEYS,
+} from "@/features/billing/stripe-metadata";
 
 type CreateBookCheckoutInput = {
   userId: string;
@@ -59,17 +63,23 @@ export async function createBookCheckoutSession(
     cancel_url: cancelUrl,
     client_reference_id: input.userId,
     payment_intent_data: {
+      // Mirror the session metadata exactly. Webhook reads from
+      // session.metadata, but keeping both bags symmetric avoids the
+      // operator-confusing situation where the Stripe dashboard's
+      // payment-intent view shows different fields than the
+      // session view.
       metadata: {
-        userId: input.userId,
-        bookSlug: book.slug,
-        amountCop: String(book.priceCop),
+        [STRIPE_METADATA_KEYS.userId]: input.userId,
+        [STRIPE_METADATA_KEYS.bookSlug]: book.slug,
+        [STRIPE_METADATA_KEYS.amountCop]: String(book.priceCop),
+        [STRIPE_METADATA_KEYS.kind]: BOOK_METADATA_KIND,
       },
     },
     metadata: {
-      userId: input.userId,
-      bookSlug: book.slug,
-      amountCop: String(book.priceCop),
-      kind: "book",
+      [STRIPE_METADATA_KEYS.userId]: input.userId,
+      [STRIPE_METADATA_KEYS.bookSlug]: book.slug,
+      [STRIPE_METADATA_KEYS.amountCop]: String(book.priceCop),
+      [STRIPE_METADATA_KEYS.kind]: BOOK_METADATA_KIND,
     },
   });
 
