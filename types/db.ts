@@ -70,6 +70,7 @@ export type Database = {
           free_messages_used: number;
           hit_paywall: boolean;
           converted_after_session: boolean;
+          user_state_summary: string | null;
           created_at: string;
         };
         Insert: {
@@ -85,6 +86,7 @@ export type Database = {
           free_messages_used?: number;
           hit_paywall?: boolean;
           converted_after_session?: boolean;
+          user_state_summary?: string | null;
           created_at?: string;
         };
         Update: {
@@ -100,6 +102,7 @@ export type Database = {
           free_messages_used?: number;
           hit_paywall?: boolean;
           converted_after_session?: boolean;
+          user_state_summary?: string | null;
           created_at?: string;
         };
         Relationships: [];

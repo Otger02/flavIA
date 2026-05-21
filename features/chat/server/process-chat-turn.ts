@@ -348,6 +348,7 @@ export async function processChatTurn({
     await updateUserState({
       session: sessionWithTopic,
       assistantMessage: reply,
+      recentMessages: messages,
     });
 
     return {
@@ -546,7 +547,7 @@ export async function processChatTurnStream({
 
         const messages = await getChatHistory({ sessionId: session.id });
 
-        await updateUserState({ session: sessionWithTopic, assistantMessage: reply });
+        await updateUserState({ session: sessionWithTopic, assistantMessage: reply, recentMessages: messages });
 
         controller.enqueue(
           encodeEvent({

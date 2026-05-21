@@ -171,13 +171,41 @@ export async function generateChatResponse(context: ChatContext): Promise<Genera
 
 // --- Streaming ---
 
+// Wraps any AsyncIterable and throws if no item arrives within idleTimeoutMs.
+// Each yielded item resets the clock, so long-running but active streams are safe.
+async function* withIdleTimeout<T>(
+  source: AsyncIterable<T>,
+  idleTimeoutMs: number,
+): AsyncGenerator<T> {
+  const iter = source[Symbol.asyncIterator]();
+  try {
+    while (true) {
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      const timeout = new Promise<never>((_, reject) => {
+        timer = setTimeout(
+          () => reject(new Error(`Stream idle for ${idleTimeoutMs}ms — aborting`)),
+          idleTimeoutMs,
+        );
+      });
+      const next = await Promise.race([iter.next(), timeout]);
+      clearTimeout(timer);
+      if (next.done) break;
+      yield next.value;
+    }
+  } finally {
+    await iter.return?.();
+  }
+}
+
+const STREAM_IDLE_TIMEOUT_MS = 45_000;
+
 type StreamResult = {
   stream: AsyncIterable<string>;
   model: string;
   provider: "openai" | "anthropic";
 };
 
-async function streamWithOpenAI(context: ChatContext, apiKey: string): Promise<StreamResult> {
+async function streamWithOpenAI(context: ChatContext, apiKey: string, signal?: AbortSignal): Promise<StreamResult> {
   const client = new OpenAI({ apiKey });
   const messages: ChatCompletionMessageParam[] = [
     { role: "system", content: getChatSystemPrompt(context) },
@@ -189,7 +217,7 @@ async function streamWithOpenAI(context: ChatContext, apiKey: string): Promise<S
     temperature: 0.7,
     messages,
     stream: true,
-  });
+  }, { signal });
 
   async function* iterateChunks() {
     for await (const chunk of completion) {
@@ -198,17 +226,17 @@ async function streamWithOpenAI(context: ChatContext, apiKey: string): Promise<S
     }
   }
 
-  return { stream: iterateChunks(), model: OPENAI_MODEL, provider: "openai" };
+  return { stream: withIdleTimeout(iterateChunks(), STREAM_IDLE_TIMEOUT_MS), model: OPENAI_MODEL, provider: "openai" };
 }
 
-async function streamWithAnthropic(context: ChatContext, apiKey: string): Promise<StreamResult> {
+async function streamWithAnthropic(context: ChatContext, apiKey: string, signal?: AbortSignal): Promise<StreamResult> {
   const client = new Anthropic({ apiKey });
   const response = client.messages.stream({
     model: ANTHROPIC_MODEL,
     max_tokens: 500,
     system: getChatSystemPrompt(context),
     messages: getAnthropicConversationMessages(context),
-  });
+  }, { signal });
 
   async function* iterateChunks() {
     for await (const event of response) {
@@ -218,16 +246,17 @@ async function streamWithAnthropic(context: ChatContext, apiKey: string): Promis
     }
   }
 
-  return { stream: iterateChunks(), model: ANTHROPIC_MODEL, provider: "anthropic" };
+  return { stream: withIdleTimeout(iterateChunks(), STREAM_IDLE_TIMEOUT_MS), model: ANTHROPIC_MODEL, provider: "anthropic" };
 }
 
 export async function generateChatResponseStream(context: ChatContext): Promise<StreamResult> {
   const { anthropicApiKey, openAiApiKey } = getAiProviderKeys();
   const errors: string[] = [];
+  const abort = new AbortController();
 
   if (openAiApiKey) {
     try {
-      return await withRetry(() => streamWithOpenAI(context, openAiApiKey), RETRY_ATTEMPTS);
+      return await withRetry(() => streamWithOpenAI(context, openAiApiKey, abort.signal), RETRY_ATTEMPTS);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown OpenAI error";
       errors.push(`OpenAI stream: ${message}`);
@@ -236,7 +265,7 @@ export async function generateChatResponseStream(context: ChatContext): Promise<
 
   if (anthropicApiKey) {
     try {
-      return await withRetry(() => streamWithAnthropic(context, anthropicApiKey), RETRY_ATTEMPTS);
+      return await withRetry(() => streamWithAnthropic(context, anthropicApiKey, abort.signal), RETRY_ATTEMPTS);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown Anthropic error";
       errors.push(`Anthropic stream: ${message}`);
