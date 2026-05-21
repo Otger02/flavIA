@@ -1,0 +1,64 @@
+{
+	"meta": {
+		"title": "Política de la comunidad",
+		"description": "Las reglas con las que cuidamos el espacio: respeto, consentimiento, sin diagnósticos, sin promoción comercial."
+	},
+	"hero": {
+		"eyebrow": "Comunidad",
+		"title": "Cómo cuidamos este espacio",
+		"intro": "La comunidad de Flavia es un lugar para hablar de deseo, intimidad, pareja y sexualidad sin tabú ni juicio. Para que eso funcione, hace falta acuerdo. Estas son las reglas mínimas — escritas para que sean claras, no para asustarte."
+	},
+	"rules": {
+		"title": "Las reglas",
+		"r1_title": "Respeto absoluto",
+		"r1_body": "No se aceptan insultos, acoso, humillación ni descalificaciones personales. Puedes estar en desacuerdo con alguien, pero no atacarla. Si no lo dirías en una conversación en persona con respeto, no lo escribas aquí.",
+		"r2_title": "Consentimiento al hablar de otras personas",
+		"r2_body": "Cuidado al identificar a tu pareja, ex, familia o amistades por nombre o detalles reconocibles. Si lo que cuentas las describe demasiado, pregúntate si tienen consentimiento para aparecer en tu relato. Cuando dudes, anonimiza.",
+		"r3_title": "Nada que sexualice a menores de edad",
+		"r3_body": "Cero contenido sexual explícito sobre o que involucre a menores. Punto final. Esta regla no se discute: cualquier publicación o comentario en esa línea se elimina y la cuenta queda suspendida de inmediato.",
+		"r4_title": "Sin promoción comercial no autorizada",
+		"r4_body": "No publiques enlaces a productos, marcas, servicios profesionales propios o cursos sin acuerdo previo con el equipo. Las recomendaciones de marcas afiliadas las hace Flavia desde el chat, con divulgación clara. La comunidad no es un escaparate.",
+		"r5_title": "Sin consejo médico, psicológico o legal si no eres profesional verificada",
+		"r5_body": "Compartir tu experiencia personal es bienvenido. Diagnosticar a otra persona o recetarle un tratamiento no lo es. Si eres psicóloga, sexóloga o médica con credenciales reales, puedes pedir la verificación en /perfil/verificacion — una vez aprobada, tus respuestas llevan una marca (✓ Profesional verificada) y pueden marcarse como \"respuesta oficial\".",
+		"r6_title": "Sin desinformación de salud sexual",
+		"r6_body": "Mitos peligrosos, teorías conspirativas sobre anticoncepción/menopausia/ITS, o consejos contrarios a evidencia clínica básica se moderan. No buscamos silenciar dudas legítimas — buscamos que las dudas se respondan con información, no con desinformación.",
+		"r7_title": "Sin discriminación",
+		"r7_body": "No se acepta contenido discriminatorio por orientación sexual, identidad de género, etnia, religión, edad, cuerpo o condición. La diversidad es la norma, no la excepción.",
+		"r8_title": "Si compartes algo doloroso, dinos qué necesitas",
+		"r8_body": "Puedes contar lo que estás viviendo. Solo añade qué te ayudaría: escucha, una opinión, ideas concretas, o sólo desahogarte. Eso ayuda a quien responde a no proyectar ni dar consejos no pedidos."
+	},
+	"moderation": {
+		"title": "Cómo moderamos",
+		"intro": "La moderación combina automatización y revisión humana. No es perfecta — pero es la base sobre la que iremos ajustando.",
+		"auto_title": "Capa automática",
+		"auto_body": "Cada hilo y comentario pasa por un clasificador de IA antes de publicarse. La capa automática solo bloquea lo que está claramente fuera (amenazas, contenido con menores, spam, doxing, discurso de odio). El sexo explícito respetuoso NO se bloquea — este es un espacio adulto sobre sexualidad.",
+		"human_title": "Capa humana",
+		"human_body": "Los casos limítrofes los revisa el equipo. Los reportes que envías la comunidad llegan también ahí. Las decisiones se toman caso por caso, no por algoritmo.",
+		"verified_title": "Voz de profesionales",
+		"verified_body": "Las profesionales verificadas (psicólogas, sexólogas, médicas con credenciales aprobadas) aparecen con una marca distintiva. Pueden marcar respuestas como \"respuesta oficial\" — eso no les da poder de moderación, solo claridad sobre quién responde.",
+		"reports_title": "Cuando reportas",
+		"reports_body": "Cuando reportas un contenido, queda registrado y el equipo lo revisa. No siempre damos seguimiento individual a cada reporte, pero ningún reporte se ignora."
+	},
+	"consequences": {
+		"title": "Qué pasa si rompes una regla",
+		"intro": "No tenemos un sistema rígido de \"strikes\". El equipo decide proporcionalmente, caso por caso. Como guía:",
+		"step1_title": "Primera vez, regla menor",
+		"step1_body": "El contenido se elimina o edita. Te avisamos qué pasó y por qué.",
+		"step2_title": "Reincidencia",
+		"step2_body": "Suspensión temporal de la cuenta para publicar (puedes seguir leyendo). El tiempo depende de la gravedad y del patrón.",
+		"step3_title": "Casos graves",
+		"step3_body": "Acoso dirigido a una persona concreta, contenido ilegal, doxing intencional o contenido sexual con menores: expulsión inmediata y permanente. Sin negociación. Si aplica, denunciamos a las autoridades.",
+		"discretion_note": "El equipo se reserva la decisión final. Si crees que se cometió un error contigo, escríbenos al correo de soporte y revisamos."
+	},
+	"report": {
+		"title": "Cómo reportar",
+		"body": "Cada hilo y comentario tiene un botón \"Reportar\". Úsalo cuando algo cruce las reglas. No hace falta dar contexto largo — basta con marcar el motivo.",
+		"cta": "Ir a la comunidad"
+	},
+	"rights": {
+		"title": "Tus derechos",
+		"body": "Tienes derecho a saber por qué se moderó tu contenido, a pedir revisión humana de una decisión automática, y a exportar o eliminar tus datos. Si quieres reclamar una decisión, escríbenos a {contactEmail}.",
+		"contact_email": "hola@flavia.app"
+	},
+	"footer_note": "Esta política puede cambiar a medida que la comunidad crece. Avisaremos por correo cuando lo haga."
+}

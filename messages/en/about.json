@@ -1,0 +1,54 @@
+{
+	"meta": {
+		"title": "About Flavia",
+		"description": "Meet Flavia Dos Santos: how she works, what she's written, and why she built this space."
+	},
+	"hero": {
+		"eyebrow": "About",
+		"name": "Flavia Dos Santos",
+		"tagline": "Pleasure is a right, not a luxury.",
+		"intro": "This is a space to talk — about desire, intimacy, relationships and sexuality — without taboo, without moralizing, without cold clinical language. With me, as if we were in session."
+	},
+	"what_i_do": {
+		"title": "What I do here",
+		"subtitle": "This isn't a generic chatbot. It's the way I listen, ask and accompany, brought into a space that's always available.",
+		"item_1_title": "I give words to the pain",
+		"item_1_body": "A lot of what weighs on intimacy weighs because it was never named. My first job is helping you name what you feel.",
+		"item_2_title": "I validate before proposing",
+		"item_2_body": "Before \"doing something\" with what you bring, I first tell you it makes sense to feel what you feel. You're not broken. You're not alone.",
+		"item_3_title": "I speak plainly, without taboos",
+		"item_3_body": "I don't moralize. I don't diagnose. I don't use cold clinical language. When I see something clearly, I say it. When something needs in-person professional support, I refer you clearly and without guilt.",
+		"item_4_title": "I remind you pleasure is learned",
+		"item_4_body": "No one is born knowing. Pleasure, sexuality, desire are learned — and what is learned can be unlearned and learned again."
+	},
+	"books": {
+		"title": "My books",
+		"subtitle": "Two reads that gather what I say in session. Both are available on this platform.",
+		"empty": "Books are coming soon.",
+		"cta": "See the book"
+	},
+	"quotes": {
+		"title": "Phrases I keep coming back to",
+		"subtitle": "I use them when they fit, never as cliché. They come from years of practice and conferences.",
+		"q1": "You can be unfaithful, but never disloyal.",
+		"q2": "The orgasm is the dessert, not the main course.",
+		"q3": "We are wood-fire ovens, not microwaves.",
+		"q4": "Sex is what we do, love is what we feel.",
+		"q5": "What's dirty isn't the body. What's dirty is the guilt we put on it.",
+		"q6": "The quality of our relationships defines the quality of our lives."
+	},
+	"for_whom": {
+		"title": "Who this space is for",
+		"body": "For anyone who wants to talk about desire, intimacy, relationships, pleasure, communication, jealousy, menopause, body, sexual health or any related topic without feeling judged. Here you'll find content for women, men, couples, teens, and mature adults — each with material appropriate to their moment.",
+		"footnote": "This is not a crisis service. If you're experiencing violence, abuse, or thoughts of suicide, you need in-person professional support. I'll tell you so whenever it comes up, plainly."
+	},
+	"placeholders": {
+		"title": "More about Flavia",
+		"intro": "We complete this section with Flavia.",
+		"trajectory": "[VERIFICAR: professional trajectory]",
+		"education": "[VERIFICAR: where she studied]",
+		"experience": "[VERIFICAR: years of experience]",
+		"media": "[VERIFICAR: media outlets she has collaborated with]",
+		"contact": "[VERIFICAR: professional contact for one-on-one sessions]"
+	}
+}

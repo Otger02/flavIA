@@ -1,0 +1,54 @@
+{
+	"meta": {
+		"title": "Sobre Flavia",
+		"description": "Conoce a Flavia Dos Santos: cómo trabaja, qué ha escrito y por qué creó este espacio."
+	},
+	"hero": {
+		"eyebrow": "Sobre",
+		"name": "Flavia Dos Santos",
+		"tagline": "El placer es un derecho, no un lujo.",
+		"intro": "Esta es una plataforma para conversar — sobre deseo, intimidad, pareja y sexualidad — sin tabú, sin moralizar, sin lenguaje clínico frío. Conmigo, como si estuviéramos en consulta."
+	},
+	"what_i_do": {
+		"title": "Lo que hago aquí",
+		"subtitle": "No es un chatbot genérico. Es la forma en que yo escucho, pregunto y acompaño, llevada a un espacio que está siempre disponible.",
+		"item_1_title": "Pongo palabra al dolor",
+		"item_1_body": "Muchas cosas que pesan en la intimidad pesan porque nunca se nombraron. Mi primer trabajo es ayudarte a nombrar lo que sientes.",
+		"item_2_title": "Valido antes de proponer",
+		"item_2_body": "Antes de \"hacer algo\" con lo que traes, primero te digo que tiene sentido sentir lo que sientes. No estás rota. No estás solo.",
+		"item_3_title": "Hablo claro, sin rodeos ni tabúes",
+		"item_3_body": "No moralizo. No diagnostico. No uso lenguaje clínico frío. Cuando veo algo claro, lo digo. Cuando algo necesita acompañamiento profesional presencial, te derivo con claridad y sin culpa.",
+		"item_4_title": "Te recuerdo que el placer se aprende",
+		"item_4_body": "Nadie nace sabiendo. El placer, la sexualidad, el deseo son aprendidos — y lo que se aprende se puede desaprender y volver a aprender."
+	},
+	"books": {
+		"title": "Mis libros",
+		"subtitle": "Dos lecturas que reúnen lo que digo en consulta. Las dos están disponibles para leer en esta plataforma.",
+		"empty": "Pronto añadiremos los libros aquí.",
+		"cta": "Ver el libro"
+	},
+	"quotes": {
+		"title": "Algunas frases que repito",
+		"subtitle": "Las uso cuando encajan, no como cliché. Vienen de años de consulta y de conferencias.",
+		"q1": "Hay que ser infiel, pero nunca desleal.",
+		"q2": "El orgasmo es el postre, no el plato fuerte.",
+		"q3": "Somos horno a leña, no microondas.",
+		"q4": "Sexo es lo que hacemos, amor es lo que sentimos.",
+		"q5": "Lo sucio no es el cuerpo. Lo sucio es la culpa que cargamos sobre él.",
+		"q6": "La calidad de nuestras relaciones determina la calidad de nuestras vidas."
+	},
+	"for_whom": {
+		"title": "Para quién es este espacio",
+		"body": "Para cualquier persona que quiera conversar sobre deseo, intimidad, pareja, placer, comunicación, celos, menopausia, cuerpo, salud sexual o cualquier tema relacionado sin sentirse juzgada. Aquí caben mujeres, hombres, parejas, adolescentes, personas en edad madura — cada una con contenido apropiado para su momento.",
+		"footnote": "Este no es un servicio de crisis. Si estás viviendo violencia, abuso o pensamientos de suicidio, necesitas acompañamiento profesional presencial. Te lo digo siempre que aparece, sin rodeos."
+	},
+	"placeholders": {
+		"title": "Más sobre Flavia",
+		"intro": "Esta sección la completamos con Flavia.",
+		"trajectory": "[VERIFICAR: trayectoria profesional]",
+		"education": "[VERIFICAR: dónde estudió]",
+		"experience": "[VERIFICAR: años de experiencia]",
+		"media": "[VERIFICAR: medios donde ha colaborado]",
+		"contact": "[VERIFICAR: contacto profesional para sesiones individuales]"
+	}
+}

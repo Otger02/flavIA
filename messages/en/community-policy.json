@@ -1,0 +1,64 @@
+{
+	"meta": {
+		"title": "Community policy",
+		"description": "The rules we use to care for the space: respect, consent, no diagnoses, no commercial promotion."
+	},
+	"hero": {
+		"eyebrow": "Community",
+		"title": "How we take care of this space",
+		"intro": "Flavia's community is a place to talk about desire, intimacy, relationships and sexuality without taboo or judgment. For that to work, we need an agreement. These are the minimum rules — written to be clear, not to scare you."
+	},
+	"rules": {
+		"title": "The rules",
+		"r1_title": "Absolute respect",
+		"r1_body": "No insults, harassment, humiliation or personal attacks. You can disagree with someone, but never attack them. If you wouldn't say it respectfully in person, don't write it here.",
+		"r2_title": "Consent when talking about other people",
+		"r2_body": "Be careful identifying your partner, ex, family or friends by name or recognizable detail. If your story makes them identifiable, ask whether they'd consent to appearing in it. When in doubt, anonymize.",
+		"r3_title": "Nothing sexualizing minors",
+		"r3_body": "Zero sexually explicit content about or involving minors. Full stop. This rule isn't negotiable: any post or comment in that direction is removed immediately and the account suspended.",
+		"r4_title": "No unauthorized commercial promotion",
+		"r4_body": "Don't post links to products, brands, your own professional services or courses without prior agreement with the team. Affiliate brand recommendations are made by Flavia in the chat, with clear disclosure. The community is not a storefront.",
+		"r5_title": "No medical, psychological or legal advice unless you're a verified professional",
+		"r5_body": "Sharing your personal experience is welcome. Diagnosing someone else or prescribing treatment is not. If you're a psychologist, sexologist or doctor with real credentials, you can request verification at /perfil/verificacion — once approved, your replies carry a badge (✓ Verified professional) and can be marked as \"official reply\".",
+		"r6_title": "No sexual-health misinformation",
+		"r6_body": "Dangerous myths, conspiracy theories about contraception/menopause/STIs, or advice contrary to basic clinical evidence will be moderated. We're not here to silence legitimate questions — we're here so questions are answered with information, not misinformation.",
+		"r7_title": "No discrimination",
+		"r7_body": "Content discriminating by sexual orientation, gender identity, ethnicity, religion, age, body or condition is not accepted. Diversity is the norm, not the exception.",
+		"r8_title": "If you share something painful, tell us what you need",
+		"r8_body": "You can share what you're going through. Just add what would help: listening, an opinion, concrete ideas, or just venting. It helps whoever responds not to project or give unsolicited advice."
+	},
+	"moderation": {
+		"title": "How we moderate",
+		"intro": "Moderation combines automation and human review. It's not perfect — but it's the baseline we'll keep adjusting.",
+		"auto_title": "Automatic layer",
+		"auto_body": "Every thread and comment goes through an AI classifier before publishing. The automatic layer only blocks things that are clearly out of bounds (threats, content with minors, spam, doxing, hate speech). Respectful explicit sex content is NOT blocked — this is an adult space about sexuality.",
+		"human_title": "Human layer",
+		"human_body": "Borderline cases are reviewed by the team. The reports you send the community also land there. Decisions are made case by case, not by algorithm.",
+		"verified_title": "Verified professionals' voice",
+		"verified_body": "Verified professionals (psychologists, sexologists, doctors with approved credentials) appear with a distinctive badge. They can mark replies as \"official reply\" — that doesn't give them moderation power, just clarity about who's answering.",
+		"reports_title": "When you report",
+		"reports_body": "When you report content, it's recorded and reviewed by the team. We don't always follow up on each report individually, but no report is ignored."
+	},
+	"consequences": {
+		"title": "What happens if you break a rule",
+		"intro": "We don't have a rigid \"strikes\" system. The team decides proportionally, case by case. As a guide:",
+		"step1_title": "First time, minor rule",
+		"step1_body": "The content is removed or edited. We let you know what happened and why.",
+		"step2_title": "Repeated behavior",
+		"step2_body": "Temporary suspension of the account's ability to post (you can still read). The length depends on severity and pattern.",
+		"step3_title": "Serious cases",
+		"step3_body": "Targeted harassment of a specific person, illegal content, intentional doxing, or sexual content involving minors: immediate and permanent ban. No negotiation. Where applicable, we report to the authorities.",
+		"discretion_note": "The team reserves the final decision. If you think there was a mistake with your case, email support and we'll review."
+	},
+	"report": {
+		"title": "How to report",
+		"body": "Each thread and comment has a \"Report\" button. Use it when something crosses the rules. You don't need a long explanation — just mark the reason.",
+		"cta": "Go to the community"
+	},
+	"rights": {
+		"title": "Your rights",
+		"body": "You have the right to know why your content was moderated, to request human review of an automatic decision, and to export or delete your data. To dispute a decision, email us at {contactEmail}.",
+		"contact_email": "hola@flavia.app"
+	},
+	"footer_note": "This policy may change as the community grows. We'll email you when it does."
+}

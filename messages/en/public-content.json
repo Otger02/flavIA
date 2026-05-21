@@ -1,0 +1,53 @@
+{
+	"page_eyebrow": "Admin",
+	"page_title": "Flavia public content",
+	"page_subtitle": "Ingest YouTube transcripts, media interviews or pasted text. Claude Haiku proposes content pieces (QuicKly tips, articles, phrases) grounded literally in the source — you approve or reject.",
+	"tab": {
+		"sources": "Sources",
+		"proposals": "Proposals"
+	},
+	"sources": {
+		"add_title": "Add a new source",
+		"list_title": "Ingested sources",
+		"empty": "No sources added yet.",
+		"add_cta": "Add source",
+		"adding": "Adding…",
+		"process_cta": "Process with Haiku",
+		"reprocess_cta": "Re-process",
+		"reprocess_help": "Deletes pending proposals for this source and calls Haiku again. Approved/rejected ones are preserved.",
+		"processing": "Processing…",
+		"raw_chars": "{count} characters of text",
+		"processed_at": "processed"
+	},
+	"proposals": {
+		"pending_title": "Pending review",
+		"reviewed_title": "Already reviewed",
+		"empty_pending": "No pending proposals.",
+		"empty_reviewed": "No history yet.",
+		"full_content_title": "Show full content",
+		"source_quote_title": "Verbatim quote from source (anti-hallucination)",
+		"sanity_draft_label": "Sanity draft",
+		"notes_placeholder": "Review notes (optional)",
+		"approve_cta": "Approve",
+		"reject_cta": "Reject"
+	},
+	"field": {
+		"source_type": "Source type",
+		"source_url": "URL",
+		"title_override": "Title (optional)",
+		"title_placeholder": "If left empty we'll use the auto-detected title",
+		"author": "Author (optional)",
+		"published_at": "Date (optional)",
+		"raw_text": "Pasted text",
+		"raw_text_placeholder": "Paste the transcript or article body here if the URL can't be scraped automatically."
+	},
+	"source_type": {
+		"youtube": "YouTube (auto transcript)",
+		"media_article": "Media article (HTML)",
+		"podcast_transcript": "Podcast transcript (pasted)",
+		"manual_text": "Manual text (pasted)"
+	},
+	"error": {
+		"prefix": "Error"
+	}
+}

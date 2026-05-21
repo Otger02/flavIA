@@ -1,0 +1,53 @@
+{
+	"page_eyebrow": "Admin",
+	"page_title": "Contenido público de Flavia",
+	"page_subtitle": "Ingiere transcripciones de YouTube, entrevistas en medios o textos pegados a mano. Claude Haiku propone piezas de contenido (tips QuicKly, artículos, frases) basadas literalmente en la fuente — tú apruebas o rechazas.",
+	"tab": {
+		"sources": "Fuentes",
+		"proposals": "Propuestas"
+	},
+	"sources": {
+		"add_title": "Añadir una nueva fuente",
+		"list_title": "Fuentes ingeridas",
+		"empty": "Aún no has añadido ninguna fuente.",
+		"add_cta": "Añadir fuente",
+		"adding": "Añadiendo…",
+		"process_cta": "Procesar con Haiku",
+		"reprocess_cta": "Re-procesar",
+		"reprocess_help": "Borra las propuestas pendientes de esta fuente y vuelve a llamar a Haiku. Conserva las ya aprobadas/rechazadas.",
+		"processing": "Procesando…",
+		"raw_chars": "{count} caracteres de texto",
+		"processed_at": "procesada"
+	},
+	"proposals": {
+		"pending_title": "Pendientes de revisar",
+		"reviewed_title": "Ya revisadas",
+		"empty_pending": "No hay propuestas pendientes.",
+		"empty_reviewed": "Sin historial.",
+		"full_content_title": "Ver contenido completo",
+		"source_quote_title": "Cita literal de la fuente (anti-alucinación)",
+		"sanity_draft_label": "Draft en Sanity",
+		"notes_placeholder": "Notas de revisión (opcional)",
+		"approve_cta": "Aprobar",
+		"reject_cta": "Rechazar"
+	},
+	"field": {
+		"source_type": "Tipo de fuente",
+		"source_url": "URL",
+		"title_override": "Título (opcional)",
+		"title_placeholder": "Si lo dejas vacío se usará el detectado automáticamente",
+		"author": "Autor (opcional)",
+		"published_at": "Fecha (opcional)",
+		"raw_text": "Texto pegado",
+		"raw_text_placeholder": "Pega aquí la transcripción o el texto del artículo si la URL no se puede scrapear automáticamente."
+	},
+	"source_type": {
+		"youtube": "YouTube (transcripción auto)",
+		"media_article": "Artículo de prensa (HTML)",
+		"podcast_transcript": "Transcripción de podcast (texto pegado)",
+		"manual_text": "Texto manual (pegado)"
+	},
+	"error": {
+		"prefix": "Error"
+	}
+}
