@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { getTranslations } from "next-intl/server";
 import { getUser } from "@/features/auth/server/get-user";
 import { isCommunityEnabled } from "@/lib/feature-flags";
 import { enforceCommunityPolicy } from "@/features/community/server/enforce-community-policy";
@@ -18,7 +19,8 @@ export async function POST(request: NextRequest) {
   // Check Plus access
   const policy = await enforceCommunityPolicy({ userId: user.id, action: "create_thread" });
   if (!policy.allowed) {
-    return NextResponse.json({ error: "This feature is exclusive to Flavia Plus." }, { status: 403 });
+    const tErrors = await getTranslations("errors");
+    return NextResponse.json({ error: tErrors("plus_only_feature") }, { status: 403 });
   }
 
   let body: unknown;
@@ -44,7 +46,8 @@ export async function POST(request: NextRequest) {
     .eq("is_flavia_ai", true);
 
   if ((aiReplyCount ?? 0) > 0) {
-    return NextResponse.json({ error: "Flavia already participated in this conversation." }, { status: 409 });
+    const tErrors = await getTranslations("errors");
+    return NextResponse.json({ error: tErrors("flavia_already_replied") }, { status: 409 });
   }
 
   // Get thread + recent replies

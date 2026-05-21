@@ -1,8 +1,14 @@
 import "server-only";
 
+import { getTranslations } from "next-intl/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { getAiModelConfig } from "@/lib/env";
 import { moderateContent } from "./moderate-content";
 import type { CommunityThread } from "@/features/community/types";
+
+// Logged into community_moderation_log.model. See note in get-comments.ts.
+const { openAiChatModel: MODERATION_LOG_MODEL } = getAiModelConfig();
 
 function slugify(title: string): string {
   const base = title
@@ -61,7 +67,8 @@ export async function createThread(input: CreateThreadInput): Promise<CreateThre
 
   if (error) {
     console.error("[community] create thread failed:", error);
-    return { ok: false, error: "No se pudo crear la conversacion." };
+    const tErrors = await getTranslations("errors");
+    return { ok: false, error: tErrors("thread_create_failed") };
   }
 
   // Log moderation
@@ -71,7 +78,7 @@ export async function createThread(input: CreateThreadInput): Promise<CreateThre
     decision: modResult.decision,
     confidence: modResult.confidence,
     reason: modResult.reason,
-    model: "gpt-4.1-mini",
+    model: MODERATION_LOG_MODEL,
   });
 
   if (status === "hidden") {

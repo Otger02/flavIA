@@ -1,8 +1,17 @@
 import "server-only";
 
+import { getTranslations } from "next-intl/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { getAiModelConfig } from "@/lib/env";
 import { moderateContent } from "./moderate-content";
 import type { CommunityComment, CommentTargetType } from "@/features/community/types";
+
+// Logged into community_moderation_log.model. Tracks the primary
+// moderator model (OpenAI is tried first in moderate-content.ts);
+// fallback runs aren't currently differentiated in the log — improving
+// that would require moderateContent() returning the model it used.
+const { openAiChatModel: MODERATION_LOG_MODEL } = getAiModelConfig();
 
 type GetCommentsOptions = {
   targetType: CommentTargetType;
@@ -96,7 +105,16 @@ type CreateCommentInput = {
   content: string;
   isAnonymous: boolean;
   parentCommentId?: string | null;
-  isOfficialReply?: boolean;
+  /**
+   * INTENT to mark as an official professional reply. The actual
+   * `is_official_reply` value written to the DB is only `true` if
+   * BOTH (a) intent is true AND (b) the user has an approved row in
+   * `professional_verifications`. Non-professionals always get false.
+   *
+   * Anonymous comments can never be official — the badge requires a
+   * named author for accountability.
+   */
+  markAsOfficial?: boolean;
 };
 
 type CreateCommentResult =
@@ -104,7 +122,7 @@ type CreateCommentResult =
   | { ok: false; error: string };
 
 export async function createComment(input: CreateCommentInput): Promise<CreateCommentResult> {
-  const { userId, targetType, targetId, content, isAnonymous, parentCommentId, isOfficialReply = false } = input;
+  const { userId, targetType, targetId, content, isAnonymous, parentCommentId, markAsOfficial = false } = input;
 
   const modResult = await moderateContent(content);
   const status = modResult.decision === "approved" && modResult.confidence > 0.85
@@ -112,6 +130,24 @@ export async function createComment(input: CreateCommentInput): Promise<CreateCo
     : "hidden" as const;
 
   const supabase = await createServerSupabaseClient();
+
+  // SECURITY: derive `is_official_reply` server-side. Only honour the
+  // markAsOfficial intent if the user is an approved verified
+  // professional AND the comment is non-anonymous. This is the only
+  // path that can ever write `is_official_reply = true` from a user
+  // request (admin operations bypass via service role).
+  let isOfficialReply = false;
+  if (markAsOfficial && !isAnonymous) {
+    const { data: verification } = await supabase
+      .from("professional_verifications")
+      .select("status")
+      .eq("user_id", userId)
+      .eq("status", "approved")
+      .maybeSingle();
+    if (verification) {
+      isOfficialReply = true;
+    }
+  }
 
   const { data: comment, error } = await supabase
     .from("community_comments")
@@ -130,7 +166,8 @@ export async function createComment(input: CreateCommentInput): Promise<CreateCo
 
   if (error) {
     console.error("[community] create comment failed:", error);
-    return { ok: false, error: "No se pudo publicar el comentario." };
+    const tErrors = await getTranslations("errors");
+    return { ok: false, error: tErrors("comment_publish_failed") };
   }
 
   // Log moderation
@@ -140,7 +177,7 @@ export async function createComment(input: CreateCommentInput): Promise<CreateCo
     decision: modResult.decision,
     confidence: modResult.confidence,
     reason: modResult.reason,
-    model: "gpt-4.1-mini",
+    model: MODERATION_LOG_MODEL,
   });
 
   return { ok: true, comment: comment as CommunityComment };

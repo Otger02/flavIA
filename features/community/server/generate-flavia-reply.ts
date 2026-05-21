@@ -1,5 +1,7 @@
 import "server-only";
 
+import { getTranslations } from "next-intl/server";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { generateChatResponse } from "@/lib/ai/client";
 import { FLAVIA_IDENTITY, FLAVIA_TONE, FLAVIA_VOICE_PATTERNS, FLAVIA_BOUNDARIES } from "@/lib/ai/prompts/flavia-voice-profile";
@@ -61,7 +63,10 @@ ${FLAVIA_BOUNDARIES.join("\n")}`;
     .eq("id", threadId)
     .single();
 
-  if (!thread) return { ok: false, error: "Thread not found" };
+  if (!thread) {
+    const tErrors = await getTranslations("errors");
+    return { ok: false, error: tErrors("thread_not_found") };
+  }
 
   const { data: comment, error } = await supabase
     .from("community_comments")
@@ -79,7 +84,8 @@ ${FLAVIA_BOUNDARIES.join("\n")}`;
 
   if (error) {
     console.error("[community] flavia reply insert failed:", error);
-    return { ok: false, error: "No se pudo publicar la respuesta de Flavia." };
+    const tErrors = await getTranslations("errors");
+    return { ok: false, error: tErrors("flavia_reply_failed") };
   }
 
   // Log moderation

@@ -1,0 +1,15 @@
+{
+	"already_reported": "Ya has reportado este contenido.",
+	"plus_only_feature": "Esta función es exclusiva de Flavia Plus.",
+	"flavia_already_replied": "Flavia ya participó en esta conversación.",
+	"moderate_failed": "No se pudo moderar el contenido.",
+	"report_submit_failed": "No se pudo enviar el reporte.",
+	"account_delete_failed": "No se pudo eliminar la cuenta. Inténtalo de nuevo o contacta con soporte.",
+	"thread_create_failed": "No se pudo crear la conversación.",
+	"comment_publish_failed": "No se pudo publicar el comentario.",
+	"thread_not_found": "Hilo no encontrado.",
+	"flavia_reply_failed": "No se pudo publicar la respuesta de Flavia.",
+	"comment_length": "El comentario debe tener entre {min} y {max} caracteres.",
+	"thread_title_length": "El título debe tener entre {min} y {max} caracteres.",
+	"thread_body_length": "El cuerpo debe tener entre {min} y {max} caracteres."
+}

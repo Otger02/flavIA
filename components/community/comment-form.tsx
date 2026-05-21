@@ -37,7 +37,11 @@ export function CommentForm({ targetType, targetId, onCommentAdded, isVerifiedPr
           targetId,
           content,
           isAnonymous,
-          isOfficialReply: isVerifiedProfessional && !isAnonymous ? isOfficialReply : false,
+          // Server-side: only honoured if the user is actually an
+          // approved verified professional. The client-side gate here
+          // is purely UX — security lives in the server route +
+          // createComment, plus the RLS policy on community_comments.
+          markAsOfficial: isVerifiedProfessional && !isAnonymous ? isOfficialReply : false,
         }),
       });
 

@@ -2,8 +2,11 @@ import "server-only";
 
 import OpenAI from "openai";
 import Anthropic from "@anthropic-ai/sdk";
-import { getAiProviderKeys } from "@/lib/env";
+import { getAiModelConfig, getAiProviderKeys } from "@/lib/env";
 import type { ModerationResult } from "@/features/community/types";
+
+const { openAiChatModel: OPENAI_MODEL, anthropicChatModel: ANTHROPIC_MODEL } =
+  getAiModelConfig();
 
 const MODERATION_PROMPT = `You are a content moderator for an intimate wellness platform run by sexologist Flavia Dos Santos.
 
@@ -29,7 +32,7 @@ Respond ONLY with a JSON object, no other text:
 async function moderateWithOpenAI(content: string, apiKey: string): Promise<ModerationResult> {
   const client = new OpenAI({ apiKey });
   const completion = await client.chat.completions.create({
-    model: "gpt-4.1-mini",
+    model: OPENAI_MODEL,
     temperature: 0,
     messages: [
       { role: "system", content: MODERATION_PROMPT },
@@ -46,7 +49,7 @@ async function moderateWithOpenAI(content: string, apiKey: string): Promise<Mode
 async function moderateWithAnthropic(content: string, apiKey: string): Promise<ModerationResult> {
   const client = new Anthropic({ apiKey });
   const response = await client.messages.create({
-    model: "claude-3-5-sonnet-latest",
+    model: ANTHROPIC_MODEL,
     max_tokens: 200,
     system: MODERATION_PROMPT,
     messages: [{ role: "user", content }],

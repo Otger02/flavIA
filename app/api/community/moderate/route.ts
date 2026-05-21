@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { getTranslations } from "next-intl/server";
 import { getUser } from "@/features/auth/server/get-user";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { ADMIN_EMAILS } from "@/lib/constants";
@@ -57,7 +58,8 @@ export async function PATCH(request: NextRequest) {
 
   if (updateError) {
     console.error("[community] moderate failed:", updateError);
-    return NextResponse.json({ error: "Failed to moderate content." }, { status: 500 });
+    const tErrors = await getTranslations("errors");
+    return NextResponse.json({ error: tErrors("moderate_failed") }, { status: 500 });
   }
 
   // Update any pending reports to "actioned"

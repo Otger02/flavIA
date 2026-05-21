@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { getTranslations } from "next-intl/server";
 import { getUser } from "@/features/auth/server/get-user";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { isCommunityEnabled } from "@/lib/feature-flags";
@@ -48,11 +49,12 @@ export async function POST(request: NextRequest) {
   });
 
   if (error) {
+    const tErrors = await getTranslations("errors");
     if (error.code === "23505") {
-      return NextResponse.json({ error: "You have already reported this content." }, { status: 409 });
+      return NextResponse.json({ error: tErrors("already_reported") }, { status: 409 });
     }
     console.error("[community] report failed:", error);
-    return NextResponse.json({ error: "Failed to submit report." }, { status: 500 });
+    return NextResponse.json({ error: tErrors("report_submit_failed") }, { status: 500 });
   }
 
   return NextResponse.json({ ok: true });

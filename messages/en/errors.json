@@ -1,0 +1,15 @@
+{
+	"already_reported": "You have already reported this content.",
+	"plus_only_feature": "This feature is exclusive to Flavia Plus.",
+	"flavia_already_replied": "Flavia already participated in this conversation.",
+	"moderate_failed": "Could not moderate the content.",
+	"report_submit_failed": "Could not submit the report.",
+	"account_delete_failed": "Could not delete the account. Try again or contact support.",
+	"thread_create_failed": "Could not create the conversation.",
+	"comment_publish_failed": "Could not publish the comment.",
+	"thread_not_found": "Thread not found.",
+	"flavia_reply_failed": "Could not publish Flavia's reply.",
+	"comment_length": "Comment must be between {min} and {max} characters.",
+	"thread_title_length": "Title must be between {min} and {max} characters.",
+	"thread_body_length": "Body must be between {min} and {max} characters."
+}

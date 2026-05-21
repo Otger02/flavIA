@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { getTranslations } from "next-intl/server";
 import { getUser } from "@/features/auth/server/get-user";
 import { getThreads } from "@/features/community/server/get-threads";
 import { createThread } from "@/features/community/server/create-thread";
@@ -51,11 +52,19 @@ export async function POST(request: NextRequest) {
   const { title, body: threadBody, topic, isAnonymous } = body as Record<string, unknown>;
 
   if (typeof title !== "string" || title.trim().length < THREAD_TITLE_MIN || title.trim().length > THREAD_TITLE_MAX) {
-    return NextResponse.json({ error: `Title must be between ${THREAD_TITLE_MIN} and ${THREAD_TITLE_MAX} characters.` }, { status: 400 });
+    const tErrors = await getTranslations("errors");
+    return NextResponse.json(
+      { error: tErrors("thread_title_length", { min: THREAD_TITLE_MIN, max: THREAD_TITLE_MAX }) },
+      { status: 400 },
+    );
   }
 
   if (typeof threadBody !== "string" || threadBody.trim().length < THREAD_BODY_MIN || threadBody.trim().length > THREAD_BODY_MAX) {
-    return NextResponse.json({ error: `Body must be between ${THREAD_BODY_MIN} and ${THREAD_BODY_MAX} characters.` }, { status: 400 });
+    const tErrors = await getTranslations("errors");
+    return NextResponse.json(
+      { error: tErrors("thread_body_length", { min: THREAD_BODY_MIN, max: THREAD_BODY_MAX }) },
+      { status: 400 },
+    );
   }
 
   const validTopic = typeof topic === "string" && COMMUNITY_TOPICS.includes(topic as (typeof COMMUNITY_TOPICS)[number])
