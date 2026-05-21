@@ -1,12 +1,8 @@
 import "server-only";
 
-import { Resend } from "resend";
 import { getLocale, getTranslations } from "next-intl/server";
 import { isTopicSlug } from "@/lib/topic-config";
-
-const resend = process.env.RESEND_API_KEY
-  ? new Resend(process.env.RESEND_API_KEY)
-  : null;
+import { sendEmailWithRetry } from "@/lib/email/resend-client";
 
 type SendSessionSummaryEmailParams = {
   to: string;
@@ -19,11 +15,6 @@ export async function sendSessionSummaryEmail({
   summary,
   sessionTopic,
 }: SendSessionSummaryEmailParams): Promise<boolean> {
-  if (!resend) {
-    console.warn("[email] RESEND_API_KEY not configured, skipping email");
-    return false;
-  }
-
   const [tShared, tEmail, locale] = await Promise.all([
     getTranslations("shared"),
     getTranslations("emails"),
@@ -37,8 +28,10 @@ export async function sendSessionSummaryEmail({
     ? tEmail("session_summary.subject_with_topic", { topic: topicLabel })
     : tEmail("session_summary.subject_default");
 
-  try {
-    await resend.emails.send({
+  const result = await sendEmailWithRetry(
+    {
+      // Custom From for session summaries — different subdomain than
+      // the default. Kept verbatim to preserve deliverability/reputation.
       from: "Flavia <flavia@updates.flavia.app>",
       to,
       subject,
@@ -53,13 +46,11 @@ export async function sendSessionSummaryEmail({
         footerReason: tEmail("session_summary.footer_reason"),
         footerManage: tEmail("session_summary.footer_manage"),
       }),
-    });
+    },
+    { label: "session_summary" },
+  );
 
-    return true;
-  } catch (error) {
-    console.error("[email] Failed to send session summary:", error);
-    return false;
-  }
+  return result.ok;
 }
 
 function buildEmailHtml({

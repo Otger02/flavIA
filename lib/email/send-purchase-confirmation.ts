@@ -1,9 +1,7 @@
 import "server-only";
 
-import { Resend } from "resend";
+import { getDefaultFrom, sendEmailWithRetry } from "@/lib/email/resend-client";
 
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
-const FROM = process.env.RESEND_FROM_EMAIL ?? "Flavia <noreply@flavia.app>";
 const APP_URL = (process.env.NEXT_PUBLIC_APP_URL ?? "https://flavia.app").replace(/\/$/, "");
 
 type SendPurchaseConfirmationParams = {
@@ -15,21 +13,15 @@ export async function sendPurchaseConfirmationEmail({
   to,
   planName,
 }: SendPurchaseConfirmationParams): Promise<void> {
-  if (!resend) {
-    console.warn("[email] RESEND_API_KEY not configured, skipping purchase confirmation");
-    return;
-  }
-
-  await resend.emails
-    .send({
-      from: FROM,
+  await sendEmailWithRetry(
+    {
+      from: getDefaultFrom(),
       to,
       subject: `Tu suscripción a ${planName} está activa`,
       html: buildPurchaseHtml({ planName }),
-    })
-    .catch((error) => {
-      console.warn("[email] purchase confirmation send failed", error);
-    });
+    },
+    { label: "purchase_confirmation" },
+  );
 }
 
 function buildPurchaseHtml({ planName }: { planName: string }): string {

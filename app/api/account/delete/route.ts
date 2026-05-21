@@ -1,14 +1,11 @@
 import "server-only";
 
 import { NextResponse } from "next/server";
+import { getTranslations } from "next-intl/server";
 
 import { createAdminSupabaseClient } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { Resend } from "resend";
-
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
-const FROM = process.env.RESEND_FROM_EMAIL ?? "Flavia <noreply@flavia.app>";
-const APP_URL = (process.env.NEXT_PUBLIC_APP_URL ?? "https://flavia.app").replace(/\/$/, "");
+import { getDefaultFrom, sendEmailWithRetry } from "@/lib/email/resend-client";
 
 export const runtime = "nodejs";
 
@@ -28,17 +25,20 @@ export async function DELETE() {
 
   if (error) {
     console.error("[account-delete] Failed to delete user:", error.message);
-    return NextResponse.json({ error: "No se pudo eliminar la cuenta. Inténtalo de nuevo o contacta con soporte." }, { status: 500 });
+    const tErrors = await getTranslations("errors");
+    return NextResponse.json({ error: tErrors("account_delete_failed") }, { status: 500 });
   }
 
   // Sign out the current session (best-effort — user is already deleted)
   await supabase.auth.signOut().catch(() => {});
 
-  // Send confirmation email (best-effort)
-  if (resend && email) {
-    void resend.emails
-      .send({
-        from: FROM,
+  // Send confirmation email (best-effort). Fire-and-forget — the
+  // delete response shouldn't wait for the email transport, and the
+  // retry wrapper handles Sentry capture if all 3 attempts fail.
+  if (email) {
+    void sendEmailWithRetry(
+      {
+        from: getDefaultFrom(),
         to: email,
         subject: "Tu cuenta de Flavia ha sido eliminada",
         html: `
@@ -53,8 +53,9 @@ export async function DELETE() {
             <p style="font-size:13px;color:#a8a29e;margin:0;">Gracias por haber formado parte de Flavia.</p>
           </div>
         `.trim(),
-      })
-      .catch((err) => console.warn("[account-delete] confirmation email failed:", err));
+      },
+      { label: "account_deleted" },
+    );
   }
 
   return NextResponse.json({ ok: true });

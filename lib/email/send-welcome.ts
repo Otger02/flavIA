@@ -1,27 +1,19 @@
 import "server-only";
 
-import { Resend } from "resend";
+import { getDefaultFrom, sendEmailWithRetry } from "@/lib/email/resend-client";
 
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
-const FROM = process.env.RESEND_FROM_EMAIL ?? "Flavia <noreply@flavia.app>";
 const APP_URL = (process.env.NEXT_PUBLIC_APP_URL ?? "https://flavia.app").replace(/\/$/, "");
 
 export async function sendWelcomeEmail(to: string): Promise<void> {
-  if (!resend) {
-    console.warn("[email] RESEND_API_KEY not configured, skipping welcome email");
-    return;
-  }
-
-  await resend.emails
-    .send({
-      from: FROM,
+  await sendEmailWithRetry(
+    {
+      from: getDefaultFrom(),
       to,
       subject: "Bienvenida a Flavia",
       html: buildWelcomeHtml(),
-    })
-    .catch((error) => {
-      console.warn("[email] welcome send failed", error);
-    });
+    },
+    { label: "welcome" },
+  );
 }
 
 function buildWelcomeHtml(): string {
