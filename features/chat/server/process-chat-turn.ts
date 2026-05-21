@@ -1,10 +1,5 @@
 import "server-only";
 
-import { detectProductContext } from "@/features/affiliate-products/server/detect-product-context";
-import {
-  selectAffiliateRecommendation,
-  type AffiliateRecommendationCardData,
-} from "@/features/affiliate-products/server/select-recommendation";
 import { recordRecommendationEvent } from "@/features/affiliate-products/server/track-recommendation-event";
 import { getUserPlan } from "@/features/billing/server/get-user-plan";
 import { buildChatContext } from "@/features/chat/server/build-chat-context";
@@ -14,67 +9,13 @@ import { enforceUsagePolicy } from "@/features/chat/server/enforce-usage-policy"
 import { getChatHistory } from "@/features/chat/server/get-chat-history";
 import { CHAT_MAX_INPUT_LENGTH } from "@/features/chat/constants";
 import { logChatFailureMetric } from "@/features/chat/server/log-chat-failure-metric";
+import { runRecommendationPipeline } from "@/features/chat/server/process-chat-turn-shared";
 import { saveChatMessage } from "@/features/chat/server/save-chat-message";
 import { updateUserState } from "@/features/chat/server/update-user-state";
-import { chooseRecommendation } from "@/features/recommendations/server/choose-recommendation";
-import { getContentRecommendations } from "@/features/recommendations/server/get-content-recommendations";
-import { getProductRecommendations } from "@/features/recommendations/server/get-product-recommendations";
 import { logRecommendation } from "@/features/recommendations/server/log-recommendation";
 import { generateChatResponse, generateChatResponseStream } from "@/lib/ai/client";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import type { ChatMessage, ChatSession, ChatTurnRequest, ChatTurnResponse } from "@/features/chat/types";
-
-/**
- * Runs the Haiku-based affiliate-product detector + product selection in
- * one shot. Always resolves (errors swallowed downstream). Returns null
- * when nothing should be shown.
- *
- * Kicked off in parallel with persistence inside both the buffered and
- * streaming chat paths — never blocks the main LLM response.
- */
-async function detectAndSelectAffiliateRecommendation(params: {
-  userMessage: string;
-  recentMessages: ChatMessage[];
-  userTurnCount: number;
-  sessionId: string;
-}): Promise<{
-  card: AffiliateRecommendationCardData;
-  contextTags: string[];
-  keywords: string[];
-  confidence: "low" | "medium" | "high";
-} | null> {
-  try {
-    const detection = await detectProductContext({
-      userMessage: params.userMessage,
-      recentMessages: params.recentMessages,
-      turnCount: params.userTurnCount,
-    });
-
-    if (!detection.shouldRecommend) {
-      return null;
-    }
-
-    const card = await selectAffiliateRecommendation({
-      detection,
-      sessionId: params.sessionId,
-    });
-
-    if (!card) {
-      return null;
-    }
-
-    return {
-      card,
-      contextTags: detection.contextTags,
-      keywords: detection.keywords,
-      confidence: detection.confidence,
-    };
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "unknown";
-    console.warn(`[affiliate-recommend] pipeline failed: ${message}`);
-    return null;
-  }
-}
+import type { ChatSession, ChatTurnRequest, ChatTurnResponse } from "@/features/chat/types";
 
 type ProcessChatTurnParams = {
   userId: string;
@@ -329,85 +270,40 @@ export async function processChatTurn({
       },
     };
 
-    // Count previous recommendations in this session
-    const supabaseForRecs = await createServerSupabaseClient();
-    const { count: previousRecommendationCount } = await (supabaseForRecs as any)
-      .from("recommendation_log")
-      .select("id", { count: "exact", head: true })
-      .eq("session_id", session.id);
-
-    const { data: lastRecLog } = await (supabaseForRecs as any)
-      .from("recommendation_log")
-      .select("created_at")
-      .eq("session_id", session.id)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .single() as { data: { created_at: string } | null };
-
-    // Estimate the turn of the last recommendation (rough: count user messages before it)
-    let lastRecommendationTurn = 0;
-    if (lastRecLog) {
-      const { count: turnsBeforeLastRec } = await supabaseForRecs
-        .from("chat_messages")
-        .select("id", { count: "exact", head: true })
-        .eq("session_id", session.id)
-        .eq("role", "user")
-        .lte("created_at", lastRecLog.created_at);
-      lastRecommendationTurn = turnsBeforeLastRec ?? 0;
-    }
-
-    const [contentRecommendations, productRecommendations] = await Promise.all([
-      getContentRecommendations(recommendationRequest),
-      getProductRecommendations(recommendationRequest),
-    ]);
-
-    const recommendationChoice = await chooseRecommendation({
-      content: contentRecommendations,
-      products: productRecommendations,
-      turnCount: userTurnCount,
-      previousRecommendationCount: previousRecommendationCount ?? 0,
-      lastRecommendationTurn,
+    const {
+      recommendation: gatedRecommendation,
+      recommendationChoice,
+      affiliateRecommendation,
+    } = await runRecommendationPipeline({
+      userId,
+      sessionId: session.id,
+      activeTopic: context.activeTopic,
+      userMessage: sanitizedMessage,
+      recentMessages: history,
+      userTurnCount,
     });
 
-    let recommendation = recommendationChoice?.recommendation ?? null;
+    let recommendation = gatedRecommendation;
 
-    // Run the affiliate-product detection in parallel with the existing
-    // recommendation logging. Both finish before we persist the assistant
-    // message so the affiliate rec lands in `chat_messages.metadata`
-    // alongside the message itself — survives reloads + history fetches.
-    const [affiliateRecommendation, recommendationLogResult] = await Promise.all([
-      detectAndSelectAffiliateRecommendation({
-        userMessage: sanitizedMessage,
-        recentMessages: history,
-        userTurnCount,
-        sessionId: session.id,
-      }),
-      recommendationChoice && recommendation
-        ? logRecommendation({
+    // logRecommendation runs after the pipeline. The legacy log row
+    // records what was *chosen*, not what was *displayed* — so it stays
+    // tied to recommendationChoice even when the priority gate
+    // suppressed the rendered card in favor of an affiliate hit.
+    const recommendationLogResult =
+      recommendationChoice && recommendationChoice.recommendation
+        ? await logRecommendation({
             userId,
             sessionId: session.id,
             surface: "chat",
             itemId: recommendationChoice.targetId,
             itemType: recommendationChoice.targetType,
             activeTopic: context.activeTopic,
-            score: recommendation.score,
+            score: recommendationChoice.recommendation.score,
           }).catch(() => null)
-        : Promise.resolve(null),
-    ]);
-
-    // Priority gate: when an affiliate product fires on the same turn,
-    // suppress the legacy library-content recommendation. Only one
-    // recommendation card renders per turn — the affiliate one wins.
-    // The legacy log row from the Promise.all above remains intact
-    // (analytics records what was *chosen*, not what was *displayed*).
-    if (affiliateRecommendation && recommendation) {
-      recommendation = null;
-    }
+        : null;
 
     // Enrichment runs AFTER the gate so the assistant's message text
     // doesn't lead into a library recommendation that won't appear.
-    // When the gate is a no-op (affiliate didn't fire), the enrichment
-    // input is byte-for-byte identical to the legacy behavior.
     const finalReplyContent = enrichAssistantReply({
       activeTopic: context.activeTopic,
       recommendationKind: recommendation?.kind ?? null,
@@ -566,73 +462,23 @@ export async function processChatTurnStream({
 
         // ── Post-LLM work ─────────────────────────────────────────────
         // The user has already seen Flavia's full reply by this point.
-        // Affiliate detection runs in parallel with the existing
-        // recommendation pipeline and never blocks the main token stream.
-        const recommendationRequest = {
+        // The shared pipeline runs the affiliate detection in parallel
+        // with the legacy content + product fetches and never blocks
+        // the main token stream.
+        const {
+          recommendation: gatedRecommendation,
+          recommendationChoice,
+          affiliateRecommendation,
+        } = await runRecommendationPipeline({
           userId,
-          surface: "chat" as const,
-          context: { activeTopic: context.activeTopic },
-        };
-
-        // Count previous recommendations in this session
-        const supabaseForRecs = await createServerSupabaseClient();
-        const { count: previousRecommendationCount } = await (supabaseForRecs as any)
-          .from("recommendation_log")
-          .select("id", { count: "exact", head: true })
-          .eq("session_id", session.id);
-
-        const { data: lastRecLog } = await (supabaseForRecs as any)
-          .from("recommendation_log")
-          .select("created_at")
-          .eq("session_id", session.id)
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .single() as { data: { created_at: string } | null };
-
-        let lastRecommendationTurn = 0;
-        if (lastRecLog) {
-          const { count: turnsBeforeLastRec } = await supabaseForRecs
-            .from("chat_messages")
-            .select("id", { count: "exact", head: true })
-            .eq("session_id", session.id)
-            .eq("role", "user")
-            .lte("created_at", lastRecLog.created_at);
-          lastRecommendationTurn = turnsBeforeLastRec ?? 0;
-        }
-
-        // Run affiliate detection alongside the legacy recommendation
-        // fetches. Detection may take ~1-3s on Haiku — that's fine here
-        // because tokens have already streamed.
-        const [contentRecommendations, productRecommendations, affiliateRecommendation] =
-          await Promise.all([
-            getContentRecommendations(recommendationRequest),
-            getProductRecommendations(recommendationRequest),
-            detectAndSelectAffiliateRecommendation({
-              userMessage: sanitizedMessage,
-              recentMessages: history,
-              userTurnCount,
-              sessionId: session.id,
-            }),
-          ]);
-
-        const recommendationChoice = await chooseRecommendation({
-          content: contentRecommendations,
-          products: productRecommendations,
-          turnCount: userTurnCount,
-          previousRecommendationCount: previousRecommendationCount ?? 0,
-          lastRecommendationTurn,
+          sessionId: session.id,
+          activeTopic: context.activeTopic,
+          userMessage: sanitizedMessage,
+          recentMessages: history,
+          userTurnCount,
         });
 
-        let recommendation = recommendationChoice?.recommendation ?? null;
-
-        // Priority gate: when an affiliate product fires on the same turn,
-        // suppress the legacy library-content recommendation. Only one
-        // recommendation card renders per turn — the affiliate one wins.
-        // Placed BEFORE enrichment so the assistant's message text doesn't
-        // lead into a library recommendation that won't appear.
-        if (affiliateRecommendation && recommendation) {
-          recommendation = null;
-        }
+        let recommendation = gatedRecommendation;
 
         const finalReplyContent = enrichAssistantReply({
           activeTopic: context.activeTopic,
