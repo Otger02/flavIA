@@ -1,0 +1,57 @@
+{
+	"meta": {
+		"title": "Bienvenida — Flavia",
+		"description": "Cuéntale a Flavia un poco sobre ti antes de empezar a conversar."
+	},
+	"common": {
+		"skip": "Saltar onboarding",
+		"continue": "Empezar →",
+		"next": "Listo →",
+		"skip_short": "Saltar →",
+		"back": "← Atrás",
+		"saving": "Guardando…",
+		"error": "Algo salió mal. Inténtalo de nuevo."
+	},
+	"welcome": {
+		"image_alt": "Flavia Dos Santos",
+		"greeting": "Hola. Soy Flavia.",
+		"body": "Antes de empezar, déjame conocerte un poco para que esto se sienta más nuestro. Solo dos minutos."
+	},
+	"personalization": {
+		"title": "Cuéntame algo de ti",
+		"subtitle": "Todo es opcional. Puedes saltarlo si quieres.",
+		"name_label": "¿Cómo quieres que te llame?",
+		"name_placeholder": "Tu nombre, un alias, o déjalo vacío",
+		"topics_label": "¿Qué te trae aquí?",
+		"topics_help": "Marca hasta 3. Esto me ayuda a sugerirte por dónde empezar.",
+		"topics_max_reached": "Máximo 3 temas.",
+		"relationship_label": "¿Cómo está tu vida íntima ahora?",
+		"topic": {
+			"deseo": "Deseo",
+			"pareja": "Pareja",
+			"comunicacion": "Comunicación",
+			"autoconocimiento": "Autoconocimiento",
+			"menopausia": "Menopausia",
+			"postparto": "Después del parto",
+			"primera_vez": "Primera vez",
+			"infidelidad": "Infidelidad",
+			"identidad": "Identidad",
+			"miedo": "Miedo",
+			"otro": "Otro"
+		},
+		"relationship": {
+			"soltera": "Soltera",
+			"en_pareja": "En pareja",
+			"casada": "Casada",
+			"recien_separada": "Recién separada",
+			"abierta": "Relación abierta",
+			"prefiero_no_decir": "Prefiero no decir"
+		}
+	},
+	"suggested": {
+		"title": "Gracias.",
+		"body": "Te dejo en el chat — puedes hablarme de lo que quieras, cuando quieras. Si quieres, te dejo aquí algunas conversaciones para empezar.",
+		"prompt_aria": "Empezar conversación: {message}",
+		"free_chat_cta": "Empezar conversación libre →"
+	}
+}

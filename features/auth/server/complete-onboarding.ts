@@ -21,6 +21,10 @@ export async function completeOnboarding({ displayName, relationshipStatus, pron
       relationship_status: relationshipStatus || null,
       pronouns: pronouns || null,
       onboarding_completed: true,
+      // Stamp the new timestamp column too so /onboarding's "already
+      // done" check stays consistent regardless of which legacy
+      // caller writes the boolean.
+      onboarding_completed_at: new Date().toISOString(),
     })
     .eq("id", user.id);
 

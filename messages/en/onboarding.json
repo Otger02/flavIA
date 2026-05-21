@@ -1,0 +1,57 @@
+{
+	"meta": {
+		"title": "Welcome — Flavia",
+		"description": "Tell Flavia a little about you before you start talking."
+	},
+	"common": {
+		"skip": "Skip onboarding",
+		"continue": "Start →",
+		"next": "Done →",
+		"skip_short": "Skip →",
+		"back": "← Back",
+		"saving": "Saving…",
+		"error": "Something went wrong. Try again."
+	},
+	"welcome": {
+		"image_alt": "Flavia Dos Santos",
+		"greeting": "Hi. I'm Flavia.",
+		"body": "Before we start, let me get to know you a little so this feels more like ours. Just two minutes."
+	},
+	"personalization": {
+		"title": "Tell me a bit about you",
+		"subtitle": "Everything is optional. You can skip it if you want.",
+		"name_label": "What should I call you?",
+		"name_placeholder": "Your name, an alias, or leave blank",
+		"topics_label": "What brings you here?",
+		"topics_help": "Pick up to 3. This helps me suggest where to start.",
+		"topics_max_reached": "Maximum 3 topics.",
+		"relationship_label": "How is your intimate life right now?",
+		"topic": {
+			"deseo": "Desire",
+			"pareja": "Couple",
+			"comunicacion": "Communication",
+			"autoconocimiento": "Self-knowledge",
+			"menopausia": "Menopause",
+			"postparto": "After childbirth",
+			"primera_vez": "First time",
+			"infidelidad": "Infidelity",
+			"identidad": "Identity",
+			"miedo": "Fear",
+			"otro": "Other"
+		},
+		"relationship": {
+			"soltera": "Single",
+			"en_pareja": "In a relationship",
+			"casada": "Married",
+			"recien_separada": "Recently separated",
+			"abierta": "Open relationship",
+			"prefiero_no_decir": "Prefer not to say"
+		}
+	},
+	"suggested": {
+		"title": "Thank you.",
+		"body": "I'll leave you in the chat — you can talk to me about whatever you want, whenever you want. If you'd like, here are some conversations to get started.",
+		"prompt_aria": "Start conversation: {message}",
+		"free_chat_cta": "Start a free conversation →"
+	}
+}
