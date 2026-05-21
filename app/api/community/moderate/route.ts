@@ -4,6 +4,7 @@ import { getUser } from "@/features/auth/server/get-user";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { ADMIN_EMAILS } from "@/lib/constants";
 import { isCommunityEnabled } from "@/lib/feature-flags";
+import { sendModerationNoticeEmail } from "@/lib/email/send-moderation-notice";
 
 export async function PATCH(request: NextRequest) {
   if (!isCommunityEnabled()) {
@@ -38,22 +39,41 @@ export async function PATCH(request: NextRequest) {
 
   const supabase = await createServerSupabaseClient();
   let updateError: { message: string } | null = null;
+  let authorUserId: string | null = null;
 
   if (contentType === "thread") {
     const statusMap = { approve: "published", hide: "hidden", remove: "removed" } as const;
     const newStatus = statusMap[action as keyof typeof statusMap];
-    const { error } = await supabase.from("community_threads").update({ status: newStatus }).eq("id", contentId);
+    const { data, error } = await supabase
+      .from("community_threads")
+      .update({ status: newStatus })
+      .eq("id", contentId)
+      .select("user_id")
+      .single();
     updateError = error;
+    authorUserId = data?.user_id ?? null;
   } else if (contentType === "comment") {
     const statusMap = { approve: "published", hide: "hidden", remove: "removed" } as const;
     const newStatus = statusMap[action as keyof typeof statusMap];
-    const { error } = await supabase.from("community_comments").update({ status: newStatus }).eq("id", contentId);
+    const { data, error } = await supabase
+      .from("community_comments")
+      .update({ status: newStatus })
+      .eq("id", contentId)
+      .select("user_id")
+      .single();
     updateError = error;
+    authorUserId = data?.user_id ?? null;
   } else if (contentType === "story") {
     const statusMap = { approve: "approved", hide: "pending", remove: "rejected" } as const;
     const newStatus = statusMap[action as keyof typeof statusMap];
-    const { error } = await supabase.from("user_stories").update({ status: newStatus }).eq("id", contentId);
+    const { data, error } = await supabase
+      .from("user_stories")
+      .update({ status: newStatus })
+      .eq("id", contentId)
+      .select("user_id")
+      .single();
     updateError = error;
+    authorUserId = data?.user_id ?? null;
   }
 
   if (updateError) {
@@ -75,6 +95,23 @@ export async function PATCH(request: NextRequest) {
     .eq("target_type", reportTargetType)
     .eq("target_id", contentId)
     .eq("status", "pending");
+
+  // Notify author on hide/remove (fire-and-forget, never blocks response)
+  if (authorUserId && (action === "hide" || action === "remove")) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("email")
+      .eq("id", authorUserId)
+      .single();
+
+    if (profile?.email) {
+      void sendModerationNoticeEmail({
+        to: profile.email,
+        contentType: contentType as "thread" | "comment" | "story",
+        action,
+      });
+    }
+  }
 
   return NextResponse.json({ ok: true });
 }
