@@ -54,6 +54,12 @@ export default async function ComunidadPage({ searchParams }: Props) {
         <p className="mt-3 max-w-xl text-base leading-7 text-stone-600">
           {tc("page.description")}
         </p>
+        <Link
+          href="/politica-comunidad"
+          className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-rose-600 underline-offset-4 hover:underline"
+        >
+          ✦ Lee la política de comunidad antes de participar →
+        </Link>
       </div>
 
       {/* Tabs + Create button */}

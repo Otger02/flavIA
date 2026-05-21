@@ -244,6 +244,12 @@ export default async function AdminPage() {
         >
           Verificación de profesionales
         </Link>
+        <Link
+          href="/admin/contenido-publico"
+          className="rounded-full border border-rose-200/60 bg-rose-50/60 px-4 py-2 text-xs font-medium text-rose-700 transition hover:bg-rose-100"
+        >
+          Contenido público
+        </Link>
       </div>
 
       {/* ── Moderation Alert Banner ───────────────────────────────── */}

@@ -49,6 +49,22 @@ export default async function NuevaConversacionPage() {
         </p>
       </div>
 
+      <aside className="rounded-2xl border border-amber-200/60 bg-amber-50/50 px-5 py-4 text-sm leading-6 text-amber-900">
+        <p className="font-medium">Antes de publicar, revisa cómo cuidamos este espacio.</p>
+        <p className="mt-1 text-xs leading-5 text-amber-800/80">
+          Respeto, consentimiento al hablar de otras personas, nada de diagnósticos si no eres
+          profesional verificada. Lo demás está en la{" "}
+          <a
+            href="/politica-comunidad"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium underline underline-offset-2 hover:text-amber-700"
+          >
+            política de comunidad
+          </a>.
+        </p>
+      </aside>
+
       <div className="rounded-2xl border border-stone-200/50 bg-white/80 p-6 shadow-[0_2px_12px_rgba(180,120,100,0.06)]">
         <ThreadForm />
       </div>

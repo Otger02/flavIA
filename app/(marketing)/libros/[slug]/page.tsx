@@ -94,8 +94,33 @@ export default async function BookDetailPage({ params, searchParams }: BookPageP
   const showPurchaseSuccess = qs.purchased === "true";
   const showPurchaseError = qs.error === "payment";
 
+  const bookLd = {
+    "@context": "https://schema.org",
+    "@type": "Book",
+    name: book.title,
+    author: { "@type": "Person", name: "Flavia Dos Santos" },
+    inLanguage: "es",
+    bookFormat: "https://schema.org/EBook",
+    url: `https://flavia.app/libros/${book.slug}`,
+    ...(book.coverImageUrl ? { image: book.coverImageUrl } : {}),
+    ...(book.subtitle ? { description: book.subtitle } : {}),
+    ...(book.pages ? { numberOfPages: book.pages } : {}),
+    offers: {
+      "@type": "Offer",
+      price: String(book.priceCop),
+      priceCurrency: "COP",
+      availability: book.hasPdf ? "https://schema.org/InStock" : "https://schema.org/PreOrder",
+      url: `https://flavia.app/libros/${book.slug}`,
+    },
+  };
+
   return (
     <article className="mx-auto max-w-5xl space-y-10">
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(bookLd) }}
+      />
       <Link
         href="/libros"
         className="inline-flex text-sm font-medium text-stone-600 underline underline-offset-4"

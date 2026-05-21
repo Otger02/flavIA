@@ -36,6 +36,7 @@ export default async function MarketingLayout({ children }: MarketingLayoutProps
                 <Link href="/chat" className="transition-colors hover:text-stone-900">{t("nav.chat")}</Link>
               </>
             ) : null}
+            <Link href="/sobre-flavia" className="transition-colors hover:text-stone-900">{t("nav.about")}</Link>
             <Link href="/library" className="transition-colors hover:text-stone-900">{t("nav.library")}</Link>
             <Link href="/libros" className="transition-colors hover:text-stone-900">{t("nav.books")}</Link>
             <Link href="/plans" className="transition-colors hover:text-stone-900">{t("nav.plans")}</Link>
@@ -60,6 +61,7 @@ export default async function MarketingLayout({ children }: MarketingLayoutProps
                 ? [
                     { href: "/dashboard", label: t("nav.dashboard") },
                     { href: "/chat", label: t("nav.chat") },
+                    { href: "/sobre-flavia", label: t("nav.about") },
                     { href: "/library", label: t("nav.library") },
                     { href: "/libros", label: t("nav.books") },
                     { href: "/plans", label: t("nav.plans") },
@@ -67,6 +69,7 @@ export default async function MarketingLayout({ children }: MarketingLayoutProps
                     { href: "/account", label: t("nav.account") },
                   ]
                 : [
+                    { href: "/sobre-flavia", label: t("nav.about") },
                     { href: "/library", label: t("nav.library") },
                     { href: "/libros", label: t("nav.books") },
                     { href: "/plans", label: t("nav.plans") },
@@ -83,6 +86,12 @@ export default async function MarketingLayout({ children }: MarketingLayoutProps
               © {new Date().getFullYear()} FlavIA. Todos los derechos reservados.
             </p>
             <nav className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-stone-400 sm:justify-end">
+              <Link href="/sobre-flavia" className="transition-colors hover:text-stone-600">
+                {t("nav.about")}
+              </Link>
+              <Link href="/politica-comunidad" className="transition-colors hover:text-stone-600">
+                Política de comunidad
+              </Link>
               <Link href="/terminos" className="transition-colors hover:text-stone-600">
                 Términos de uso
               </Link>

@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { BillingReturnNotice } from "@/components/billing/billing-return-notice";
 import { BillingActionButton } from "@/components/billing/billing-action-button";
 import { RefreshPlanStatusButton } from "@/components/billing/refresh-plan-status-button";
+import { ResetOnboardingLink } from "@/components/account/reset-onboarding-link";
 import { requireUser } from "@/features/auth/server/require-user";
 import { BILLING_FREE_PLAN, BILLING_PLUS_PRODUCT_NAME } from "@/features/billing/constants";
 import { getUserPlan } from "@/features/billing/server/get-user-plan";
@@ -107,6 +108,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
         <p className="max-w-2xl text-base leading-7 text-stone-600">
           {t("account.subtitle")}
         </p>
+        <ResetOnboardingLink label="Volver a hacer onboarding" />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1.3fr_0.9fr]">

@@ -31,8 +31,29 @@ export default async function MarketingHomePage() {
   const user = await getUser();
   const isLoggedIn = !!user;
 
+  // WebSite JSON-LD. SearchAction intentionally omitted: there's no
+  // public site-wide search endpoint yet. When /library gains a ?q=
+  // param we can extend this with a potentialAction.
+  const websiteLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Flavia",
+    url: "https://flavia.app",
+    inLanguage: ["es", "en"],
+    publisher: {
+      "@type": "Person",
+      name: "Flavia Dos Santos",
+      url: "https://flavia.app/sobre-flavia",
+    },
+  };
+
   return (
     <section className="scroll-smooth">
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteLd) }}
+      />
       <TrackViewEvent event={ANALYTICS_EVENTS.homeViewed} properties={{ surface: "marketing_home" }} />
 
       <Hero isLoggedIn={isLoggedIn} />
