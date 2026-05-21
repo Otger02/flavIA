@@ -5,12 +5,12 @@ import OpenAI from "openai";
 import type { MessageParam } from "@anthropic-ai/sdk/resources/messages";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 
-import { getAiProviderKeys } from "@/lib/env";
+import { getAiModelConfig, getAiProviderKeys } from "@/lib/env";
 import { getChatSystemPrompt } from "@/lib/ai/prompts/chat-system-prompt";
 import type { ChatContext } from "@/features/chat/types";
 
-const OPENAI_MODEL = "gpt-4.1-mini";
-const ANTHROPIC_MODEL = "claude-3-5-sonnet-latest";
+const { openAiChatModel: OPENAI_MODEL, anthropicChatModel: ANTHROPIC_MODEL } =
+  getAiModelConfig();
 
 type GenerateChatResponseResult = {
   content: string;

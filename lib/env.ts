@@ -102,3 +102,33 @@ export function getAiProviderKeys() {
 
   return { openAiApiKey, anthropicApiKey };
 }
+
+/**
+ * Model identifiers used across the AI pipeline. Single source of truth
+ * so a model bump (e.g. `claude-sonnet-4-5` → `claude-sonnet-4-6`) is a
+ * one-line env-var change, not a sweep through the codebase.
+ *
+ * Three buckets cover every current call site:
+ *   - openAiChatModel — primary OpenAI model. Used by chat, community
+ *     moderation, session summaries and topic detection. Replaces every
+ *     hardcoded "gpt-4.1-mini".
+ *   - anthropicChatModel — Anthropic fallback for the same paths.
+ *     Replaces every hardcoded "claude-sonnet-4-5".
+ *   - anthropicClassifierModel — fast/cheap classifier. Used by the
+ *     affiliate context detector and public-content proposal extractor.
+ *     Replaces every hardcoded "claude-haiku-4-5".
+ *
+ * Defaults match the values that were hardcoded before this refactor,
+ * so behaviour is unchanged unless an env var is set.
+ */
+export function getAiModelConfig() {
+  assertServerOnly();
+
+  return {
+    openAiChatModel: process.env.OPENAI_CHAT_MODEL?.trim() || "gpt-4.1-mini",
+    anthropicChatModel:
+      process.env.ANTHROPIC_CHAT_MODEL?.trim() || "claude-sonnet-4-5",
+    anthropicClassifierModel:
+      process.env.ANTHROPIC_CLASSIFIER_MODEL?.trim() || "claude-haiku-4-5",
+  } as const;
+}

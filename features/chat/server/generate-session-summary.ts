@@ -3,8 +3,11 @@ import "server-only";
 import OpenAI from "openai";
 import Anthropic from "@anthropic-ai/sdk";
 
-import { getAiProviderKeys } from "@/lib/env";
+import { getAiModelConfig, getAiProviderKeys } from "@/lib/env";
 import type { ChatMessage } from "@/features/chat/types";
+
+const { openAiChatModel: OPENAI_MODEL, anthropicChatModel: ANTHROPIC_MODEL } =
+  getAiModelConfig();
 
 const SUMMARY_SYSTEM_PROMPT = `Eres Flavia, una sexóloga y terapeuta de pareja.
 Genera un resumen breve y cálido de la conversación que acabas de tener.
@@ -39,7 +42,7 @@ export async function generateSessionSummary(
     try {
       const client = new OpenAI({ apiKey: openAiApiKey });
       const completion = await client.chat.completions.create({
-        model: "gpt-4.1-mini",
+        model: OPENAI_MODEL,
         temperature: 0.6,
         max_tokens: 300,
         messages: [
@@ -60,7 +63,7 @@ export async function generateSessionSummary(
     try {
       const client = new Anthropic({ apiKey: anthropicApiKey });
       const response = await client.messages.create({
-        model: "claude-3-5-sonnet-latest",
+        model: ANTHROPIC_MODEL,
         max_tokens: 300,
         system: SUMMARY_SYSTEM_PROMPT,
         messages: [{ role: "user", content: userPrompt }],

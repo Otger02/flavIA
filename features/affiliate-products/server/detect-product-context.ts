@@ -2,7 +2,7 @@ import "server-only";
 
 import Anthropic from "@anthropic-ai/sdk";
 
-import { getAiProviderKeys } from "@/lib/env";
+import { getAiModelConfig, getAiProviderKeys } from "@/lib/env";
 import {
   AFFILIATE_CONTEXT_TAGS,
   type AffiliateContextTag,
@@ -22,7 +22,7 @@ export type ProductContextDetection = {
   reason?: string;
 };
 
-const HAIKU_MODEL = "claude-haiku-4-5";
+const HAIKU_MODEL = getAiModelConfig().anthropicClassifierModel;
 const MAX_DETECTION_LATENCY_MS = 4000;
 
 /**

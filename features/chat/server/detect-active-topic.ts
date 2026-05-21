@@ -4,9 +4,12 @@ import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 
 import { CHAT_TOPICS } from "@/features/chat/constants";
-import { getAiProviderKeys } from "@/lib/env";
+import { getAiModelConfig, getAiProviderKeys } from "@/lib/env";
 import { getTopicDetectionPrompt } from "@/lib/ai/prompts/topic-detection-prompt";
 import type { ChatMessage, ChatTopic } from "@/features/chat/types";
+
+const { openAiChatModel: OPENAI_MODEL, anthropicChatModel: ANTHROPIC_MODEL } =
+  getAiModelConfig();
 
 type DetectActiveTopicParams = {
   recentMessages: ChatMessage[];
@@ -161,7 +164,7 @@ function detectTopicHeuristically(recentMessages: ChatMessage[]): ChatTopic | nu
 async function detectTopicWithOpenAI(recentMessages: ChatMessage[], apiKey: string) {
   const client = new OpenAI({ apiKey });
   const completion = await client.responses.create({
-    model: "gpt-4.1-mini",
+    model: OPENAI_MODEL,
     input: getTopicDetectionPrompt({ recentMessages }),
   });
 
@@ -171,7 +174,7 @@ async function detectTopicWithOpenAI(recentMessages: ChatMessage[], apiKey: stri
 async function detectTopicWithAnthropic(recentMessages: ChatMessage[], apiKey: string) {
   const client = new Anthropic({ apiKey });
   const response = await client.messages.create({
-    model: "claude-3-5-sonnet-latest",
+    model: ANTHROPIC_MODEL,
     max_tokens: 30,
     messages: [
       {
