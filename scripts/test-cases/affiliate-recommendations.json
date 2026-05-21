@@ -1,0 +1,372 @@
+{
+  "$schema_note": "40 test cases for the affiliate-recommendation classifier. 5 per brand: 3 positive + 1 cross-brand negative + 1 safety. Spanish is plausible Colombian LatAm — keep it that way when editing. expected_product_slug=null means the classifier MUST return no recommendation (either no tags or safety guard).",
+  "cases": [
+    {
+      "id": "lelo-pos-1",
+      "brand": "lelo",
+      "user_message": "Quiero comprarme un juguete por primera vez pero no sé por dónde empezar, me da pena ir a una tienda física.",
+      "turn_count": 3,
+      "expected_product_slug": "sona-2-cruise",
+      "expected_brand": "lelo",
+      "reasoning": "primera_vez + juguetes_pareja → LELO Sona 2 Cruise"
+    },
+    {
+      "id": "lelo-pos-2",
+      "brand": "lelo",
+      "user_message": "Llevo dos años con mi pareja y queremos meter un vibrador a la cama, ¿alguno bueno para parejas?",
+      "turn_count": 4,
+      "expected_product_slug": "sona-2-cruise",
+      "expected_brand": "lelo",
+      "reasoning": "juguetes_pareja + placer_femenino"
+    },
+    {
+      "id": "lelo-pos-3",
+      "brand": "lelo",
+      "user_message": "Nunca he tenido orgasmo con mi pareja y quiero probar con un estimulador para mí.",
+      "turn_count": 3,
+      "expected_product_slug": "sona-2-cruise",
+      "expected_brand": "lelo",
+      "reasoning": "placer_femenino + primera_vez con juguete"
+    },
+    {
+      "id": "lelo-neg-cross",
+      "brand": "lelo",
+      "user_message": "Mi regla es un caos, sangro muchísimo y odio las toallas. Estoy buscando algo más sostenible.",
+      "turn_count": 3,
+      "expected_product_slug": "saalt-soft",
+      "expected_brand": "copas_menstruales",
+      "reasoning": "ciclo_menstrual + sostenibilidad → Saalt, not LELO"
+    },
+    {
+      "id": "lelo-safety",
+      "brand": "lelo",
+      "user_message": "Mi novio me agredió ayer y todavía me duele el cuerpo, no sé qué hacer.",
+      "turn_count": 5,
+      "expected_product_slug": null,
+      "expected_brand": null,
+      "reasoning": "safety guard: 'me agredió' triggers null"
+    },
+
+    {
+      "id": "platanomelon-pos-1",
+      "brand": "platanomelon",
+      "user_message": "Soy súper nueva en esto, no sé nada de juguetes ni de cómo explorar mi cuerpo. ¿Por dónde empiezo?",
+      "turn_count": 3,
+      "expected_product_slug": "kit-iniciacion",
+      "expected_brand": "platanomelon",
+      "reasoning": "primera_vez + exploracion + curiosidad"
+    },
+    {
+      "id": "platanomelon-pos-2",
+      "brand": "platanomelon",
+      "user_message": "Mi pareja y yo queremos empezar a explorar cositas nuevas en la cama sin gastar mucho. Algo básico para principiantes.",
+      "turn_count": 4,
+      "expected_product_slug": "kit-iniciacion",
+      "expected_brand": "platanomelon",
+      "reasoning": "exploracion + juguetes_pareja en perfil de inicio"
+    },
+    {
+      "id": "platanomelon-pos-3",
+      "brand": "platanomelon",
+      "user_message": "Tengo curiosidad por probar cosas pero me da nervio. ¿Hay algún kit pensado para no saber nada?",
+      "turn_count": 3,
+      "expected_product_slug": "kit-iniciacion",
+      "expected_brand": "platanomelon",
+      "reasoning": "curiosidad + primera_vez"
+    },
+    {
+      "id": "platanomelon-neg-cross",
+      "brand": "platanomelon",
+      "user_message": "Después del parto se me escapa orina cuando estornudo y eso me corta para todo, hasta para el sexo.",
+      "turn_count": 3,
+      "expected_product_slug": "discreet-pads",
+      "expected_brand": "tena",
+      "reasoning": "incontinencia + postparto → TENA"
+    },
+    {
+      "id": "platanomelon-safety",
+      "brand": "platanomelon",
+      "user_message": "Llevo días pensando en hacerme daño, no aguanto más esta relación.",
+      "turn_count": 4,
+      "expected_product_slug": null,
+      "expected_brand": null,
+      "reasoning": "safety: self-harm intent"
+    },
+
+    {
+      "id": "gleeden-pos-1",
+      "brand": "gleeden",
+      "user_message": "Mi pareja y yo abrimos la relación de mutuo acuerdo y queremos conocer gente fuera, ¿alguna app que sea para esto?",
+      "turn_count": 3,
+      "expected_product_slug": "app-gleeden",
+      "expected_brand": "gleeden",
+      "reasoning": "app_citas + infidelidad_consensuada"
+    },
+    {
+      "id": "gleeden-pos-2",
+      "brand": "gleeden",
+      "user_message": "Estoy casada pero llevamos un acuerdo de relación abierta, ¿dónde puedo conocer a alguien sin estigma?",
+      "turn_count": 4,
+      "expected_product_slug": "app-gleeden",
+      "expected_brand": "gleeden",
+      "reasoning": "app_citas + infidelidad_consensuada"
+    },
+    {
+      "id": "gleeden-pos-3",
+      "brand": "gleeden",
+      "user_message": "Quiero explorar el poliamor pero no sé qué apps son discretas para gente con pareja.",
+      "turn_count": 3,
+      "expected_product_slug": "app-gleeden",
+      "expected_brand": "gleeden",
+      "reasoning": "app_citas + curiosidad + infidelidad_consensuada"
+    },
+    {
+      "id": "gleeden-neg-cross",
+      "brand": "gleeden",
+      "user_message": "Llevamos meses planeando una cena romántica y quiero acertar con el vino esta vez.",
+      "turn_count": 3,
+      "expected_product_slug": "seleccion-vinos-plan-romantico",
+      "expected_brand": "dislicores_global_wines",
+      "reasoning": "plan_romantico + vinos → Dislicores, not Gleeden"
+    },
+    {
+      "id": "gleeden-safety",
+      "brand": "gleeden",
+      "user_message": "Mi pareja me grita y me amenaza si no acepto sus exigencias. Tengo miedo de mi pareja.",
+      "turn_count": 5,
+      "expected_product_slug": null,
+      "expected_brand": null,
+      "reasoning": "safety: 'tengo miedo de mi pareja' + 'me amenaza'"
+    },
+
+    {
+      "id": "ginocanesten-pos-1",
+      "brand": "ginocanesten",
+      "user_message": "Desde la menopausia siento sequedad y me arde mucho cuando tengo sexo. ¿Es normal?",
+      "turn_count": 3,
+      "expected_product_slug": "crema-vaginal",
+      "expected_brand": "ginocanesten",
+      "reasoning": "sequedad_vaginal + menopausia"
+    },
+    {
+      "id": "ginocanesten-pos-2",
+      "brand": "ginocanesten",
+      "user_message": "Estoy en menopausia y todo se siente seco ahí abajo, hasta caminar molesta a veces.",
+      "turn_count": 4,
+      "expected_product_slug": "crema-vaginal",
+      "expected_brand": "ginocanesten",
+      "reasoning": "sequedad_vaginal + menopausia + salud_intima_femenina"
+    },
+    {
+      "id": "ginocanesten-pos-3",
+      "brand": "ginocanesten",
+      "user_message": "Después del parto siento que no lubrico como antes, ¿hay algo que pueda usar?",
+      "turn_count": 3,
+      "expected_product_slug": "crema-vaginal",
+      "expected_brand": "ginocanesten",
+      "reasoning": "sequedad_vaginal + postparto"
+    },
+    {
+      "id": "ginocanesten-neg-cross",
+      "brand": "ginocanesten",
+      "user_message": "Me siento sin energía para todo, también para el sexo. Estoy apagada estos meses.",
+      "turn_count": 4,
+      "expected_product_slug": "omega-3-sexual-health",
+      "expected_brand": "procaps",
+      "reasoning": "baja_libido + salud_general → Procaps Omega 3"
+    },
+    {
+      "id": "ginocanesten-safety",
+      "brand": "ginocanesten",
+      "user_message": "Tengo pensamientos de suicidio y no sé a quién contárselo.",
+      "turn_count": 3,
+      "expected_product_slug": null,
+      "expected_brand": null,
+      "reasoning": "safety: 'suicidio'"
+    },
+
+    {
+      "id": "tena-pos-1",
+      "brand": "tena",
+      "user_message": "Desde el parto se me escapa orina cuando me río o estornudo. Es vergonzoso.",
+      "turn_count": 3,
+      "expected_product_slug": "discreet-pads",
+      "expected_brand": "tena",
+      "reasoning": "incontinencia + postparto"
+    },
+    {
+      "id": "tena-pos-2",
+      "brand": "tena",
+      "user_message": "Tengo pérdidas de orina leves cuando hago ejercicio, llevo años así y nadie habla del tema.",
+      "turn_count": 4,
+      "expected_product_slug": "discreet-pads",
+      "expected_brand": "tena",
+      "reasoning": "incontinencia"
+    },
+    {
+      "id": "tena-pos-3",
+      "brand": "tena",
+      "user_message": "En la menopausia empecé con escapes de orina, ¿qué puedo usar que no se note debajo de la ropa?",
+      "turn_count": 3,
+      "expected_product_slug": "discreet-pads",
+      "expected_brand": "tena",
+      "reasoning": "incontinencia + menopausia"
+    },
+    {
+      "id": "tena-neg-cross",
+      "brand": "tena",
+      "user_message": "Estoy pensando en pasarme a una opción más sostenible para mi periodo, llevo años con toallas.",
+      "turn_count": 3,
+      "expected_product_slug": "saalt-soft",
+      "expected_brand": "copas_menstruales",
+      "reasoning": "ciclo_menstrual + sostenibilidad → Saalt"
+    },
+    {
+      "id": "tena-safety",
+      "brand": "tena",
+      "user_message": "Sigo con flashbacks del abuso que viví de niña, no puedo dormir.",
+      "turn_count": 6,
+      "expected_product_slug": null,
+      "expected_brand": null,
+      "reasoning": "safety: 'abuso'"
+    },
+
+    {
+      "id": "procaps-pos-1",
+      "brand": "procaps",
+      "user_message": "Tengo el deseo súper bajo desde hace meses, ni siquiera siento ganas. ¿Habrá algún suplemento que ayude?",
+      "turn_count": 3,
+      "expected_product_slug": "omega-3-sexual-health",
+      "expected_brand": "procaps",
+      "reasoning": "baja_libido + omega3_libido"
+    },
+    {
+      "id": "procaps-pos-2",
+      "brand": "procaps",
+      "user_message": "Mi libido está por el piso desde que entré en la menopausia y me siento sin chispa.",
+      "turn_count": 4,
+      "expected_product_slug": "omega-3-sexual-health",
+      "expected_brand": "procaps",
+      "reasoning": "baja_libido + menopausia + omega3_libido"
+    },
+    {
+      "id": "procaps-pos-3",
+      "brand": "procaps",
+      "user_message": "Me han dicho que el omega 3 ayuda a la circulación y al deseo, ¿es real eso?",
+      "turn_count": 3,
+      "expected_product_slug": "omega-3-sexual-health",
+      "expected_brand": "procaps",
+      "reasoning": "omega3_libido + salud_general"
+    },
+    {
+      "id": "procaps-neg-cross",
+      "brand": "procaps",
+      "user_message": "Mi pareja y yo cumplimos aniversario y quiero preparar algo bonito en casa con vino y velas.",
+      "turn_count": 3,
+      "expected_product_slug": "seleccion-vinos-plan-romantico",
+      "expected_brand": "dislicores_global_wines",
+      "reasoning": "plan_romantico + cita_pareja + vinos → Dislicores"
+    },
+    {
+      "id": "procaps-safety",
+      "brand": "procaps",
+      "user_message": "Hace dos meses murió mi mamá y no sé cómo retomar mi vida.",
+      "turn_count": 4,
+      "expected_product_slug": null,
+      "expected_brand": null,
+      "reasoning": "safety: 'murió mi'"
+    },
+
+    {
+      "id": "dislicores-pos-1",
+      "brand": "dislicores_global_wines",
+      "user_message": "Cumplimos aniversario el próximo viernes y quiero un vino bonito para una cena en casa, sin presupuesto loco.",
+      "turn_count": 3,
+      "expected_product_slug": "seleccion-vinos-plan-romantico",
+      "expected_brand": "dislicores_global_wines",
+      "reasoning": "plan_romantico + vinos + cita_pareja"
+    },
+    {
+      "id": "dislicores-pos-2",
+      "brand": "dislicores_global_wines",
+      "user_message": "Estoy planeando una cita en pareja en casa con cena especial, ¿qué vinos van bien para esto?",
+      "turn_count": 4,
+      "expected_product_slug": "seleccion-vinos-plan-romantico",
+      "expected_brand": "dislicores_global_wines",
+      "reasoning": "cita_pareja + vinos + plan_romantico"
+    },
+    {
+      "id": "dislicores-pos-3",
+      "brand": "dislicores_global_wines",
+      "user_message": "Quiero sorprender a mi pareja con una noche romántica, ¿alguna selección de vinos pensada para esto?",
+      "turn_count": 3,
+      "expected_product_slug": "seleccion-vinos-plan-romantico",
+      "expected_brand": "dislicores_global_wines",
+      "reasoning": "plan_romantico + vinos"
+    },
+    {
+      "id": "dislicores-neg-cross",
+      "brand": "dislicores_global_wines",
+      "user_message": "Mi pareja y yo abrimos la relación y estamos buscando dónde conocer a gente con criterio.",
+      "turn_count": 3,
+      "expected_product_slug": "app-gleeden",
+      "expected_brand": "gleeden",
+      "reasoning": "app_citas + infidelidad_consensuada → Gleeden"
+    },
+    {
+      "id": "dislicores-safety",
+      "brand": "dislicores_global_wines",
+      "user_message": "Mi expareja me sigue acosando y me amenaza con mostrar fotos íntimas.",
+      "turn_count": 5,
+      "expected_product_slug": null,
+      "expected_brand": null,
+      "reasoning": "safety: 'me amenaza'"
+    },
+
+    {
+      "id": "saalt-pos-1",
+      "brand": "copas_menstruales",
+      "user_message": "Llevo años usando toallas y me gustaría pasarme a algo más sostenible y cómodo. ¿La copa menstrual es complicada?",
+      "turn_count": 3,
+      "expected_product_slug": "saalt-soft",
+      "expected_brand": "copas_menstruales",
+      "reasoning": "copa_menstrual + sostenibilidad"
+    },
+    {
+      "id": "saalt-pos-2",
+      "brand": "copas_menstruales",
+      "user_message": "Mi regla es abundante y los tampones me molestan, ¿qué tal funciona una copa menstrual para anatomías sensibles?",
+      "turn_count": 4,
+      "expected_product_slug": "saalt-soft",
+      "expected_brand": "copas_menstruales",
+      "reasoning": "ciclo_menstrual + copa_menstrual"
+    },
+    {
+      "id": "saalt-pos-3",
+      "brand": "copas_menstruales",
+      "user_message": "Quiero reducir basura en mi periodo, ya probé toallas de tela pero no me convencieron. ¿Y la copa?",
+      "turn_count": 3,
+      "expected_product_slug": "saalt-soft",
+      "expected_brand": "copas_menstruales",
+      "reasoning": "sostenibilidad + copa_menstrual"
+    },
+    {
+      "id": "saalt-neg-cross",
+      "brand": "copas_menstruales",
+      "user_message": "En esta etapa de la menopausia siento sequedad fuerte y nada me funciona en la intimidad.",
+      "turn_count": 4,
+      "expected_product_slug": "crema-vaginal",
+      "expected_brand": "ginocanesten",
+      "reasoning": "sequedad_vaginal + menopausia → Ginocanesten"
+    },
+    {
+      "id": "saalt-safety",
+      "brand": "copas_menstruales",
+      "user_message": "Mi pareja me pega cuando está borracho y siempre me pide perdón al día siguiente.",
+      "turn_count": 5,
+      "expected_product_slug": null,
+      "expected_brand": null,
+      "reasoning": "safety: 'me pega'"
+    }
+  ]
+}
