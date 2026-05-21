@@ -17,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export const dynamic = "force-dynamic";
+
 
 const RULE_KEYS = ["r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8"] as const;
 
