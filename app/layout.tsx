@@ -25,7 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
       template: t("site.title_template"),
     },
     description: t("site.description"),
-    metadataBase: new URL("https://flavia.app"),
+    metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://flavia.app"),
     manifest: "/manifest.json",
     icons: {
       icon: "/favicon.svg",

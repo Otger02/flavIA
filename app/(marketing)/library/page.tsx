@@ -27,7 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: `${title} — Flavia`,
       description,
-      url: "https://flavia.app/library",
+      url: "/library",
     },
   };
 }

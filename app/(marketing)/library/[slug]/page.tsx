@@ -47,7 +47,7 @@ export async function generateMetadata({
     openGraph: {
       title: `${item.title} — Flavia`,
       description,
-      url: `https://flavia.app/library/${slug}`,
+      url: `/library/${slug}`,
       ...(item.coverImageUrl
         ? { images: [{ url: item.coverImageUrl, alt: item.title }] }
         : {}),
