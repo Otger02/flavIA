@@ -12,6 +12,36 @@ import type { ChatContext } from "@/features/chat/types";
 const { openAiChatModel: OPENAI_MODEL, anthropicChatModel: ANTHROPIC_MODEL } =
   getAiModelConfig();
 
+const RETRY_ATTEMPTS = 2;
+const RETRY_BASE_DELAY_MS = 500;
+
+function isRetryableError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+  const msg = error.message.toLowerCase();
+  return (
+    msg.includes("rate limit") ||
+    msg.includes("timeout") ||
+    msg.includes("network") ||
+    msg.includes("econnreset") ||
+    msg.includes("503") ||
+    msg.includes("529")
+  );
+}
+
+async function withRetry<T>(fn: () => Promise<T>, attempts: number): Promise<T> {
+  let lastError: unknown;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error;
+      if (!isRetryableError(error) || i === attempts - 1) throw error;
+      await new Promise((r) => setTimeout(r, RETRY_BASE_DELAY_MS * 2 ** i));
+    }
+  }
+  throw lastError;
+}
+
 type GenerateChatResponseResult = {
   content: string;
   model: string;
@@ -106,7 +136,7 @@ export async function generateChatResponse(context: ChatContext): Promise<Genera
 
   if (openAiApiKey) {
     try {
-      return await generateWithOpenAI(context, openAiApiKey);
+      return await withRetry(() => generateWithOpenAI(context, openAiApiKey), RETRY_ATTEMPTS);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown OpenAI error";
       errors.push(`OpenAI: ${message}`);
@@ -115,7 +145,7 @@ export async function generateChatResponse(context: ChatContext): Promise<Genera
 
   if (anthropicApiKey) {
     try {
-      return await generateWithAnthropic(context, anthropicApiKey);
+      return await withRetry(() => generateWithAnthropic(context, anthropicApiKey), RETRY_ATTEMPTS);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown Anthropic error";
       errors.push(`Anthropic: ${message}`);
@@ -197,7 +227,7 @@ export async function generateChatResponseStream(context: ChatContext): Promise<
 
   if (openAiApiKey) {
     try {
-      return await streamWithOpenAI(context, openAiApiKey);
+      return await withRetry(() => streamWithOpenAI(context, openAiApiKey), RETRY_ATTEMPTS);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown OpenAI error";
       errors.push(`OpenAI stream: ${message}`);
@@ -206,7 +236,7 @@ export async function generateChatResponseStream(context: ChatContext): Promise<
 
   if (anthropicApiKey) {
     try {
-      return await streamWithAnthropic(context, anthropicApiKey);
+      return await withRetry(() => streamWithAnthropic(context, anthropicApiKey), RETRY_ATTEMPTS);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown Anthropic error";
       errors.push(`Anthropic stream: ${message}`);
